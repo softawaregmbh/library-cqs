@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>softaware gmbh</Authors>
+    <Company>softaware gmbh</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://github.com/softawaregmbh/library-cqs/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
+    <PackageIconUrl>https://secure.gravatar.com/avatar/d441f5a5514d2afce7da518a89f028d0?s=512&amp;amp;r=g&amp;amp;d=retro</PackageIconUrl>
+    <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>softaware, command-query-separation</PackageTags>
+    <Description>A decorator for command-query architecture, which supports validation of data annotations.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\softaware.CQS\softaware.CQS.csproj" />
+  </ItemGroup>
+
+</Project>

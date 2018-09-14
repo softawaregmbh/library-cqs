@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>softaware gmbh</Authors>
+    <Company>softaware gmbh</Company>
+    <Description>Core library for command-query separation pattern.</Description>
+    <PackageIconUrl>https://secure.gravatar.com/avatar/d441f5a5514d2afce7da518a89f028d0?s=512&amp;amp;r=g&amp;amp;d=retro</PackageIconUrl>
+    <PackageTags>softaware, command-query-separation</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/softawaregmbh/library-cqs/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+</Project>

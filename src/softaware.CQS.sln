@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS", "softaware.CQS\softaware.CQS.csproj", "{9DEE2395-1B87-41C1-853C-DB5461C7D149}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.Validation", "softaware.CQS.Decorators.Validation\softaware.CQS.Decorators.Validation.csproj", "{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.Transaction", "softaware.CQS.Decorators.Transaction\softaware.CQS.Decorators.Transaction.csproj", "{6372820B-CD80-4D21-B9C0-B143815CFE46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.SimpleInjector", "softaware.CQS.SimpleInjector\softaware.CQS.SimpleInjector.csproj", "{78ABAB39-7F82-4964-904D-20AFBEF5E570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.UsageAware", "softaware.CQS.Decorators.UsageAware\softaware.CQS.Decorators.UsageAware.csproj", "{B9334117-F235-45CE-9590-9C1CADD6F6BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9DEE2395-1B87-41C1-853C-DB5461C7D149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DEE2395-1B87-41C1-853C-DB5461C7D149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DEE2395-1B87-41C1-853C-DB5461C7D149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DEE2395-1B87-41C1-853C-DB5461C7D149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6372820B-CD80-4D21-B9C0-B143815CFE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6372820B-CD80-4D21-B9C0-B143815CFE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6372820B-CD80-4D21-B9C0-B143815CFE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6372820B-CD80-4D21-B9C0-B143815CFE46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78ABAB39-7F82-4964-904D-20AFBEF5E570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78ABAB39-7F82-4964-904D-20AFBEF5E570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78ABAB39-7F82-4964-904D-20AFBEF5E570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78ABAB39-7F82-4964-904D-20AFBEF5E570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9334117-F235-45CE-9590-9C1CADD6F6BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9334117-F235-45CE-9590-9C1CADD6F6BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9334117-F235-45CE-9590-9C1CADD6F6BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9334117-F235-45CE-9590-9C1CADD6F6BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {991276B4-B34E-4CD5-BD7B-7EFE5ED474C8}
+	EndGlobalSection
+EndGlobal
