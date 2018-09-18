@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace softaware.CQS.Decorators.UsageAware
+namespace softaware.Cqs.Decorators.UsageAware
 {
     public class UsageAwareCommandLogger<TCommand> : UsageAwareLogger<TCommand>
         where TCommand : ICommand

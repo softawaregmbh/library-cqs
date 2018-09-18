@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace softaware.CQS
+namespace softaware.Cqs
 {
     public interface IQueryProcessor
     {

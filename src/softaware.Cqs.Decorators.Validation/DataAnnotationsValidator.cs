@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace softaware.CQS.Decorators.Validation
+namespace softaware.Cqs.Decorators.Validation
 {
     public class DataAnnotationsValidator : IValidator
     {

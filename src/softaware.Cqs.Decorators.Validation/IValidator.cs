@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace softaware.CQS.Decorators.Validation
+namespace softaware.Cqs.Decorators.Validation
 {
     public interface IValidator
     {

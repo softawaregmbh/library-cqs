@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace softaware.CQS.Decorators.UsageAware
+namespace softaware.Cqs.Decorators.UsageAware
 {
     public class UsageAwareLogger<T>
     {

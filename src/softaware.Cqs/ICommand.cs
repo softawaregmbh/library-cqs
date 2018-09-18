@@ -1,4 +1,4 @@
-﻿namespace softaware.CQS
+﻿namespace softaware.Cqs
 {
     /// <summary>
     /// Marker interface for commands.

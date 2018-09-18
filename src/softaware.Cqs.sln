@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS", "softaware.CQS\softaware.CQS.csproj", "{9DEE2395-1B87-41C1-853C-DB5461C7D149}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs", "softaware.Cqs\softaware.Cqs.csproj", "{9DEE2395-1B87-41C1-853C-DB5461C7D149}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.Validation", "softaware.CQS.Decorators.Validation\softaware.CQS.Decorators.Validation.csproj", "{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.Decorators.Validation", "softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.csproj", "{596B796A-4DEC-4BE7-B5E6-9F224C145EE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.Transaction", "softaware.CQS.Decorators.Transaction\softaware.CQS.Decorators.Transaction.csproj", "{6372820B-CD80-4D21-B9C0-B143815CFE46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.Decorators.Transaction", "softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.csproj", "{6372820B-CD80-4D21-B9C0-B143815CFE46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.SimpleInjector", "softaware.CQS.SimpleInjector\softaware.CQS.SimpleInjector.csproj", "{78ABAB39-7F82-4964-904D-20AFBEF5E570}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.SimpleInjector", "softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.csproj", "{78ABAB39-7F82-4964-904D-20AFBEF5E570}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.CQS.Decorators.UsageAware", "softaware.CQS.Decorators.UsageAware\softaware.CQS.Decorators.UsageAware.csproj", "{B9334117-F235-45CE-9590-9C1CADD6F6BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.Decorators.UsageAware", "softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj", "{B9334117-F235-45CE-9590-9C1CADD6F6BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

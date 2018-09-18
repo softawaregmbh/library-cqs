@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace softaware.CQS.Decorators.UsageAware
+namespace softaware.Cqs.Decorators.UsageAware
 {
     public class UsageAwareQueryLogger<TQuery, TResult> : UsageAwareLogger<TQuery>
         where TQuery : IQuery<TResult>

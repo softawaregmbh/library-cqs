@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/softawaregmbh/library-cqs/blob/master/LICENSE</PackageLicenseUrl>
+    <RootNamespace>softaware.Cqs</RootNamespace>
+    <AssemblyName>softaware.Cqs</AssemblyName>
   </PropertyGroup>
 
 </Project>

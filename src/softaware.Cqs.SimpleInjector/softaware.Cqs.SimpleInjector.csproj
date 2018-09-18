@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -11,15 +11,16 @@
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
-    <Description>A decorator for command-query architecture, which supports validation of data annotations.</Description>
+    <Description>Adds support for dynamic resolving of commands handlers and query handlers via SimpleInjector.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="SimpleInjector" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\softaware.CQS\softaware.CQS.csproj" />
+    <ProjectReference Include="..\softaware.Cqs\softaware.Cqs.csproj" />
   </ItemGroup>
 
 </Project>

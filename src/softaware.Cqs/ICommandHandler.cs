@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace softaware.CQS
+namespace softaware.Cqs
 {
     public interface ICommandHandler<TCommand>
         where TCommand : ICommand

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace softaware.CQS.Decorators.Transaction
+namespace softaware.Cqs.Decorators.Transaction
 {
     public class TransactionAwareCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
         where TCommand : ICommand

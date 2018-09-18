@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace softaware.CQS.SimpleInjector
+namespace softaware.Cqs.SimpleInjector
 {
     public class DynamicCommandProcessor : ICommandProcessor
     {

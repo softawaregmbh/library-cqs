@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace softaware.CQS.SimpleInjector
+namespace softaware.Cqs.SimpleInjector
 {
     public class DynamicQueryProcessor : IQueryProcessor
     {

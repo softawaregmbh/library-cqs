@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace softaware.CQS.Decorators.Transaction
+namespace softaware.Cqs.Decorators.Transaction
 {
     public class TransactionAwareQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
         where TQuery : IQuery<TResult>
