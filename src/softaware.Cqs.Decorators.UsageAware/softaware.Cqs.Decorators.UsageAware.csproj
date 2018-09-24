@@ -12,6 +12,8 @@
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
+    <PackageId>softaware.CQS.Decorators.UsageAware</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

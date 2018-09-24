@@ -12,6 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>A decorator for command-query architecture, which supports transactions.</Description>
+    <PackageId>softaware.CQS.Decorators.Transaction</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

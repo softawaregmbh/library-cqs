@@ -13,6 +13,8 @@
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>A decorator for command-query architecture, which supports validation of data annotations.</Description>
     <AssemblyName>softaware.Cqs.Decorators.Validation</AssemblyName>
+    <PackageId>softaware.CQS.Decorators.Validation</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

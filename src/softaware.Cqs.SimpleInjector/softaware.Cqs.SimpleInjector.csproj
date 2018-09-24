@@ -12,6 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>Adds support for dynamic resolving of commands handlers and query handlers via SimpleInjector.</Description>
+    <PackageId>softaware.CQS.SimpleInjector</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

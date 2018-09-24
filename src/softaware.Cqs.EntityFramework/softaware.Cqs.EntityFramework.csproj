@@ -16,6 +16,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>Adds a generic EntityFramework DbContext factory which is aware of open transactions.</Description>
+    <PackageId>softaware.CQS.EntityFramework</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
