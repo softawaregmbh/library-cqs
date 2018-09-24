@@ -1,4 +1,5 @@
-﻿using System;
+﻿using softaware.UsageAware;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -17,7 +18,7 @@ namespace softaware.Cqs.Decorators.UsageAware
         private static readonly string Area;
         private static readonly string Action;
 
-        //// TODO private readonly IUsageAwareLogger logger;
+        private readonly IUsageAwareLogger logger;
 
         static UsageAwareLogger()
         {
@@ -26,11 +27,10 @@ namespace softaware.Cqs.Decorators.UsageAware
             Action = type.Name;
         }
 
-        //// TODO
-        ////public UsageAwareLogger(IUsageAwareLogger logger)
-        ////{
-        ////    this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        ////}
+        public UsageAwareLogger(IUsageAwareLogger logger)
+        {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
         protected async Task<Task> TimeAndLogAsync(Func<Task> commandOrQuery, LogType type)
         {
@@ -45,7 +45,7 @@ namespace softaware.Cqs.Decorators.UsageAware
                 { "type", type.ToString() }
             };
 
-            //// TODO await this.logger.TrackActionAsync(Area, Action, additionalProperties);
+            await this.logger.TrackActionAsync(Area, Action, additionalProperties);
 
             return task;
         }

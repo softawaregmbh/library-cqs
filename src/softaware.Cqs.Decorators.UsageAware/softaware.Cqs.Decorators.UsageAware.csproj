@@ -17,6 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="softaware.UsageAware" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\softaware.Cqs\softaware.Cqs.csproj" />
   </ItemGroup>
 
