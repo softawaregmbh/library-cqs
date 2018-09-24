@@ -13,7 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>softaware, command-query-separation</PackageTags>
     <PackageId>softaware.CQS.Decorators.UsageAware</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
