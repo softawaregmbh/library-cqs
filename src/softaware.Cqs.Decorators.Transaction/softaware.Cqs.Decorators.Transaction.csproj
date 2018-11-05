@@ -13,12 +13,12 @@
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>A decorator for command-query architecture, which supports transactions.</Description>
     <PackageId>softaware.CQS.Decorators.Transaction</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <FileVersion>1.1.0.0</FileVersion>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.1.0</FileVersion>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
