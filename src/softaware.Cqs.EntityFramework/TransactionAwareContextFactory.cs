@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace softaware.Cqs.EntityFramework
 {
+    [Obsolete("This class is not needed and can be removed. The entity framework DbContext will attach itself to open transactions either way, even without this helper class.", error: false)]
     public static class TransactionAwareContextFactory
     {
         private static ConcurrentDictionary<Transaction, DbConnection> connections = new ConcurrentDictionary<Transaction, DbConnection>();
