@@ -6,7 +6,7 @@ using softaware.Cqs.Tests.CQ.Contract.Commands;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers
 {
-    public class SimpleCommandHandler : ICommandHandler<SimpleCommand>
+    internal class SimpleCommandHandler : ICommandHandler<SimpleCommand>
     {
         public Task HandleAsync(SimpleCommand command)
         {

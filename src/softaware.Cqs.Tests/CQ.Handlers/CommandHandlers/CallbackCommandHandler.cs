@@ -6,7 +6,7 @@ using softaware.Cqs.Tests.CQ.Contract.Commands;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers
 {
-    public class CallbackCommandHandler : ICommandHandler<CallbackCommand>
+    internal class CallbackCommandHandler : ICommandHandler<CallbackCommand>
     {
         public Task HandleAsync(CallbackCommand command)
         {

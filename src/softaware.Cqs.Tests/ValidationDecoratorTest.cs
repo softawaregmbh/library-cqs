@@ -21,7 +21,7 @@ namespace softaware.Cqs.Tests
             container.RegisterDecorator(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerDecorator<>));
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(ValidationQueryHandlerDecorator<,>));
 
-            container.Verify();
+            this.RegisterPublicDecoratorsAndVerifyContainer();
         }
 
         [Test]

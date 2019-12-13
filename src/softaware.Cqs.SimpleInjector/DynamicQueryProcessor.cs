@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.SimpleInjector
@@ -15,13 +16,13 @@ namespace softaware.Cqs.SimpleInjector
             this.container = container;
         }
 
-        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query)
+        public Task<TResult> ExecuteAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
         {
             var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
 
             dynamic handler = this.container.GetInstance(handlerType);
 
-            return handler.HandleAsync((dynamic)query);
+            return handler.HandleAsync((dynamic)query, cancellationToken);
         }
     }
 }

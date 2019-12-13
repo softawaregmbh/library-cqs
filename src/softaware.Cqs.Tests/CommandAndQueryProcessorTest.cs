@@ -10,6 +10,12 @@ namespace softaware.Cqs.Tests
 {
     public class CommandAndQueryProcessorTest : TestBase
     {
+        public override void SetUp()
+        {
+            base.SetUp();
+            this.RegisterPublicDecoratorsAndVerifyContainer();
+        }
+
         [Test]
         public async Task ExecuteCommand()
         {

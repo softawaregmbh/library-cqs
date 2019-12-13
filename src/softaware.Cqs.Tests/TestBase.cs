@@ -27,6 +27,14 @@ namespace softaware.Cqs.Tests
             this.queryProcessor = new DynamicQueryProcessor(this.container);
         }
 
+        protected void RegisterPublicDecoratorsAndVerifyContainer()
+        {
+            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(PublicQueryHandlerDecorator<,>));
+            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(PublicCommandHandlerDecorator<>));
+
+            this.container.Verify();
+        }
+
         [SetUp]
         public virtual void SetUp()
         {

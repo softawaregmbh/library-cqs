@@ -1,5 +1,6 @@
 ﻿using SimpleInjector;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.SimpleInjector
@@ -13,13 +14,13 @@ namespace softaware.Cqs.SimpleInjector
             this.container = container;
         }
 
-        public Task ExecuteAsync(ICommand command)
+        public Task ExecuteAsync(ICommand command, CancellationToken cancellationToken = default)
         {
             var handlerType = typeof(ICommandHandler<>).MakeGenericType(command.GetType());
 
             dynamic handler = this.container.GetInstance(handlerType);
 
-            return handler.HandleAsync((dynamic)command);
+            return handler.HandleAsync((dynamic)command, cancellationToken);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using NUnit.Framework;
 using softaware.Cqs.Decorators.Transaction;
+using softaware.Cqs.SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
@@ -20,7 +21,7 @@ namespace softaware.Cqs.Tests
             container.RegisterDecorator(typeof(ICommandHandler<>), typeof(TransactionAwareCommandHandlerDecorator<>));
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(TransactionAwareQueryHandlerDecorator<,>));
 
-            container.Verify();
+            this.RegisterPublicDecoratorsAndVerifyContainer();
         }
 
         [Test]
