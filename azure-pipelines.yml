@@ -11,6 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  solutionFile: 'src/softaware.Cqs.sln'
 
 steps:
 - task: UseDotNet@2
@@ -18,10 +19,10 @@ steps:
   inputs:
     version: 3.1.x
 
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build $(solutionFile) --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test --configuration $(buildConfiguration) --logger trx
+- script: dotnet test $(solutionFile) --configuration $(buildConfiguration) --logger trx
   displayName: 'dotnet test $(buildConfiguration)'
 
 - task: PublishTestResults@2
