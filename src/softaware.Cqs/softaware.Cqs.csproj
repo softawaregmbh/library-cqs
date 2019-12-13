@@ -6,22 +6,26 @@
     <Authors>softaware gmbh</Authors>
     <Company>softaware gmbh</Company>
     <Description>Core library for command-query separation pattern.</Description>
-    <PackageIconUrl>https://secure.gravatar.com/avatar/d441f5a5514d2afce7da518a89f028d0?s=512&amp;amp;r=g&amp;amp;d=retro</PackageIconUrl>
     <PackageTags>softaware, command-query-separation</PackageTags>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/softawaregmbh/library-cqs/blob/master/LICENSE</PackageLicenseUrl>
     <RootNamespace>softaware.Cqs</RootNamespace>
     <AssemblyName>softaware.Cqs</AssemblyName>
     <Version>2.0.0-beta</Version>
     <PackageId>softaware.CQS</PackageId>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <FileVersion>2.0.0.0</FileVersion>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
