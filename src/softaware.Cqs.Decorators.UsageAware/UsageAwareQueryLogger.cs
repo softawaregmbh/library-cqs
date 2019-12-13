@@ -1,11 +1,15 @@
-﻿using softaware.UsageAware;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using softaware.UsageAware;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.UsageAware
 {
+    /// <summary>
+    /// A <see cref="UsageAwareLogger{T}"/> for logging queries.
+    /// </summary>
+    /// <typeparam name="TQuery">The type of the query to log.</typeparam>
+    /// <typeparam name="TResult">The type of the query result.</typeparam>
     public class UsageAwareQueryLogger<TQuery, TResult> : UsageAwareLogger<TQuery>
         where TQuery : IQuery<TResult>
     {

@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using System;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.UsageAware
 {
+    /// <summary>
+    /// A decorator for tracking query executions with UsageAware.
+    /// </summary>
+    /// <typeparam name="TQuery">The type of the query to execute.</typeparam>
+    /// <typeparam name="TResult">The type of the query result.</typeparam>
     public class UsageAwareQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
         where TQuery : IQuery<TResult>
     {
@@ -24,5 +28,4 @@ namespace softaware.Cqs.Decorators.UsageAware
             return this.logger.TimeAndLogQueryAsync(() => this.decoratee.HandleAsync(query));
         }
     }
-
 }

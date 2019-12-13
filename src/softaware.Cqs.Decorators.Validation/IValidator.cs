@@ -2,6 +2,9 @@
 
 namespace softaware.Cqs.Decorators.Validation
 {
+    /// <summary>
+    /// Interface for validating objects.
+    /// </summary>
     public interface IValidator
     {
         /// <summary>Validates the given instance.</summary>

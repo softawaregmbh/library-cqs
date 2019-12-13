@@ -17,7 +17,7 @@ namespace softaware.Cqs.Tests
         {
             base.SetUp();
 
-            container.RegisterInstance<IValidator>(new DataAnnotationsValidator(container));
+            container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
             container.RegisterDecorator(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerDecorator<>));
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(ValidationQueryHandlerDecorator<,>));
 

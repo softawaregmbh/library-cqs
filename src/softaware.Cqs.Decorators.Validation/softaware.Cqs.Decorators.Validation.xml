@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>softaware.Cqs.Decorators.Validation</name>
+    </assembly>
+    <members>
+        <member name="T:softaware.Cqs.Decorators.Validation.DataAnnotationsValidator">
+            <summary>
+            Validates annotations by using <see cref="M:System.ComponentModel.DataAnnotations.Validator.ValidateObject(System.Object,System.ComponentModel.DataAnnotations.ValidationContext,System.Boolean)"/>.
+            </summary>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.Validation.IValidator">
+            <summary>
+            Interface for validating objects.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.Decorators.Validation.IValidator.ValidateObject(System.Object)">
+            <summary>Validates the given instance.</summary>
+            <param name="instance">The instance to validate.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the instance is a null reference.</exception>
+            <exception cref="T:System.ComponentModel.DataAnnotations.ValidationException">Thrown when the instance is invalid.</exception>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.Validation.ValidationCommandHandlerDecorator`1">
+            <summary>
+            A decorator for validating the specified command. Uses the contructor injected <see cref="T:softaware.Cqs.Decorators.Validation.IValidator"/> for validating the command.
+            </summary>
+            <typeparam name="TCommand">The command to execute.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.Validation.ValidationQueryHandlerDecorator`2">
+            <summary>
+            A decorator for validating the specified query. Uses the contructor injected <see cref="T:softaware.Cqs.Decorators.Validation.IValidator"/> for validating the query.
+            </summary>
+            <typeparam name="TQuery">The type of the query to execute.</typeparam>
+            <typeparam name="TResult">The type of the query result.</typeparam>
+        </member>
+    </members>
+</doc>

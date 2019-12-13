@@ -23,6 +23,10 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs\softaware.Cqs.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
   </ItemGroup>

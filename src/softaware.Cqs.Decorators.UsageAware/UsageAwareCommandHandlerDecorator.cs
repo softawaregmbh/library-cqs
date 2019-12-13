@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using System;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.UsageAware
 {
+    /// <summary>
+    /// A decorator for tracking command executions with UsageAware.
+    /// </summary>
+    /// <typeparam name="TCommand">The command to execute.</typeparam>
     public class UsageAwareCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
         where TCommand : ICommand
     {

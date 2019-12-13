@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using System;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.Validation
 {
+    /// <summary>
+    /// A decorator for validating the specified query. Uses the contructor injected <see cref="IValidator"/> for validating the query.
+    /// </summary>
+    /// <typeparam name="TQuery">The type of the query to execute.</typeparam>
+    /// <typeparam name="TResult">The type of the query result.</typeparam>
     public class ValidationQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
         where TQuery : IQuery<TResult>
     {

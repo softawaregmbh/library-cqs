@@ -1,9 +1,14 @@
-﻿using System;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System.Threading.Tasks;
 using System.Transactions;
 
 namespace softaware.Cqs.Decorators.Transaction
 {
+    /// <summary>
+    /// A decorator for creating a <see cref="TransactionScope"/> for the command handler.
+    /// The transaction gets committed when the decorated handler successfully executes.
+    /// </summary>
+    /// <typeparam name="TCommand">The command to execute.</typeparam>
     public class TransactionAwareCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
         where TCommand : ICommand
     {

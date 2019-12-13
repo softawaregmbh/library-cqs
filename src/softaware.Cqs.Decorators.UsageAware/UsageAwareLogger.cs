@@ -1,12 +1,16 @@
-﻿using softaware.UsageAware;
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using softaware.UsageAware;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.UsageAware
 {
+    /// <summary>
+    /// Logs and measures duration of the execution of a command or a query.
+    /// </summary>
+    /// <typeparam name="T">The type of the command or the query to log.</typeparam>
     public class UsageAwareLogger<T>
     {
         protected enum LogType

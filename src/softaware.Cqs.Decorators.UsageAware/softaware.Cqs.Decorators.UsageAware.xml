@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>softaware.Cqs.Decorators.UsageAware</name>
+    </assembly>
+    <members>
+        <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareCommandHandlerDecorator`1">
+            <summary>
+            A decorator for tracking command executions with UsageAware.
+            </summary>
+            <typeparam name="TCommand">The command to execute.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareCommandLogger`1">
+            <summary>
+            A <see cref="T:softaware.Cqs.Decorators.UsageAware.UsageAwareLogger`1"/> for logging commands.
+            </summary>
+            <typeparam name="TCommand">The type of the command to log.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareLogger`1">
+            <summary>
+            Logs and measures duration of the execution of a command or a query.
+            </summary>
+            <typeparam name="T">The type of the command or the query to log.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareQueryHandlerDecorator`2">
+            <summary>
+            A decorator for tracking query executions with UsageAware.
+            </summary>
+            <typeparam name="TQuery">The type of the query to execute.</typeparam>
+            <typeparam name="TResult">The type of the query result.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareQueryLogger`2">
+            <summary>
+            A <see cref="T:softaware.Cqs.Decorators.UsageAware.UsageAwareLogger`1"/> for logging queries.
+            </summary>
+            <typeparam name="TQuery">The type of the query to log.</typeparam>
+            <typeparam name="TResult">The type of the query result.</typeparam>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>softaware.Cqs.SimpleInjector</name>
+    </assembly>
+    <members>
+        <member name="T:softaware.Cqs.SimpleInjector.DynamicCommandProcessor">
+            <summary>
+            Finds the matching <see cref="T:softaware.Cqs.ICommandHandler`1"/> for a specified <see cref="T:softaware.Cqs.ICommand"/> and
+            calls <see cref="M:softaware.Cqs.ICommandHandler`1.HandleAsync(`0,System.Threading.CancellationToken)"/> for that command handler.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SimpleInjector.DynamicCommandProcessor.ExecuteAsync(softaware.Cqs.ICommand,System.Threading.CancellationToken)">
+            <summary>
+            Finds the matching <see cref="T:softaware.Cqs.ICommandHandler`1"/> for a specified <see cref="T:softaware.Cqs.ICommand"/> and
+            calls <see cref="M:softaware.Cqs.ICommandHandler`1.HandleAsync(`0,System.Threading.CancellationToken)"/> for that command handler.
+            </summary>
+            <param name="command">The command to execute.</param>
+            <param name="cancellationToken">The optional cancellation token when requesting the cancellation of the execution.</param>
+        </member>
+        <member name="T:softaware.Cqs.SimpleInjector.DynamicQueryProcessor">
+            <summary>
+            Finds the matching <see cref="T:softaware.Cqs.IQueryHandler`2"/> for a specified <see cref="T:softaware.Cqs.IQuery`1"/> and
+            calls <see cref="M:softaware.Cqs.IQueryHandler`2.HandleAsync(`0,System.Threading.CancellationToken)"/> for that query handler.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SimpleInjector.DynamicQueryProcessor.ExecuteAsync``1(softaware.Cqs.IQuery{``0},System.Threading.CancellationToken)">
+            <summary>
+            Finds the matching <see cref="T:softaware.Cqs.IQueryHandler`2"/> for a specified <see cref="T:softaware.Cqs.IQuery`1"/> and
+            calls <see cref="M:softaware.Cqs.IQueryHandler`2.HandleAsync(`0,System.Threading.CancellationToken)"/> for that query handler.
+            </summary>
+            <param name="query">The query to execute.</param>
+            <param name="cancellationToken">The optional cancellation token when requesting the cancellation of the execution.</param>
+            <returns>The query result.</returns>
+        </member>
+        <member name="T:softaware.Cqs.SimpleInjector.PublicCommandHandlerDecorator`1">
+            <summary>
+            This decorator just delegates to the next decorator or to the actual handler.
+            It is needed when using <see cref="T:softaware.Cqs.SimpleInjector.DynamicCommandProcessor"/> to allow <see langword="internal"/> decorators or <see langword="internal"/> handlers to get resolved correctly.
+            A <see langword="public"/> decorator must be applied first so that the <see cref="T:softaware.Cqs.SimpleInjector.DynamicCommandProcessor"/> can call the correct method.
+            <para>
+            See https://github.com/dotnetjunkie/solidservices/issues/21#issuecomment-382506019 for more information.
+            </para>
+            <para>
+            Register this decorator as the *last* decorator in the chain using <see cref="M:SimpleInjector.Container.RegisterDecorator(System.Type,System.Type)"/>.
+            (The last decorator in the chain will be resolved *first*).
+            </para>
+            </summary>
+        </member>
+        <member name="T:softaware.Cqs.SimpleInjector.PublicQueryHandlerDecorator`2">
+            <summary>
+            This decorator just delegates to the next decorator or to the actual handler.
+            It is needed when using <see cref="T:softaware.Cqs.SimpleInjector.DynamicQueryProcessor"/> to allow <see langword="internal"/> decorators or <see langword="internal"/> handlers to get resolved correctly.
+            A <see langword="public"/> decorator must be applied first so that the <see cref="T:softaware.Cqs.SimpleInjector.DynamicQueryProcessor"/> can call the correct method.
+            <para>
+            See https://github.com/dotnetjunkie/solidservices/issues/21#issuecomment-382506019 for more information.
+            </para>
+            <para>
+            Register this decorator as the *last* decorator in the chain using <see cref="M:SimpleInjector.Container.RegisterDecorator(System.Type,System.Type)"/>.
+            (The last decorator in the chain will be resolved *first*).
+            </para>
+            </summary>
+        </member>
+    </members>
+</doc>

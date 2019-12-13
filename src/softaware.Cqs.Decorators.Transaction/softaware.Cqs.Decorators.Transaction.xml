@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>softaware.Cqs.Decorators.Transaction</name>
+    </assembly>
+    <members>
+        <member name="T:softaware.Cqs.Decorators.Transaction.TransactionAwareCommandHandlerDecorator`1">
+            <summary>
+            A decorator for creating a <see cref="T:System.Transactions.TransactionScope"/> for the command handler.
+            The transaction gets committed when the decorated handler successfully executes.
+            </summary>
+            <typeparam name="TCommand">The command to execute.</typeparam>
+        </member>
+        <member name="T:softaware.Cqs.Decorators.Transaction.TransactionAwareQueryHandlerDecorator`2">
+            <summary>
+            A decorator for creating a <see cref="T:System.Transactions.TransactionScope"/> for the query handler.
+            The transaction gets committed when the decorated handler successfully executes.
+            </summary>
+            <typeparam name="TQuery">The type of the query to execute.</typeparam>
+            <typeparam name="TResult">The type of the query result.</typeparam>
+        </member>
+    </members>
+</doc>
