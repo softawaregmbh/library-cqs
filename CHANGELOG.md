@@ -1,5 +1,8 @@
 ## Changelog
 
+## 2.0.1
+  * XML documentation for all public types has been added.
+
 ## 2.0.0
 
 ### Breaking Changes
@@ -26,8 +29,6 @@
       }
     ```
   * Unit tests have been added.
-  * XML documentation for all public types has been added.
-
 
 ## 2.0.0-beta
 
