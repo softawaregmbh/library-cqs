@@ -27,6 +27,10 @@
     <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs\softaware.Cqs.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs\softaware.Cqs.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
   </ItemGroup>

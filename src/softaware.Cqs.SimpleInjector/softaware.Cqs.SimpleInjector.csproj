@@ -25,6 +25,10 @@
     <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">

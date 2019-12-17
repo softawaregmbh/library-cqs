@@ -26,6 +26,10 @@
     <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
