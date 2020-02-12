@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -20,7 +21,9 @@ namespace softaware.Cqs.Decorators.Transaction
             this.decoratee = decoratee;
         }
 
-        public async Task HandleAsync(TCommand command)
+        public Task HandleAsync(TCommand command) => this.HandleAsync(command, default);
+
+        public async Task HandleAsync(TCommand command, CancellationToken cancellationToken)
         {
             TransactionOptions transactionOptions = new TransactionOptions
             {
@@ -29,7 +32,7 @@ namespace softaware.Cqs.Decorators.Transaction
 
             using (var tx = new TransactionScope(TransactionScopeOption.Required, transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
             {
-                await this.decoratee.HandleAsync(command);
+                await this.decoratee.HandleAsync(command, cancellationToken);
                 tx.Complete();
             }
         }

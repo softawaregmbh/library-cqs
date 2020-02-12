@@ -1,5 +1,11 @@
 ## Changelog
 
+## 2.0.2
+
+### Bug Fixes
+
+* The `CancellationToken` will now correctly be passed to the inner handlers when using the Transaction-, Validation- or UsageAware decorators.
+
 ## 2.0.1
   * XML documentation for all public types has been added.
 

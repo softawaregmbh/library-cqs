@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.UsageAware
@@ -23,9 +24,11 @@ namespace softaware.Cqs.Decorators.UsageAware
             this.decoratee = decoratee ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public Task<TResult> HandleAsync(TQuery query)
+        public Task<TResult> HandleAsync(TQuery query) => this.HandleAsync(query, default);
+
+        public Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken)
         {
-            return this.logger.TimeAndLogQueryAsync(() => this.decoratee.HandleAsync(query));
+            return this.logger.TimeAndLogQueryAsync(() => this.decoratee.HandleAsync(query, cancellationToken));
         }
     }
 }

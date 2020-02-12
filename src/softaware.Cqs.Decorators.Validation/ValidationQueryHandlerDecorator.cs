@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace softaware.Cqs.Decorators.Validation
@@ -23,7 +24,9 @@ namespace softaware.Cqs.Decorators.Validation
             this.decoratee = decoratee;
         }
 
-        public Task<TResult> HandleAsync(TQuery query)
+        public Task<TResult> HandleAsync(TQuery query) => this.HandleAsync(query, default);
+
+        public Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken)
         {
             if (query == null)
             {
@@ -31,7 +34,7 @@ namespace softaware.Cqs.Decorators.Validation
             }
 
             this.validator.ValidateObject(query);
-            return this.decoratee.HandleAsync(query);
+            return this.decoratee.HandleAsync(query, cancellationToken);
         }
     }
 }
