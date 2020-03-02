@@ -17,7 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D783F3F7-0AB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{51D3C0D3-1FFC-4067-A646-180246B2CB05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "softaware.Cqs.Tests", "softaware.Cqs.Tests\softaware.Cqs.Tests.csproj", "{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.Tests", "softaware.Cqs.Tests\softaware.Cqs.Tests.csproj", "{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "softaware.Cqs.Decorators.FluentValidation", "softaware.Cqs.Decorators.FluentValidation\softaware.Cqs.Decorators.FluentValidation.csproj", "{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{78ABAB39-7F82-4964-904D-20AFBEF5E570} = {D783F3F7-0AB3-4648-9496-CF72724121B9}
 		{B9334117-F235-45CE-9590-9C1CADD6F6BF} = {D783F3F7-0AB3-4648-9496-CF72724121B9}
 		{3377E1D3-D5AC-4F5C-B04A-B12FBE6AA6A4} = {51D3C0D3-1FFC-4067-A646-180246B2CB05}
+		{C61BD2B4-021C-44CD-B1DA-1EA3D9E3B9EB} = {D783F3F7-0AB3-4648-9496-CF72724121B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {991276B4-B34E-4CD5-BD7B-7EFE5ED474C8}

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="8.6.1" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation\softaware.Cqs.Decorators.FluentValidation.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.csproj" />

@@ -1,5 +1,11 @@
 ## Changelog
 
+## 2.1.0
+
+### New Features
+
+* Added new NuGet package `softaware.Cqs.Decorators.FluentValidation` which supports command and query decorators for using [FluentValidation](https://fluentvalidation.net/).
+
 ## 2.0.2
 
 ### Bug Fixes
