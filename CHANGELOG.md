@@ -40,6 +40,7 @@
           }
       }
     ```
+    **Note:** For this to work, *all* existing Decorators must override the `HandleAsync(command, token)` method and pass the `cancellationToken` to the inner handlers.
   * Unit tests have been added.
 
 ## 2.0.0-beta
