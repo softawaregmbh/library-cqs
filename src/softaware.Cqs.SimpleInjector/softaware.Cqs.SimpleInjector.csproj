@@ -22,11 +22,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.SimpleInjector.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.SimpleInjector.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
