@@ -24,11 +24,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs\softaware.Cqs.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs\softaware.Cqs.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

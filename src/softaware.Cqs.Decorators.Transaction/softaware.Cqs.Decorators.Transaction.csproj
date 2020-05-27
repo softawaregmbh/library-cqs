@@ -22,11 +22,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.Decorators.Transaction.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.Decorators.Transaction.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

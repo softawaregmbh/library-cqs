@@ -23,11 +23,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Development\library-cqs\src\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
+    <DocumentationFile>softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
