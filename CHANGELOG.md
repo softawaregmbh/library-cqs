@@ -7,7 +7,7 @@
 #### Breaking Changes
 
 * Major update of Simple Injector to version 5.
-* If you are using the NuGet package `softaware.Cqs.Decorators.UsageAware`, the types `UsageAwareCommandLogger<>` and `UsageAwareQueryLogger<,>` must now be registered in the container, since these classes won't be resolved automatically in the new Simple Injector version any more by default. For more information, see https://simpleinjector.org/.
+* If you are using the NuGet package `softaware.Cqs.Decorators.UsageAware`, the types `UsageAwareCommandLogger<>` and `UsageAwareQueryLogger<,>` must now be registered in the container, since these classes won't be resolved automatically in the new Simple Injector version any more by default. For more information, see https://simpleinjector.org/ructd.
 
     ```csharp
     this.container.Register(typeof(UsageAwareCommandLogger<>));
