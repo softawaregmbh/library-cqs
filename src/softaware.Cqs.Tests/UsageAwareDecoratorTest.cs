@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using NUnit.Framework;
 using softaware.Cqs.Decorators.UsageAware;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
@@ -22,10 +19,12 @@ namespace softaware.Cqs.Tests
 
             this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
-            container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+            this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+            this.container.RegisterSingleton<UsageAwareCommandLogger>();
+            this.container.RegisterSingleton<UsageAwareQueryLogger>();
 
-            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
-            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
+            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
+            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
 
             this.RegisterPublicDecoratorsAndVerifyContainer();
         }

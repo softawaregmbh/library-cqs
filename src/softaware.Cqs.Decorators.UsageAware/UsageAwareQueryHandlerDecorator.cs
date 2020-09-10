@@ -13,11 +13,11 @@ namespace softaware.Cqs.Decorators.UsageAware
     public class UsageAwareQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
         where TQuery : IQuery<TResult>
     {
-        private readonly UsageAwareQueryLogger<TQuery, TResult> logger;
+        private readonly UsageAwareQueryLogger logger;
         private readonly IQueryHandler<TQuery, TResult> decoratee;
 
         public UsageAwareQueryHandlerDecorator(
-            UsageAwareQueryLogger<TQuery, TResult> logger,
+            UsageAwareQueryLogger logger,
             IQueryHandler<TQuery, TResult> decoratee)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -28,7 +28,7 @@ namespace softaware.Cqs.Decorators.UsageAware
 
         public Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken)
         {
-            return this.logger.TimeAndLogQueryAsync(() => this.decoratee.HandleAsync(query, cancellationToken));
+            return this.logger.TimeAndLogQueryAsync<TQuery, TResult>(() => this.decoratee.HandleAsync(query, cancellationToken));
         }
     }
 }

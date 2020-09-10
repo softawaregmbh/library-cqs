@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using softaware.Cqs.Decorators.Transaction;
@@ -22,8 +19,11 @@ namespace softaware.Cqs.Tests
             base.SetUp();
 
             var fakeUsageAwareLogger = new FakeUsageAwareLogger();
-            container.RegisterInstance<IUsageAwareLogger>(fakeUsageAwareLogger);
-            container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
+            this.container.RegisterInstance<IUsageAwareLogger>(fakeUsageAwareLogger);
+            this.container.RegisterSingleton<UsageAwareCommandLogger>();
+            this.container.RegisterSingleton<UsageAwareQueryLogger>();
+
+            this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
 
             // Register all decorators to make sure that cancellation token is correctly passed to inner handler.
             this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(TransactionAwareQueryHandlerDecorator<,>));
@@ -53,7 +53,7 @@ namespace softaware.Cqs.Tests
             var task = this.commandProcessor.ExecuteAsync(new LongRunningCommand(), cancellationTokenSource.Token);
             cancellationTokenSource.Cancel();
 
-            Assert.ThrowsAsync<TaskCanceledException>(async () => await task);            
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
         }
 
         [Test]

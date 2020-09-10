@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 using NUnit.Framework;
 using softaware.Cqs.Decorators.FluentValidation;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
-using softaware.Cqs.Tests.CQ.Contract.Commands.Validation;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
-using softaware.Cqs.Tests.CQ.Contract.Queries.Validation;
 
 namespace softaware.Cqs.Tests
 {
@@ -25,8 +21,8 @@ namespace softaware.Cqs.Tests
             // Register "empty" validator if no other matching validator exists.
             this.container.RegisterConditional(typeof(IValidator<>), typeof(NullValidator<>), c => !c.Handled);
 
-            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
-            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
+            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
+            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
 
             this.RegisterPublicDecoratorsAndVerifyContainer();
         }
@@ -40,7 +36,7 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(1)
             };
 
-            var validator = this.container.GetInstance<StartAndEndDateCommandValidator>();
+            var validator = this.container.GetInstance<IValidator<StartAndEndDateCommand>>();
             var result = validator.Validate(command);
 
             Assert.IsTrue(result.IsValid);
@@ -55,7 +51,7 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(-1)
             };
 
-            var validator = this.container.GetInstance<StartAndEndDateCommandValidator>();
+            var validator = this.container.GetInstance<IValidator<StartAndEndDateCommand>>();
             var result = validator.Validate(command);
 
             Assert.IsFalse(result.IsValid);
@@ -96,7 +92,7 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(1)
             };
 
-            var validator = this.container.GetInstance<StartAndEndDateValidator>();
+            var validator = this.container.GetInstance<IValidator<StartAndEndDate>>();
             var result = validator.Validate(query);
 
             Assert.IsTrue(result.IsValid);
@@ -105,14 +101,14 @@ namespace softaware.Cqs.Tests
         [Test]
         public void QueryValidationFailsWhenEndIsBeforeStart()
         {
-            var command = new StartAndEndDate
+            var query = new StartAndEndDate
             {
                 Start = DateTime.Now,
                 End = DateTime.Now.AddHours(-1)
             };
 
-            var validator = this.container.GetInstance<StartAndEndDateValidator>();
-            var result = validator.Validate(command);
+            var validator = this.container.GetInstance<IValidator<StartAndEndDate>>();
+            var result = validator.Validate(query);
 
             Assert.IsFalse(result.IsValid);
         }
