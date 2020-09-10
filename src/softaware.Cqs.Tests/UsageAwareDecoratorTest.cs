@@ -20,8 +20,8 @@ namespace softaware.Cqs.Tests
             this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
             this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
-            this.container.RegisterSingleton<UsageAwareCommandLogger>();
-            this.container.RegisterSingleton<UsageAwareQueryLogger>();
+            this.container.Register(typeof(UsageAwareCommandLogger<>));
+            this.container.Register(typeof(UsageAwareQueryLogger<,>));
 
             this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
             this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));

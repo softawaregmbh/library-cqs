@@ -12,11 +12,11 @@ namespace softaware.Cqs.Decorators.UsageAware
     public class UsageAwareCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand>
         where TCommand : ICommand
     {
-        private readonly UsageAwareCommandLogger logger;
+        private readonly UsageAwareCommandLogger<TCommand> logger;
         private readonly ICommandHandler<TCommand> decoratee;
 
         public UsageAwareCommandHandlerDecorator(
-            UsageAwareCommandLogger logger,
+            UsageAwareCommandLogger<TCommand> logger,
             ICommandHandler<TCommand> decoratee)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,7 +27,7 @@ namespace softaware.Cqs.Decorators.UsageAware
 
         public async Task HandleAsync(TCommand command, CancellationToken cancellationToken)
         {
-            await this.logger.TimeAndLogCommandAsync<TCommand>(() => this.decoratee.HandleAsync(command, cancellationToken));
+            await this.logger.TimeAndLogCommandAsync(() => this.decoratee.HandleAsync(command, cancellationToken));
         }
     }
 }

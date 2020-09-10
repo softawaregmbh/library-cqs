@@ -1,45 +1,42 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using softaware.UsageAware;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using softaware.UsageAware;
 
 namespace softaware.Cqs.Decorators.UsageAware
 {
     /// <summary>
     /// Logs and measures duration of the execution of a command or a query.
     /// </summary>
-    public class UsageAwareLogger
+    /// <typeparam name="T">The type of the command or the query to log.</typeparam>
+    public class UsageAwareLogger<T>
     {
-        protected struct ActionInfo
-        {
-            public ActionInfo(string area, string action)
-            {
-                this.Area = area;
-                this.Action = action;
-            }
-
-            public string Area { get; }
-            public string Action { get; }
-        }
-
         protected enum LogType
         {
             Command,
             Query
         }
 
+        private static readonly string Area;
+        private static readonly string Action;
+
         private readonly IUsageAwareLogger logger;
-        protected readonly ConcurrentDictionary<Type, ActionInfo> actionInfos = new ConcurrentDictionary<Type, ActionInfo>();
+
+        static UsageAwareLogger()
+        {
+            var type = typeof(T);
+            Area = type.Namespace.Substring(type.Namespace.LastIndexOf('.') + 1);
+            Action = type.Name;
+        }
 
         public UsageAwareLogger(IUsageAwareLogger logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected async Task<Task> TimeAndLogAsync<T>(Func<Task> commandOrQuery, LogType type)
+        protected async Task<Task> TimeAndLogAsync(Func<Task> commandOrQuery, LogType type)
         {
             var watch = Stopwatch.StartNew();
 
@@ -52,13 +49,7 @@ namespace softaware.Cqs.Decorators.UsageAware
                 { "type", type.ToString() }
             };
 
-            var actionInfo = this.actionInfos.GetOrAdd(
-                typeof(T),
-                type => new ActionInfo(
-                    area: type.Namespace.Substring(type.Namespace.LastIndexOf('.') + 1),
-                    action: type.Name));
-
-            await this.logger.TrackActionAsync(actionInfo.Area, actionInfo.Action, additionalProperties);
+            await this.logger.TrackActionAsync(Area, Action, additionalProperties);
 
             return task;
         }

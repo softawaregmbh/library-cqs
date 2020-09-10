@@ -20,8 +20,8 @@ namespace softaware.Cqs.Tests
 
             var fakeUsageAwareLogger = new FakeUsageAwareLogger();
             this.container.RegisterInstance<IUsageAwareLogger>(fakeUsageAwareLogger);
-            this.container.RegisterSingleton<UsageAwareCommandLogger>();
-            this.container.RegisterSingleton<UsageAwareQueryLogger>();
+            this.container.Register(typeof(UsageAwareCommandLogger<>));
+            this.container.Register(typeof(UsageAwareQueryLogger<,>));
 
             this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
 

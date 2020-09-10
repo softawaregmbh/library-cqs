@@ -6,19 +6,12 @@
 
 #### Breaking Changes
 
-* Major update of SimpleInjector to version 5.
-
-## softaware.Cqs.Decorators.UsageAware
-
-### 3.0.0
-
-#### Breaking Changes
-
-* Refactoring which was required due to update to SimpleInjector v5. It is now needed to register the `UsageAwareCommandLogger` and `UsageAwareQueryLogger` as Singletons in the container. In previous versions of SimpleInjector, these classes were resolved automatically. With the new default value for the SimpleInjector option `ResolveUnregisteredConcreteTypes ` this is no longer supported (see https://simpleinjector.org/ructd for details).
+* Major update of Simple Injector to version 5.
+* If you are using the NuGet package `softaware.Cqs.Decorators.UsageAware`, the types `UsageAwareCommandLogger<>` and `UsageAwareQueryLogger<,>` must now be registered in the container, since these classes won't be resolved automatically in the new Simple Injector version any more by default. For more information, see https://simpleinjector.org/.
 
     ```csharp
-    this.container.RegisterSingleton<UsageAwareCommandLogger>();
-    this.container.RegisterSingleton<UsageAwareQueryLogger>();
+    this.container.Register(typeof(UsageAwareCommandLogger<>));
+    this.container.Register(typeof(UsageAwareQueryLogger<,>));
     ```
 
 ## 2.1.0
