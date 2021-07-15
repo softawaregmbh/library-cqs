@@ -1,5 +1,11 @@
 # Changelog
 
+## softaware.Cqs.Decorators.FluentValidation
+
+### 1.0.1
+
+* Update Dependency to [FluentValidation](https://fluentvalidation.net/) to use Version 10 or higher.
+
 ## softaware.Cqs.SimpleInjector
 
 ### 3.0.0
