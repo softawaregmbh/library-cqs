@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using NUnit.Framework;
 using SimpleInjector;
 using softaware.Cqs.SimpleInjector;
@@ -19,9 +16,12 @@ namespace softaware.Cqs.Tests
         {
             this.container = new Container();
 
-            Assembly[] handlerAssemblies = new[] { Assembly.GetExecutingAssembly() };
-            this.container.Register(typeof(ICommandHandler<>), handlerAssemblies);
-            this.container.Register(typeof(IQueryHandler<,>), handlerAssemblies);
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));
+                
+            ////Assembly[] handlerAssemblies = new[] { Assembly.GetExecutingAssembly() };
+            ////this.container.Register(typeof(ICommandHandler<>), handlerAssemblies);
+            ////this.container.Register(typeof(IQueryHandler<,>), handlerAssemblies);
 
             this.commandProcessor = new DynamicCommandProcessor(this.container);
             this.queryProcessor = new DynamicQueryProcessor(this.container);

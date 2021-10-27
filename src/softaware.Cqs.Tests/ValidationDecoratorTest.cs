@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using softaware.Cqs.Decorators.Validation;
+using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
@@ -15,13 +13,20 @@ namespace softaware.Cqs.Tests
     {
         public override void SetUp()
         {
-            base.SetUp();
+            // base.SetUp();
 
-            container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
-            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerDecorator<>));
-            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(ValidationQueryHandlerDecorator<,>));
+            this.container = new Container();
 
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddTransactionCommandHandlerDecorator()
+                    .AddValidationDecorator());
+
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
+
+            this.container.Verify();
         }
 
         [Test]

@@ -61,5 +61,20 @@
             </para>
             </summary>
         </member>
+        <member name="P:softaware.Cqs.SimpleInjector.SoftawareCqsTypesBuilder.RegisteredAssemblies">
+            <summary>
+            Gets the already registered assemblies.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SimpleInjector.SoftawareCqsTypesBuilder.IncludeTypesFrom(System.Type[])">
+            <summary>
+            Registers the assemblies of the provided <paramref name="markerTypes"/>.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SimpleInjector.SoftawareCqsTypesBuilder.IncludeTypesFrom(System.Reflection.Assembly[])">
+            <summary>
+            Registers the provided <paramref name="assemblies"/> for later Mediator configuration.
+            </summary>
+        </member>
     </members>
 </doc>
