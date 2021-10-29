@@ -1,6 +1,7 @@
 ﻿using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
-using softaware.Cqs.Decorators.UsageAware;
+using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
@@ -9,24 +10,30 @@ using softaware.UsageAware;
 namespace softaware.Cqs.Tests
 {
     [TestFixture]
-    public class UsageAwareDecoratorTest : TestBase
+    public class UsageAwareDecoratorTest
     {
+        private Container container;
         private FakeUsageAwareLogger fakeUsageAwareLogger;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
 
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
+            this.container = new Container();
 
             this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b.AddUsageAwareDecorators());
+
             this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
-            this.container.Register(typeof(UsageAwareCommandLogger<>));
-            this.container.Register(typeof(UsageAwareQueryLogger<,>));
 
-            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
-            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
+            this.container.Verify();
 
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
         }
 
         [Test]

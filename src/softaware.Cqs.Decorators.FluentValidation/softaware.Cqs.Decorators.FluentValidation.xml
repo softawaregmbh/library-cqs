@@ -42,5 +42,18 @@
             Implementation of the "Null Object Pattern". This validator does not validate anything.
             </summary>
         </member>
+        <member name="T:softaware.Cqs.SoftawareCqsFluentValidationDecoratorBuilderExtensions">
+            <summary>
+            Provides extension methods to add FluentValidation decorators.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsFluentValidationDecoratorBuilderExtensions.AddFluentValidationDecorators(softaware.Cqs.SoftawareCqsDecoratorBuilder,System.Action{softaware.Cqs.SoftawareCqsTypesBuilder})">
+            <summary>
+            Registers the fluent validation command and query decorators as well as all validators from the specified assemblies.
+            </summary>
+            <param name="decoratorBuilder">The CQS decorator builder.</param>
+            <param name="validatorTypesBuilderAction">The types builder for registering assemblies from where to find <see cref="T:FluentValidation.IValidator`1"/> instances.</param>
+            <returns>The CQS decorator builder.</returns>
+        </member>
     </members>
 </doc>

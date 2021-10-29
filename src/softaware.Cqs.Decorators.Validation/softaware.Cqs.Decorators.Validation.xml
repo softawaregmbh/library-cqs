@@ -33,5 +33,17 @@
             <typeparam name="TQuery">The type of the query to execute.</typeparam>
             <typeparam name="TResult">The type of the query result.</typeparam>
         </member>
+        <member name="T:softaware.Cqs.SoftawareCqsValidationDecoratorBuilderExtensions">
+            <summary>
+            Provides extension methods to add data annotations decorators.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsValidationDecoratorBuilderExtensions.AddDataAnnotationsValidationDecorators(softaware.Cqs.SoftawareCqsDecoratorBuilder)">
+            <summary>
+            Registers the data annotations validation command and query decorators.
+            </summary>
+            <param name="decoratorBuilder">The CQS decorator builder.</param>
+            <returns>The CQS decorator builder.</returns>
+        </member>
     </members>
 </doc>

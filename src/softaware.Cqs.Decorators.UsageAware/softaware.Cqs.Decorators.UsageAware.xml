@@ -4,6 +4,21 @@
         <name>softaware.Cqs.Decorators.UsageAware</name>
     </assembly>
     <members>
+        <member name="T:softaware.Cqs.SoftawareCqsUsageAwareDecoratorBuilderExtensions">
+            <summary>
+            Provides extension methods to add usage aware decorators.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsUsageAwareDecoratorBuilderExtensions.AddUsageAwareDecorators(softaware.Cqs.SoftawareCqsDecoratorBuilder)">
+            <summary>
+            Registers the usage aware command and query loggers and decorators.
+            </summary>
+            <remarks>
+            An instance of <see cref="T:softaware.UsageAware.IUsageAwareLogger"/> must be registered in the container.
+            </remarks>
+            <param name="decoratorBuilder">The CQS decorator builder.</param>
+            <returns>The CQS decorator builder.</returns>
+        </member>
         <member name="T:softaware.Cqs.Decorators.UsageAware.UsageAwareCommandHandlerDecorator`1">
             <summary>
             A decorator for tracking command executions with UsageAware.

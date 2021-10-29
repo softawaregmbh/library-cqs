@@ -9,24 +9,26 @@ using softaware.Cqs.Tests.CQ.Contract.Queries;
 namespace softaware.Cqs.Tests
 {
     [TestFixture]
-    public class ValidationDecoratorTest : TestBase
+    public class ValidationDecoratorTest
     {
-        public override void SetUp()
-        {
-            // base.SetUp();
+        private Container container;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
 
+        [SetUp]
+        public void SetUp()
+        {
             this.container = new Container();
 
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddTransactionCommandHandlerDecorator()
-                    .AddValidationDecorator());
+                    .AddDataAnnotationsValidationDecorators());
+
+            this.container.Verify();
 
             this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
             this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
-
-            this.container.Verify();
         }
 
         [Test]

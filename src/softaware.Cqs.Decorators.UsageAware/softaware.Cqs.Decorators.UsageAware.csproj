@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.csproj" />
     <ProjectReference Include="..\softaware.Cqs\softaware.Cqs.csproj" />
   </ItemGroup>
 

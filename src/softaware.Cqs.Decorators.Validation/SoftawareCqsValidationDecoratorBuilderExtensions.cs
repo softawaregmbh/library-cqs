@@ -2,9 +2,17 @@
 
 namespace softaware.Cqs
 {
+    /// <summary>
+    /// Provides extension methods to add data annotations decorators.
+    /// </summary>
     public static class SoftawareCqsValidationDecoratorBuilderExtensions
     {
-        public static SoftawareCqsDecoratorBuilder AddValidationDecorator(this SoftawareCqsDecoratorBuilder decoratorBuilder)
+        /// <summary>
+        /// Registers the data annotations validation command and query decorators.
+        /// </summary>
+        /// <param name="decoratorBuilder">The CQS decorator builder.</param>
+        /// <returns>The CQS decorator builder.</returns>
+        public static SoftawareCqsDecoratorBuilder AddDataAnnotationsValidationDecorators(this SoftawareCqsDecoratorBuilder decoratorBuilder)
         {
             decoratorBuilder.Container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
 

@@ -3,28 +3,32 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentValidation;
 using NUnit.Framework;
-using softaware.Cqs.Decorators.FluentValidation;
+using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests
 {
-    public class FluentValidationDecoratorTest : TestBase
+    public class FluentValidationDecoratorTest
     {
-        public override void SetUp()
+        private Container container;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
+
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
+            this.container = new Container();
 
-            // Register all fluent validators which are available in this project (e.g. StartAndEndDateCommandValidator).
-            this.container.Register(typeof(IValidator<>), new[] { Assembly.GetExecutingAssembly() });
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b.AddFluentValidationDecorators(
+                    builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
 
-            // Register "empty" validator if no other matching validator exists.
-            this.container.RegisterConditional(typeof(IValidator<>), typeof(NullValidator<>), c => !c.Handled);
+            this.container.Verify();
 
-            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
-            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
-
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
         }
 
         [Test]

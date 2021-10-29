@@ -4,9 +4,18 @@ using softaware.Cqs.Decorators.FluentValidation;
 
 namespace softaware.Cqs
 {
+    /// <summary>
+    /// Provides extension methods to add FluentValidation decorators.
+    /// </summary>
     public static class SoftawareCqsFluentValidationDecoratorBuilderExtensions
     {
-        public static SoftawareCqsDecoratorBuilder AddFluentValidationDecorator(
+        /// <summary>
+        /// Registers the fluent validation command and query decorators as well as all validators from the specified assemblies.
+        /// </summary>
+        /// <param name="decoratorBuilder">The CQS decorator builder.</param>
+        /// <param name="validatorTypesBuilderAction">The types builder for registering assemblies from where to find <see cref="IValidator{T}"/> instances.</param>
+        /// <returns>The CQS decorator builder.</returns>
+        public static SoftawareCqsDecoratorBuilder AddFluentValidationDecorators(
             this SoftawareCqsDecoratorBuilder decoratorBuilder,
             Action<SoftawareCqsTypesBuilder> validatorTypesBuilderAction)
         {

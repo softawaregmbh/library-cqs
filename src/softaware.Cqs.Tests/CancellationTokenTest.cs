@@ -1,9 +1,8 @@
-﻿using System.Threading;
+﻿using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using softaware.Cqs.Decorators.Transaction;
-using softaware.Cqs.Decorators.UsageAware;
-using softaware.Cqs.Decorators.Validation;
+using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
@@ -12,30 +11,33 @@ using softaware.UsageAware;
 namespace softaware.Cqs.Tests
 {
     [TestFixture]
-    public class CancellationTokenTest : TestBase
+    public class CancellationTokenTest
     {
-        public override void SetUp()
+        private Container container;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
+
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
-
-            var fakeUsageAwareLogger = new FakeUsageAwareLogger();
-            this.container.RegisterInstance<IUsageAwareLogger>(fakeUsageAwareLogger);
-            this.container.Register(typeof(UsageAwareCommandLogger<>));
-            this.container.Register(typeof(UsageAwareQueryLogger<,>));
-
-            this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
+            this.container = new Container();
 
             // Register all decorators to make sure that cancellation token is correctly passed to inner handler.
-            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(TransactionAwareQueryHandlerDecorator<,>));
-            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
-            this.container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(ValidationQueryHandlerDecorator<,>));
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddTransactionQueryHandlerDecorator()
+                    .AddTransactionCommandHandlerDecorator()
+                    .AddUsageAwareDecorators()
+                    .AddDataAnnotationsValidationDecorators()
+                    .AddFluentValidationDecorators(x => x.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
 
-            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(TransactionAwareCommandHandlerDecorator<>));
-            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
-            this.container.RegisterDecorator(typeof(ICommandHandler<>), typeof(ValidationCommandHandlerDecorator<>));
+            this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
 
+            this.container.Verify();
 
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
         }
 
         [Test]

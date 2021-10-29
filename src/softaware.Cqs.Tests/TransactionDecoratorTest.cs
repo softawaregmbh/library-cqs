@@ -1,27 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
 using NUnit.Framework;
-using softaware.Cqs.Decorators.Transaction;
-using softaware.Cqs.SimpleInjector;
+using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests
 {
     [TestFixture]
-    public class TransactionDecoratorTest : TestBase
+    public class TransactionDecoratorTest
     {
-        public override void SetUp()
+        private Container container;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
+
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
+            this.container = new Container();
 
-            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(TransactionAwareCommandHandlerDecorator<>));
-            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(TransactionAwareQueryHandlerDecorator<,>));
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddTransactionCommandHandlerDecorator()
+                    .AddTransactionQueryHandlerDecorator());
 
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.container.Verify();
+
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
         }
 
         [Test]

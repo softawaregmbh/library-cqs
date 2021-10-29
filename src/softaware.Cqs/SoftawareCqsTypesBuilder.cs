@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace softaware.Cqs
 {
+    /// <summary>
+    /// Provides a builder to configure registered assemblies.
+    /// </summary>
     public class SoftawareCqsTypesBuilder
     {
         private readonly HashSet<Assembly> _registeredAssemblies = new HashSet<Assembly>();

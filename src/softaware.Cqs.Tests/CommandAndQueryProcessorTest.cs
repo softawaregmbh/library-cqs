@@ -2,18 +2,30 @@ using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SimpleInjector;
-using softaware.Cqs.SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests
 {
-    public class CommandAndQueryProcessorTest : TestBase
+    public class CommandAndQueryProcessorTest
     {
-        public override void SetUp()
+        private Container container;
+        private ICommandProcessor commandProcessor;
+        private IQueryProcessor queryProcessor;
+
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
-            this.RegisterPublicDecoratorsAndVerifyContainer();
+            this.container = new Container();
+
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => { });
+
+            this.container.Verify();
+
+            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
+            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
         }
 
         [Test]

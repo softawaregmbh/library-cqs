@@ -81,6 +81,11 @@
             <param name="cancellationToken">The optional cancellation token for requesting cancellation of the query execution.</param>
             <returns>The query result.</returns>
         </member>
+        <member name="T:softaware.Cqs.SoftawareCqsTypesBuilder">
+            <summary>
+            Provides a builder to configure registered assemblies.
+            </summary>
+        </member>
         <member name="P:softaware.Cqs.SoftawareCqsTypesBuilder.RegisteredAssemblies">
             <summary>
             Gets the already registered assemblies.

@@ -4,6 +4,25 @@
         <name>softaware.Cqs.Decorators.Transaction</name>
     </assembly>
     <members>
+        <member name="T:softaware.Cqs.SoftawareCqsTransactionDecoratorBuilderExtensions">
+            <summary>
+            Provides extension methods to add transaction aware decorators.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsTransactionDecoratorBuilderExtensions.AddTransactionCommandHandlerDecorator(softaware.Cqs.SoftawareCqsDecoratorBuilder)">
+            <summary>
+            Registers the transaction aware command handler decorator.
+            </summary>
+            <param name="decoratorBuilder">The CQS decorator builder.</param>
+            <returns>The CQS decorator builder.</returns>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsTransactionDecoratorBuilderExtensions.AddTransactionQueryHandlerDecorator(softaware.Cqs.SoftawareCqsDecoratorBuilder)">
+            <summary>
+            Registers the transaction aware query handler decorator.
+            </summary>
+            <param name="decoratorBuilder">The CQS decorator builder.</param>
+            <returns>The CQS decorator builder.</returns>
+        </member>
         <member name="T:softaware.Cqs.Decorators.Transaction.TransactionAwareCommandHandlerDecorator`1">
             <summary>
             A decorator for creating a <see cref="T:System.Transactions.TransactionScope"/> for the command handler.
