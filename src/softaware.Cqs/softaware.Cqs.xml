@@ -81,5 +81,20 @@
             <param name="cancellationToken">The optional cancellation token for requesting cancellation of the query execution.</param>
             <returns>The query result.</returns>
         </member>
+        <member name="P:softaware.Cqs.SoftawareCqsTypesBuilder.RegisteredAssemblies">
+            <summary>
+            Gets the already registered assemblies.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsTypesBuilder.IncludeTypesFrom(System.Type[])">
+            <summary>
+            Registers the assemblies of the provided <paramref name="markerTypes"/>.
+            </summary>
+        </member>
+        <member name="M:softaware.Cqs.SoftawareCqsTypesBuilder.IncludeTypesFrom(System.Reflection.Assembly[])">
+            <summary>
+            Registers the provided <paramref name="assemblies"/> for later CQS configuration.
+            </summary>
+        </member>
     </members>
 </doc>

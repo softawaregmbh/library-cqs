@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace softaware.Cqs.SimpleInjector
+namespace softaware.Cqs
 {
     public class SoftawareCqsTypesBuilder
     {
@@ -25,7 +25,7 @@ namespace softaware.Cqs.SimpleInjector
         }
 
         /// <summary>
-        /// Registers the provided <paramref name="assemblies"/> for later Mediator configuration.
+        /// Registers the provided <paramref name="assemblies"/> for later CQS configuration.
         /// </summary>
         public SoftawareCqsTypesBuilder IncludeTypesFrom(params Assembly[] assemblies)
         {
