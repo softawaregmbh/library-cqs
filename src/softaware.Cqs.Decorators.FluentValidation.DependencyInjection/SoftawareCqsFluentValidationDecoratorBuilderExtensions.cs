@@ -1,8 +1,10 @@
 ﻿using System;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using softaware.Cqs;
 using softaware.Cqs.Decorators.FluentValidation;
 
-namespace softaware.Cqs
+namespace SimpleInjector
 {
     /// <summary>
     /// Provides extension methods to add FluentValidation decorators.
@@ -23,13 +25,15 @@ namespace softaware.Cqs
             validatorTypesBuilderAction.Invoke(typesBuilder);
 
             // Register all fluent validators which are available in the specified assemblies.
-            decoratorBuilder.Container.Register(typeof(IValidator<>), typesBuilder.RegisteredAssemblies);
+            decoratorBuilder.Services
+                .Scan(scan => scan
+                    .FromAssemblies(typesBuilder.RegisteredAssemblies)
+                        .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)))
+                            .AsImplementedInterfaces()
+                            .WithTransientLifetime());
 
-            // Register "empty" validator if no other matching validator exists.
-            decoratorBuilder.Container.RegisterConditional(typeof(IValidator<>), typeof(NullValidator<>), c => !c.Handled);
-
-            decoratorBuilder.Container.RegisterDecorator(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
-            decoratorBuilder.Container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
+            decoratorBuilder.Services.Decorate(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
+            decoratorBuilder.Services.Decorate(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
 
             return decoratorBuilder;
         }

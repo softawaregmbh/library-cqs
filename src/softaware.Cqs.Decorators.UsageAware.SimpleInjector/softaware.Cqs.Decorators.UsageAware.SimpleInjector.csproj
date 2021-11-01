@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj" />
+    <ProjectReference Include="..\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.csproj" />
+  </ItemGroup>
+
+</Project>

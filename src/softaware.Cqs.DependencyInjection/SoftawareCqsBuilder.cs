@@ -1,7 +1,7 @@
 ﻿using System;
-using SimpleInjector;
+using softaware.Cqs;
 
-namespace softaware.Cqs
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Provides methods for configuring the softaware CQS infrastructure.
@@ -9,17 +9,17 @@ namespace softaware.Cqs
     public class SoftawareCqsBuilder
     {
         /// <summary>
-        /// The SimpleInjector container.
+        /// The service collection.
         /// </summary>
-        public Container Container { get; }
+        public IServiceCollection Services { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoftawareCqsBuilder"/> class.
         /// </summary>
-        /// <param name="container">The SimpleInjector container.</param>
-        public SoftawareCqsBuilder(Container container)
+        /// <param name="services">The service collection.</param>
+        public SoftawareCqsBuilder(IServiceCollection services)
         {
-            this.Container = container;
+            this.Services = services;
         }
 
         /// <summary>
@@ -33,12 +33,12 @@ namespace softaware.Cqs
         /// <returns>The CQS builder.</returns>
         public SoftawareCqsBuilder AddDecorators(Action<SoftawareCqsDecoratorBuilder> softawareCqsDecoratorBuilderAction)
         {
-            var decoratorBuilder = new SoftawareCqsDecoratorBuilder(this.Container);
+            var decoratorBuilder = new SoftawareCqsDecoratorBuilder(this.Services);
             softawareCqsDecoratorBuilderAction.Invoke(decoratorBuilder);
 
             // Register public decorators as last decorator if any decorators are registered.
-            this.Container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(PublicQueryHandlerDecorator<,>));
-            this.Container.RegisterDecorator(typeof(ICommandHandler<>), typeof(PublicCommandHandlerDecorator<>));
+            this.Services.Decorate(typeof(IQueryHandler<,>), typeof(PublicQueryHandlerDecorator<,>));
+            this.Services.Decorate(typeof(ICommandHandler<>), typeof(PublicCommandHandlerDecorator<>));
 
             return this;
         }

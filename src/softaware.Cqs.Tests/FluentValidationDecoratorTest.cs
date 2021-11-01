@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
@@ -9,27 +12,9 @@ using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests
 {
-    public class FluentValidationDecoratorTest
+    public abstract class FluentValidationDecoratorTest : TestBase
     {
-        private Container container;
-        private ICommandProcessor commandProcessor;
-        private IQueryProcessor queryProcessor;
-
-        [SetUp]
-        public void SetUp()
-        {
-            this.container = new Container();
-
-            this.container
-                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                .AddDecorators(b => b.AddFluentValidationDecorators(
-                    builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
-
-            this.container.Verify();
-
-            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
-            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
-        }
+        protected abstract IEnumerable<IValidator<T>> GetAllValidators<T>() where T : class;
 
         [Test]
         public void CommandValidationSucceedsWhenEndIsAfterStart()
@@ -40,10 +25,10 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(1)
             };
 
-            var validator = this.container.GetInstance<IValidator<StartAndEndDateCommand>>();
-            var result = validator.Validate(command);
+            var validators = this.GetAllValidators<StartAndEndDateCommand>();
+            var isValid = validators.All(v => v.Validate(command).IsValid);
 
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue(isValid);
         }
 
         [Test]
@@ -55,10 +40,10 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(-1)
             };
 
-            var validator = this.container.GetInstance<IValidator<StartAndEndDateCommand>>();
-            var result = validator.Validate(command);
+            var validators = this.GetAllValidators<StartAndEndDateCommand>();
+            var isValid = validators.All(v => v.Validate(command).IsValid);
 
-            Assert.IsFalse(result.IsValid);
+            Assert.IsFalse(isValid);
         }
 
         [Test]
@@ -96,10 +81,10 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(1)
             };
 
-            var validator = this.container.GetInstance<IValidator<StartAndEndDate>>();
-            var result = validator.Validate(query);
+            var validators = this.GetAllValidators<StartAndEndDate>();
+            var isValid = validators.All(v => v.Validate(query).IsValid);
 
-            Assert.IsTrue(result.IsValid);
+            Assert.IsTrue(isValid);
         }
 
         [Test]
@@ -111,10 +96,10 @@ namespace softaware.Cqs.Tests
                 End = DateTime.Now.AddHours(-1)
             };
 
-            var validator = this.container.GetInstance<IValidator<StartAndEndDate>>();
-            var result = validator.Validate(query);
+            var validators = this.GetAllValidators<StartAndEndDate>();
+            var isValid = validators.All(v => v.Validate(query).IsValid);
 
-            Assert.IsFalse(result.IsValid);
+            Assert.IsFalse(isValid);
         }
 
         [Test]
@@ -141,6 +126,57 @@ namespace softaware.Cqs.Tests
             };
 
             Assert.ThrowsAsync<ValidationException>(async () => await this.queryProcessor.ExecuteAsync(query));
+        }
+
+        public class SimpleInjectorTest : FluentValidationDecoratorTest
+        {
+            private Container container;
+
+            [SetUp]
+            public override void SetUp()
+            {
+                this.container = new Container();
+
+                this.container
+                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                    .AddDecorators(b => b.AddFluentValidationDecorators(
+                        builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+
+                this.container.Verify();
+
+                base.SetUp();
+            }
+
+            protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
+            protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+
+            protected override IEnumerable<IValidator<T>> GetAllValidators<T>() => this.container.GetAllInstances<IValidator<T>>();
+        }
+
+        private class ServiceCollectionTest
+            : FluentValidationDecoratorTest
+        {
+            private IServiceProvider serviceProvider;
+
+            [SetUp]
+            public override void SetUp()
+            {
+                var services = new ServiceCollection();
+
+                services
+                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                    .AddDecorators(b => b.AddFluentValidationDecorators(
+                        builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+
+                this.serviceProvider = services.BuildServiceProvider();
+
+                base.SetUp();
+            }
+
+            protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
+            protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+
+            protected override IEnumerable<IValidator<T>> GetAllValidators<T>() => this.serviceProvider.GetRequiredService<IEnumerable<IValidator<T>>>();
         }
     }
 }
