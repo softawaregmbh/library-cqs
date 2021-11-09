@@ -1,12 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>softaware gmbh</Authors>
+		<Company>softaware gmbh</Company>
+		<Description>Dependency injection builder extensions for the softaware.CQS.Decorators.UsageAware package.</Description>
+		<PackageTags>softaware, command-query-separation</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
+		<Version>1.0.0</Version>
+		<PackageId>softaware.CQS.Decorators.UsageAware.DependencyInjection</PackageId>
+		<PackageIcon>package-icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+		<FileVersion>1.0.0.0</FileVersion>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj" />
-    <ProjectReference Include="..\softaware.Cqs.DependencyInjection\softaware.Cqs.DependencyInjection.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj" />
+		<ProjectReference Include="..\softaware.Cqs.DependencyInjection\softaware.Cqs.DependencyInjection.csproj" />
+	</ItemGroup>
 
 </Project>

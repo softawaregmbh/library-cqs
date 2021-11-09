@@ -13,8 +13,7 @@ this.container = new Container();
 this.container
     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
     .AddDecorators(b => b
-        .AddTransactionCommandHandlerDecorator()
-        .AddDataAnnotationsValidationDecorators();
+        .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
 ```
 
 Commands and queries are executed via `ICommandProcessor` and `IQueryProcessor` interfaces. They are usually injected, e.g. in an ASP.NET Core controller. In the following example, the instances are directly resolved from the SimpleInejctor container:
