@@ -5,7 +5,36 @@ Commands and queries will be separated on class-level and will be represented by
 
 ## Usage
 
-When using the `softaware.CQS.SimpleInjector` library some extension methods are provided to easily configure the CQS infrastructure with decorators:
+The software CQS packages support two dependency injection frameworks:
+  1. [Dependency injection in .NET](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) from the `Microsoft.Extensions.DependencyInjection` package.
+  2. [Simple Injector](https://simpleinjector.org/).
+
+### Microsoft.Extensions.DependencyInjection
+
+When using the `softaware.CQS.DependencyInjection` library some extension methods are provided to easily configure the CQS infrastructure with decorators for the `IServiceCollection`.
+
+```csharp
+var services = new ServiceCollection();
+
+services
+    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+    .AddDecorators(b => b
+        .AddTransactionCommandHandlerDecorator()
+        .AddUsageAwareDecorators()
+        .AddDataAnnotationsValidationDecorators()
+        .AddFluentValidationDecorators(
+            builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+```
+
+The following NuGet packages provide extension methods for the builder to easily add decorators:
+  * `softaware.Cqs.Decorators.Transaction.DependencyInjection`
+  * `softaware.Cqs.Decorators.Validation.DependencyInjection`
+  * `softaware.Cqs.Decorators.FluentValidation.DependencyInjection`
+  * `softaware.Cqs.Decorators.UsageAware.DependencyInjection`
+
+### SimpleInjector
+
+When using the `softaware.CQS.SimpleInjector` library some extension methods are provided to easily configure the CQS infrastructure with decorators for the Simple Injector container:
 
 ```csharp
 this.container = new Container();
@@ -16,11 +45,18 @@ this.container
         .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
 ```
 
-Commands and queries are executed via `ICommandProcessor` and `IQueryProcessor` interfaces. They are usually injected, e.g. in an ASP.NET Core controller. In the following example, the instances are directly resolved from the SimpleInejctor container:
+Commands and queries are executed via `ICommandProcessor` and `IQueryProcessor` interfaces. They are usually injected, e.g. in an ASP.NET Core controllers. In the following example, the instances are directly resolved from the DI container:
 
 ```csharp
+// using IServiceProvider
+ICommandProcessor commandProcessor = serviceProvider.GetRequiredService<ICommandProcessor>();
+ICommandProcessor queryProcessor = serviceProvider.GetRequiredService<IQueryProcessor>();
+
+// or using SimpleInjector
 ICommandProcessor commandProcessor = this.container.GetInstance<ICommandProcessor>();
 ICommandProcessor queryProcessor = this.container.GetInstance<IQueryProcessor>();
+
+
 
 // Execute a command without a return type.
 await commandProcessor.ExecuteAsync(new SomeCommand());
