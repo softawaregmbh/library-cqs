@@ -1,7 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
 using softaware.Cqs.Decorators.FluentValidation;
@@ -16,42 +18,8 @@ using softaware.UsageAware;
 namespace softaware.Cqs.Tests
 {
     [TestFixture]
-    public class CancellationTokenTest
+    public abstract class CancellationTokenTest : TestBase
     {
-        private Container container;
-        private ICommandProcessor commandProcessor;
-        private IQueryProcessor queryProcessor;
-
-        [SetUp]
-        public void SetUp()
-        {
-            this.container = new Container();
-
-            // Register all decorators to make sure that cancellation token is correctly passed to inner handler.
-            this.container
-                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
-
-            this.container.RegisterInstance<Decorators.Validation.IValidator>(new DataAnnotationsValidator());
-            this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
-            this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
-            this.container.Register(typeof(UsageAwareCommandLogger<>));
-            this.container.Register(typeof(UsageAwareQueryLogger<,>));
-
-            this.container.Verify();
-
-            this.commandProcessor = this.container.GetInstance<ICommandProcessor>();
-            this.queryProcessor = this.container.GetInstance<IQueryProcessor>();
-        }
-
         [Test]
         public async Task DoNotCancelLongRunningCommand()
         {
@@ -86,6 +54,75 @@ namespace softaware.Cqs.Tests
             cancellationTokenSource.Cancel();
 
             Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
+        }
+
+        private class SimpleInjectorTest
+            : CancellationTokenTest
+        {
+            private Container container;
+
+            [SetUp]
+            public override void SetUp()
+            {
+                this.container = new Container();
+
+                // Register all decorators to make sure that cancellation token is correctly passed to inner handler.
+                this.container
+                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                    .AddDecorators(b => b
+                        .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>))
+                        .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>))
+                        .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
+                        .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
+
+                this.container.RegisterInstance<Decorators.Validation.IValidator>(new DataAnnotationsValidator());
+                this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
+                this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
+                this.container.Register(typeof(UsageAwareCommandLogger<>));
+                this.container.Register(typeof(UsageAwareQueryLogger<,>));
+
+                this.container.Verify();
+
+                base.SetUp();
+            }
+
+            protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
+            protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        }
+
+        private class ServiceCollectionTest
+            : CancellationTokenTest
+        {
+            private IServiceProvider serviceProvider;
+
+            [SetUp]
+            public override void SetUp()
+            {
+                var services = new ServiceCollection();
+
+                services
+                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                    .AddDecorators(b => b
+                        .AddTransactionCommandHandlerDecorator()
+                        .AddTransactionQueryHandlerDecorator()
+                        .AddUsageAwareDecorators()
+                        .AddDataAnnotationsValidationDecorators()
+                        .AddFluentValidationDecorators(
+                            builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+
+                services.AddSingleton<IUsageAwareLogger>(new FakeUsageAwareLogger());
+
+                this.serviceProvider = services.BuildServiceProvider();
+
+                base.SetUp();
+            }
+
+            protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
+            protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
         }
     }
 }
