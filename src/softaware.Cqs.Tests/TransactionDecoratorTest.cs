@@ -5,6 +5,7 @@ using System.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
+using softaware.Cqs.Decorators.Transaction;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
@@ -108,8 +109,8 @@ namespace softaware.Cqs.Tests
                 this.container
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                     .AddDecorators(b => b
-                        .AddTransactionCommandHandlerDecorator()
-                        .AddTransactionQueryHandlerDecorator());
+                        .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
 
                 this.container.Verify();
 

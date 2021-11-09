@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
+using softaware.Cqs.Decorators.Validation;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
@@ -67,7 +68,11 @@ namespace softaware.Cqs.Tests
 
                 this.container
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b.AddDataAnnotationsValidationDecorators());
+                    .AddDecorators(b => b
+                        .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>)));
+
+                this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
 
                 this.container.Verify();
 

@@ -17,16 +17,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation.DependencyInjection\softaware.Cqs.Decorators.FluentValidation.DependencyInjection.csproj" />
-    <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation.SimpleInjector\softaware.Cqs.Decorators.FluentValidation.SimpleInjector.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation\softaware.Cqs.Decorators.FluentValidation.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction.DependencyInjection\softaware.Cqs.Decorators.Transaction.DependencyInjection.csproj" />
-    <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction.SimpleInjector\softaware.Cqs.Decorators.Transaction.SimpleInjector.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware.DependencyInjection\softaware.Cqs.Decorators.UsageAware.DependencyInjection.csproj" />
-    <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware.SimpleInjector\softaware.Cqs.Decorators.UsageAware.SimpleInjector.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware\softaware.Cqs.Decorators.UsageAware.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Validation.DependencyInjection\softaware.Cqs.Decorators.Validation.DependencyInjection.csproj" />
-    <ProjectReference Include="..\softaware.Cqs.Decorators.Validation.SimpleInjector\softaware.Cqs.Decorators.Validation.SimpleInjector.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Validation\softaware.Cqs.Decorators.Validation.csproj" />
     <ProjectReference Include="..\softaware.Cqs.DependencyInjection\softaware.Cqs.DependencyInjection.csproj" />
     <ProjectReference Include="..\softaware.Cqs.SimpleInjector\softaware.Cqs.SimpleInjector.csproj" />

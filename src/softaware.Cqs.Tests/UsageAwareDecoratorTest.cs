@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
+using softaware.Cqs.Decorators.UsageAware;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
@@ -59,10 +60,14 @@ namespace softaware.Cqs.Tests
 
                 this.container
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b.AddUsageAwareDecorators());
+                    .AddDecorators(b => b
+                        .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>)));
 
                 this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
+                this.container.Register(typeof(UsageAwareCommandLogger<>));
+                this.container.Register(typeof(UsageAwareQueryLogger<,>));
                 this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
 
                 this.container.Verify();

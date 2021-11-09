@@ -7,6 +7,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
+using softaware.Cqs.Decorators.FluentValidation;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
@@ -139,8 +140,11 @@ namespace softaware.Cqs.Tests
 
                 this.container
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b.AddFluentValidationDecorators(
-                        builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+                    .AddDecorators(b => b
+                        .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
+                        .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
+
+                this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
 
                 this.container.Verify();
 

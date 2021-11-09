@@ -1,8 +1,13 @@
 ﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using NUnit.Framework;
 using SimpleInjector;
+using softaware.Cqs.Decorators.FluentValidation;
+using softaware.Cqs.Decorators.Transaction;
+using softaware.Cqs.Decorators.UsageAware;
+using softaware.Cqs.Decorators.Validation;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
@@ -26,13 +31,20 @@ namespace softaware.Cqs.Tests
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddTransactionQueryHandlerDecorator()
-                    .AddTransactionCommandHandlerDecorator()
-                    .AddUsageAwareDecorators()
-                    .AddDataAnnotationsValidationDecorators()
-                    .AddFluentValidationDecorators(x => x.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
+                    .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
+                    .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>))
+                    .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
+                    .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>))
+                    .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
+                    .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
+                    .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
+                    .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
 
+            this.container.RegisterInstance<Decorators.Validation.IValidator>(new DataAnnotationsValidator());
+            this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
             this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
+            this.container.Register(typeof(UsageAwareCommandLogger<>));
+            this.container.Register(typeof(UsageAwareQueryLogger<,>));
 
             this.container.Verify();
 
