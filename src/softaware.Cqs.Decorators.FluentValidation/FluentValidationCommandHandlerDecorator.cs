@@ -46,23 +46,18 @@ namespace softaware.Cqs.Decorators.FluentValidation
             }
             else if (this.validators.Count > 1)
             {
-                List<ValidationFailure>? failures = null;
+                var failures = new List<ValidationFailure>();
                 foreach (var validator in this.validators)
                 {
                     var validationResults = await validator.ValidateAsync(command, cancellationToken).ConfigureAwait(false);
 
                     if (!validationResults.IsValid)
                     {
-                        if (failures == null)
-                        {
-                            failures = new List<ValidationFailure>(validationResults.Errors.Count);
-                        }
-
                         failures.AddRange(validationResults.Errors);
                     }
                 }
 
-                if (failures?.Count > 0)
+                if (failures.Count > 0)
                 {
                     throw new ValidationException(failures);
                 }
