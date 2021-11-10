@@ -1,10 +1,9 @@
 ﻿using System;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 using softaware.Cqs;
 using softaware.Cqs.Decorators.FluentValidation;
 
-namespace SimpleInjector
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Provides extension methods to add FluentValidation decorators.

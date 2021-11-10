@@ -1,7 +1,7 @@
-﻿using System;
-using SimpleInjector;
+﻿using softaware.Cqs;
+using System;
 
-namespace softaware.Cqs
+namespace SimpleInjector
 {
     /// <summary>
     /// Provides methods for configuring the softaware CQS infrastructure.
