@@ -1,5 +1,39 @@
 # Changelog
 
+## softaware.Cqs.Decorators.Transaction.DependencyInjection
+
+### 1.0.0
+
+* Initial release: Builder extensions
+
+## softaware.Cqs.Decorators.UsageAware.DependencyInjection
+
+### 1.0.0
+
+* Initial release: Builder extensions
+
+## softaware.Cqs.Decorators.Validation.DependencyInjection
+
+### 1.0.0
+
+* Initial release: Builder extensions
+
+## softaware.Cqs.Decorators.FluentValidation.DependencyInjection
+
+### 1.0.0
+
+* Initial release: Builder extensions
+
+## softaware.Cqs.DependencyInjection
+### 1.0.0
+
+* Initial release: add support for `Microsoft.Extensions.DependencyInjection` DI framework.
+
+## softaware.Cqs.SimpleInjector
+### 3.1.0
+
+* Extension methods for the Simple Injector `Container` class to support fluent CQS builder syntax.
+
 ## softaware.Cqs.Decorators.FluentValidation
 
 ### 1.0.1
