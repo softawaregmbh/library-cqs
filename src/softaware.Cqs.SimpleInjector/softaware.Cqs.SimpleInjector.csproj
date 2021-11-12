@@ -11,22 +11,15 @@
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>Adds support for dynamic resolving of commands handlers and query handlers via SimpleInjector.</Description>
     <PackageId>softaware.CQS.SimpleInjector</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>softaware.Cqs.SimpleInjector.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>softaware.Cqs.SimpleInjector.xml</DocumentationFile>
+    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

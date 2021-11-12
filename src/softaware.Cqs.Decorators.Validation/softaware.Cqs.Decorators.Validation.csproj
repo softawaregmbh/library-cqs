@@ -17,17 +17,10 @@
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <Version>2.0.2</Version>
-    <FileVersion>2.0.2.0</FileVersion>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>softaware.Cqs.Decorators.Validation.xml</DocumentationFile>
+    <Version>2.1.0</Version>
+    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +28,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
