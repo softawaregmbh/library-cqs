@@ -12,15 +12,15 @@
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <RootNamespace>softaware.Cqs</RootNamespace>
     <AssemblyName>softaware.Cqs</AssemblyName>
-    <Version>2.0.1</Version>
+    <Version>2.1.0</Version>
     <PackageId>softaware.CQS</PackageId>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <FileVersion>2.0.1.0</FileVersion>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
