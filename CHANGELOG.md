@@ -1,5 +1,22 @@
 # Changelog
 
+## softaware.Cqs
+
+### 2.1.0
+
+* Add `SoftawareCqsTypesBuilder` class.
+
+## softaware.Cqs.DependencyInjection
+### 1.0.1
+
+* Fix: Add dependency to `softaware.Cqs` version `2.1.0` to have access to the `SoftawareCqsTypesBuilder` class.
+
+## softaware.Cqs.Decorators.FluentValidation.DependencyInjection
+
+### 1.0.1
+
+* Fix: Add dependency to `softaware.Cqs.DependencyInjection` version `1.0.1` to have access to the `SoftawareCqsTypesBuilder` class.
+
 ## softaware.Cqs.Decorators.Transaction.DependencyInjection
 
 ### 1.0.0
