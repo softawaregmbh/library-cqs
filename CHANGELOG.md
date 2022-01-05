@@ -1,5 +1,17 @@
 # Changelog
 
+## softaware.Cqs.Decorators.FluentValidation
+
+### 1.1.0
+
+* Support list of validators for given `TCommand` and `TQuery`.
+
+## softaware.Cqs.Decorators.FluentValidation.DependencyInjection
+
+### 1.0.2
+
+* Fix: Add dependency to `softaware.Cqs.Decorators.FluentValidation` version `1.1.0` to use new constructor parameters.
+
 ## softaware.Cqs
 
 ### 2.1.0
