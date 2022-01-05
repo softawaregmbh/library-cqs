@@ -69,6 +69,7 @@ namespace softaware.Cqs.Tests
                 this.container.Register(typeof(UsageAwareCommandLogger<>));
                 this.container.Register(typeof(UsageAwareQueryLogger<,>));
                 this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+                this.container.Register<IDependency, Dependency>();
 
                 this.container.Verify();
 
@@ -98,8 +99,13 @@ namespace softaware.Cqs.Tests
                 this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
                 services.AddSingleton<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+                services.AddTransient<IDependency, Dependency>();
 
-                this.serviceProvider = services.BuildServiceProvider();
+                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+                {
+                    ValidateOnBuild = true,
+                    ValidateScopes = true
+                });
 
                 base.SetUp();
             }

@@ -84,6 +84,7 @@ namespace softaware.Cqs.Tests
                 this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
                 this.container.Register(typeof(UsageAwareCommandLogger<>));
                 this.container.Register(typeof(UsageAwareQueryLogger<,>));
+                this.container.Register<IDependency, Dependency>();
 
                 this.container.Verify();
 
@@ -115,8 +116,13 @@ namespace softaware.Cqs.Tests
                             builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
 
                 services.AddSingleton<IUsageAwareLogger>(new FakeUsageAwareLogger());
+                services.AddTransient<IDependency, Dependency>();
 
-                this.serviceProvider = services.BuildServiceProvider();
+                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+                {
+                    ValidateOnBuild = true,
+                    ValidateScopes = true
+                });
 
                 base.SetUp();
             }

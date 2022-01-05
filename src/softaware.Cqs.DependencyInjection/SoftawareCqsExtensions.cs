@@ -34,8 +34,8 @@ namespace Microsoft.Extensions.DependencyInjection
                         .AsImplementedInterfaces()
                         .WithTransientLifetime());
 
-            services.AddSingleton<IQueryProcessor, DynamicQueryProcessor>();
-            services.AddSingleton<ICommandProcessor, DynamicCommandProcessor>();
+            services.AddTransient<IQueryProcessor, DynamicQueryProcessor>();
+            services.AddTransient<ICommandProcessor, DynamicCommandProcessor>();
 
             return new SoftawareCqsBuilder(services);
         }

@@ -8,6 +8,7 @@ using SimpleInjector;
 using softaware.Cqs.Decorators.Validation;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
+using softaware.Cqs.Tests.Fakes;
 
 namespace softaware.Cqs.Tests
 {
@@ -73,6 +74,7 @@ namespace softaware.Cqs.Tests
                         .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>)));
 
                 this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
+                this.container.Register<IDependency, Dependency>();
 
                 this.container.Verify();
 
@@ -97,7 +99,13 @@ namespace softaware.Cqs.Tests
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                     .AddDecorators(b => b.AddDataAnnotationsValidationDecorators());
 
-                this.serviceProvider = services.BuildServiceProvider();
+                services.AddTransient<IDependency, Dependency>();
+
+                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+                {
+                    ValidateOnBuild = true,
+                    ValidateScopes = true
+                });
 
                 base.SetUp();
             }

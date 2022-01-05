@@ -10,15 +10,15 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<PackageId>softaware.CQS.DependencyInjection</PackageId>
 		<PackageIcon>package-icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-		<FileVersion>1.0.1.0</FileVersion>
-		<AssemblyVersion>1.0.1.0</AssemblyVersion>
+		<FileVersion>1.0.2.0</FileVersion>
+		<AssemblyVersion>1.0.2.0</AssemblyVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 

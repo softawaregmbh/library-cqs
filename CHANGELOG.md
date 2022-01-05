@@ -1,5 +1,10 @@
 # Changelog
 
+## softaware.Cqs.DependencyInjection
+### 1.0.2
+
+* Fix: Register `DynamicQueryProcessor` and `DynamicCommandProcessor` as transient instead of singleton so that scoped dependencies can be resolved.
+
 ## softaware.Cqs.Decorators.FluentValidation
 
 ### 1.1.0

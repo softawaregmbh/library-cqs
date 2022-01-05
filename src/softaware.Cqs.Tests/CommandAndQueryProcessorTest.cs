@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
+using SimpleInjector.Lifestyles;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
+using softaware.Cqs.Tests.Fakes;
 
 namespace softaware.Cqs.Tests
 {
@@ -31,7 +33,10 @@ namespace softaware.Cqs.Tests
             Assert.That(result, Is.EqualTo(16));
         }
 
-        private class SimpleInjectorTest
+        [Test]
+        public abstract Task ExecuteCommandWithDependency();
+
+        private abstract class SimpleInjectorTest
             : CommandAndQueryProcessorTest
         {
             private Container container;
@@ -40,6 +45,8 @@ namespace softaware.Cqs.Tests
             public override void SetUp()
             {
                 this.container = new Container();
+
+                this.RegisterDependency(container);
 
                 this.container
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
@@ -52,9 +59,47 @@ namespace softaware.Cqs.Tests
 
             protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
             protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+            protected abstract void RegisterDependency(Container container);
+
+            [Test]
+            public override async Task ExecuteCommandWithDependency()
+            {
+                using (Scope scope = AsyncScopedLifestyle.BeginScope(container))
+                {
+                    var command = new CommandWithDependency();
+                    await this.commandProcessor.ExecuteAsync(command);
+                }
+            }
+
+            private class TransientSimpleInjectorTest : SimpleInjectorTest
+            {
+                protected override void RegisterDependency(Container container)
+                {
+                    container.Register<IDependency, Dependency>();
+                }
+            }
+
+            private class ScopedSimpleInjectorTest : SimpleInjectorTest
+            {
+                protected override void RegisterDependency(Container container)
+                {
+                    container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+
+                    container.Register<IDependency, Dependency>(Lifestyle.Scoped);
+                }
+            }
+
+            private class SingletonSimpleInjectorTest : SimpleInjectorTest
+            {
+                protected override void RegisterDependency(Container container)
+                {
+                    container.RegisterSingleton<IDependency, Dependency>();
+                }
+            }
         }
 
-        private class ServiceCollectionTest
+
+        private abstract class ServiceCollectionTest
             : CommandAndQueryProcessorTest
         {
             private IServiceProvider serviceProvider;
@@ -68,13 +113,56 @@ namespace softaware.Cqs.Tests
                     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                     .AddDecorators(b => { });
 
-                this.serviceProvider = services.BuildServiceProvider();
+                this.RegisterDependency(services);
+
+                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+                {
+                    ValidateOnBuild = true,
+                    ValidateScopes = true
+                });
 
                 base.SetUp();
             }
 
             protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
             protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+            protected abstract void RegisterDependency(ServiceCollection serviceCollection);
+
+            [Test]
+            public override async Task ExecuteCommandWithDependency()
+            {
+                using (var scope = this.serviceProvider.CreateScope())
+                {
+                    var commandProcessor = scope.ServiceProvider.GetRequiredService<ICommandProcessor>();
+
+                    var command = new CommandWithDependency();
+                    await commandProcessor.ExecuteAsync(command);
+                }
+            }
+
+            private class TransientServiceCollectionTest : ServiceCollectionTest
+            {
+                protected override void RegisterDependency(ServiceCollection services)
+                {
+                    services.AddTransient<IDependency, Dependency>();
+                }
+            }
+
+            private class ScopedServiceCollectionTest : ServiceCollectionTest
+            {
+                protected override void RegisterDependency(ServiceCollection services)
+                {
+                    services.AddScoped<IDependency, Dependency>();
+                }
+            }
+
+            private class SingletonServiceCollectionTest : ServiceCollectionTest
+            {
+                protected override void RegisterDependency(ServiceCollection services)
+                {
+                    services.AddSingleton<IDependency, Dependency>();
+                }
+            }
         }
     }
 }
