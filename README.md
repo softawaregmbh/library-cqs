@@ -45,6 +45,29 @@ this.container
         .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
 ```
 
+#### Validation Decorators
+
+To use validation decorators from (1) `softaware.CQS.Decorators.Validation` or (2) `softaware.CQS.Decorators.FluentValidation` with SimpleInjector configure it like following:
+``` csharp
+// (1) Register validator
+container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
+
+// (2) Register all fluent validators which are available in this project.
+container.Collection.Register(typeof(FluentValidation.IValidator<>), Assembly.GetExecutingAssembly());
+
+container
+    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+    .AddDecorators(b => b
+      // (1) Add Validation Decorators
+      .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
+      .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
+      // (2) Add FluentValidation Decorators
+      .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
+      .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
+```
+
+### Executing Commands/Queries
+
 Commands and queries are executed via `ICommandProcessor` and `IQueryProcessor` interfaces. They are usually injected, e.g. in an ASP.NET Core controllers. In the following example, the instances are directly resolved from the DI container:
 
 ```csharp
@@ -62,9 +85,9 @@ ICommandProcessor queryProcessor = this.container.GetInstance<IQueryProcessor>()
 await commandProcessor.ExecuteAsync(new SomeCommand());
 // Execute a query with a return type.
 var queryResult = await queryProcessor.ExecuteAsync(new SomeQuery());
-
 ```
 
+## Packages
 The project consists of several separate packages, which allows flexible usage of various features.
 
 | Package                                                                                                                              | NuGet                                                                                                                                                                                                                         | Description                                                                                                                           |
