@@ -57,14 +57,13 @@ container.Collection.Register(typeof(FluentValidation.IValidator<>), Assembly.Ge
 
 container
     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-    
-    // (1) Add Validation Decorators
-    .AddDecorators(b => b.AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>)))
-    .AddDecorators(b => b.AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>)))
-
-    // (2) Add FluentValidation Decorators
-    .AddDecorators(b => b.AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)))
-    .AddDecorators(b => b.AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>)));
+    .AddDecorators(b => b
+      // (1) Add Validation Decorators
+      .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
+      .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
+      // (2) Add FluentValidation Decorators
+      .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
+      .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
 ```
 
 ### Executing Commands/Queries
