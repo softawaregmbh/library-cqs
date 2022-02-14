@@ -79,7 +79,7 @@ namespace softaware.Cqs.Tests
                         .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
                         .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
 
-                this.container.RegisterInstance<Decorators.Validation.IValidator>(new DataAnnotationsValidator());
+                this.container.RegisterInstance<Cqs.Decorators.Validation.IValidator>(new DataAnnotationsValidator());
                 this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
                 this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
                 this.container.Register(typeof(UsageAwareCommandLogger<>));
