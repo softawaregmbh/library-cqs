@@ -1,6 +1,10 @@
 # Changelog
 
 ## softaware.Cqs.DependencyInjection
+### 1.0.3
+
+* Fix: Update `Scrutor` to version 4.0.0 to support generic type constraints on decorators. (See also [Scrutor issue #159](https://github.com/khellang/Scrutor/issues/159))
+  
 ### 1.0.2
 
 * Fix: Register `DynamicQueryProcessor` and `DynamicCommandProcessor` as transient instead of singleton so that scoped dependencies can be resolved.
