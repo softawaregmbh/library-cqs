@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
-namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers
+namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers;
+
+internal class GetSquareHandler : IQueryHandler<GetSquare, int>
 {
-    internal class GetSquareHandler : IQueryHandler<GetSquare, int>
+    public Task<int> HandleAsync(GetSquare query, CancellationToken cancellationToken)
     {
-        public Task<int> HandleAsync(GetSquare query)
-        {
-            return Task.FromResult(query.Value * query.Value);
-        }
+        return Task.FromResult(query.Value * query.Value);
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace softaware.Cqs.Tests.Fakes
+﻿namespace softaware.Cqs.Tests.Fakes;
+
+public interface IDependency
 {
-    public interface IDependency
-    {
-        void SomeMethod();
-    }
+    void SomeMethod();
 }

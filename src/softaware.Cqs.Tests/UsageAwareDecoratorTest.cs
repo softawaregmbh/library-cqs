@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
@@ -10,109 +8,108 @@ using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
 using softaware.UsageAware;
 
-namespace softaware.Cqs.Tests
+namespace softaware.Cqs.Tests;
+
+[TestFixture]
+public abstract class UsageAwareDecoratorTest : TestBase
 {
-    [TestFixture]
-    public abstract class UsageAwareDecoratorTest : TestBase
+    protected abstract FakeUsageAwareLogger GetUsageAwareLogger();
+
+    [Test]
+    public void TestUsageAwareForCommands()
     {
-        protected abstract FakeUsageAwareLogger GetUsageAwareLogger();
+        var command = new SimpleCommand(1);
 
-        [Test]
-        public void TestUsageAwareForCommands()
+        this.commandProcessor.ExecuteAsync(command);
+
+        var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
+        Assert.That(trackedEvent, Is.Not.Null);
+        Assert.That(trackedEvent.area, Is.EqualTo("Commands"));
+        Assert.That(trackedEvent.action, Is.EqualTo("SimpleCommand"));
+        Assert.That(trackedEvent.additionalProperties.Single(p => p.Key == "type").Value, Is.EqualTo("Command"));
+        Assert.That(trackedEvent.additionalProperties.Any(p => p.Key == "duration"), Is.True);
+    }
+
+    [Test]
+    public void TestUsageAwareForQueries()
+    {
+        var query = new GetSquare(4);
+
+        this.queryProcessor.ExecuteAsync(query);
+
+        var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
+        Assert.That(trackedEvent, Is.Not.Null);
+        Assert.That(trackedEvent.area, Is.EqualTo("Queries"));
+        Assert.That(trackedEvent.action, Is.EqualTo("GetSquare"));
+        Assert.That(trackedEvent.additionalProperties.Single(p => p.Key == "type").Value, Is.EqualTo("Query"));
+        Assert.That(trackedEvent.additionalProperties.Any(p => p.Key == "duration"), Is.True);
+    }
+
+    private class SimpleInjectorTest
+        : UsageAwareDecoratorTest
+    {
+        private Container container;
+        private FakeUsageAwareLogger fakeUsageAwareLogger;
+
+        [SetUp]
+        public override void SetUp()
         {
-            var command = new SimpleCommand(1);
+            this.container = new Container();
 
-            this.commandProcessor.ExecuteAsync(command);
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
+                    .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>)));
 
-            var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
-            Assert.That(trackedEvent, Is.Not.Null);
-            Assert.That(trackedEvent.area, Is.EqualTo("Commands"));
-            Assert.That(trackedEvent.action, Is.EqualTo("SimpleCommand"));
-            Assert.That(trackedEvent.additionalProperties.Single(p => p.Key == "type").Value, Is.EqualTo("Command"));
-            Assert.That(trackedEvent.additionalProperties.Any(p => p.Key == "duration"), Is.True);
+            this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
+
+            this.container.Register(typeof(UsageAwareCommandLogger<>));
+            this.container.Register(typeof(UsageAwareQueryLogger<,>));
+            this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+            this.container.Register<IDependency, Dependency>();
+
+            this.container.Verify();
+
+            base.SetUp();
         }
 
-        [Test]
-        public void TestUsageAwareForQueries()
+        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
+        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override FakeUsageAwareLogger GetUsageAwareLogger() => this.fakeUsageAwareLogger;
+    }
+
+    private class ServiceCollectionTest
+        : UsageAwareDecoratorTest
+    {
+        private IServiceProvider serviceProvider;
+        private FakeUsageAwareLogger fakeUsageAwareLogger;
+
+        [SetUp]
+        public override void SetUp()
         {
-            var query = new GetSquare(4);
+            var services = new ServiceCollection();
 
-            this.queryProcessor.ExecuteAsync(query);
+            services
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b.AddUsageAwareDecorators());
 
-            var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
-            Assert.That(trackedEvent, Is.Not.Null);
-            Assert.That(trackedEvent.area, Is.EqualTo("Queries"));
-            Assert.That(trackedEvent.action, Is.EqualTo("GetSquare"));
-            Assert.That(trackedEvent.additionalProperties.Single(p => p.Key == "type").Value, Is.EqualTo("Query"));
-            Assert.That(trackedEvent.additionalProperties.Any(p => p.Key == "duration"), Is.True);
-        }
+            this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
 
-        private class SimpleInjectorTest
-            : UsageAwareDecoratorTest
-        {
-            private Container container;
-            private FakeUsageAwareLogger fakeUsageAwareLogger;
+            services.AddSingleton<IUsageAwareLogger>(this.fakeUsageAwareLogger);
+            services.AddTransient<IDependency, Dependency>();
 
-            [SetUp]
-            public override void SetUp()
+            this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
             {
-                this.container = new Container();
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
 
-                this.container
-                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b
-                        .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
-                        .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>)));
-
-                this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
-
-                this.container.Register(typeof(UsageAwareCommandLogger<>));
-                this.container.Register(typeof(UsageAwareQueryLogger<,>));
-                this.container.RegisterInstance<IUsageAwareLogger>(this.fakeUsageAwareLogger);
-                this.container.Register<IDependency, Dependency>();
-
-                this.container.Verify();
-
-                base.SetUp();
-            }
-
-            protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-            protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
-            protected override FakeUsageAwareLogger GetUsageAwareLogger() => this.fakeUsageAwareLogger;
+            base.SetUp();
         }
 
-        private class ServiceCollectionTest
-            : UsageAwareDecoratorTest
-        {
-            private IServiceProvider serviceProvider;
-            private FakeUsageAwareLogger fakeUsageAwareLogger;
-
-            [SetUp]
-            public override void SetUp()
-            {
-                var services = new ServiceCollection();
-
-                services
-                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b.AddUsageAwareDecorators());
-
-                this.fakeUsageAwareLogger = new FakeUsageAwareLogger();
-
-                services.AddSingleton<IUsageAwareLogger>(this.fakeUsageAwareLogger);
-                services.AddTransient<IDependency, Dependency>();
-
-                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
-                {
-                    ValidateOnBuild = true,
-                    ValidateScopes = true
-                });
-
-                base.SetUp();
-            }
-
-            protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-            protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
-            protected override FakeUsageAwareLogger GetUsageAwareLogger() => this.fakeUsageAwareLogger;
-        }
+        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
+        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override FakeUsageAwareLogger GetUsageAwareLogger() => this.fakeUsageAwareLogger;
     }
 }
