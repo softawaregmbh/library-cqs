@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using softaware.Cqs;
 using softaware.Cqs.Decorators.FluentValidation;
 
@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class SoftawareCqsFluentValidationDecoratorBuilderExtensions
 {
     /// <summary>
-    /// Registers the fluent validation command and query decorators as well as all validators from the specified assemblies.
+    /// Registers the fluent validation request handler decorators as well as all validators from the specified assemblies.
     /// </summary>
     /// <param name="decoratorBuilder">The CQS decorator builder.</param>
     /// <param name="validatorTypesBuilderAction">The types builder for registering assemblies from where to find <see cref="IValidator{T}"/> instances.</param>
@@ -30,8 +30,7 @@ public static class SoftawareCqsFluentValidationDecoratorBuilderExtensions
                         .AsImplementedInterfaces()
                         .WithTransientLifetime());
 
-        decoratorBuilder.Services.Decorate(typeof(ICommandHandler<>), typeof(FluentValidationCommandHandlerDecorator<>));
-        decoratorBuilder.Services.Decorate(typeof(IQueryHandler<,>), typeof(FluentValidationQueryHandlerDecorator<,>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>));
 
         return decoratorBuilder;
     }

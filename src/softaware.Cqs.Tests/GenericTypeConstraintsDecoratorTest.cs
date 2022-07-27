@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SimpleInjector;
@@ -18,7 +18,7 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
     {
         var command = new AccessCheckedCommand();
 
-        await this.commandProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command);
 
         Assert.That(command.AccessCheckHasBeenEvaluated, Is.True);
     }
@@ -28,12 +28,12 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
     {
         var query = new AccessCheckedQuery();
 
-        await this.queryProcessor.ExecuteAsync(query);
+        await this.requestProcessor.ExecuteAsync(query);
 
         Assert.That(query.AccessCheckHasBeenEvaluated, Is.True);
     }
 
-    private class SimpleInjectorTest
+    private class SeparateDecoratorsSimpleInjectorTest
         : GenericTypeConstraintsDecoratorTest
     {
         private Container container;
@@ -46,8 +46,8 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(AccessControlQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(AccessControlCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(AccessControlQueryHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(AccessControlCommandHandlerDecorator<,>)));
 
             this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
             this.container.Register<IDependency, Dependency>();
@@ -57,11 +57,11 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
+
     }
 
-    private class ServiceCollectionTest
+    private class SeparateDecoratorsServiceCollectionTest
         : GenericTypeConstraintsDecoratorTest
     {
         private IServiceProvider serviceProvider;
@@ -74,8 +74,8 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
             services
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(AccessControlQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(AccessControlCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(AccessControlQueryHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(AccessControlCommandHandlerDecorator<,>)));
 
             services.AddTransient<IDependency, Dependency>();
 
@@ -88,7 +88,63 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
+
+    }
+
+    private class CommonDecoratorSimpleInjectorTest
+        : GenericTypeConstraintsDecoratorTest
+    {
+        private Container container;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            this.container = new Container();
+
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddRequestHandlerDecorator(typeof(AccessControlRequestHandlerDecorator<,>)));
+
+            this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
+            this.container.Register<IDependency, Dependency>();
+
+            this.container.Verify();
+
+            base.SetUp();
+        }
+
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
+
+    }
+
+    private class CommonDecoratorServiceCollectionTest
+        : GenericTypeConstraintsDecoratorTest
+    {
+        private IServiceProvider serviceProvider;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            var services = new ServiceCollection();
+
+            services
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddRequestHandlerDecorator(typeof(AccessControlRequestHandlerDecorator<,>)));
+
+            services.AddTransient<IDependency, Dependency>();
+
+            this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
+            base.SetUp();
+        }
+
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
     }
 }

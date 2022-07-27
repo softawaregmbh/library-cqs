@@ -1,5 +1,3 @@
-﻿using softaware.Cqs;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -16,10 +14,8 @@ public class SoftawareCqsBuilder
     /// Initializes a new instance of the <see cref="SoftawareCqsBuilder"/> class.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public SoftawareCqsBuilder(IServiceCollection services)
-    {
-        this.Services = services;
-    }
+    public SoftawareCqsBuilder(IServiceCollection services) =>
+        this.Services = services ?? throw new ArgumentNullException(nameof(services));
 
     /// <summary>
     /// Enables decorators for the softaware CQS infrastructure.
@@ -33,11 +29,8 @@ public class SoftawareCqsBuilder
     public SoftawareCqsBuilder AddDecorators(Action<SoftawareCqsDecoratorBuilder> softawareCqsDecoratorBuilderAction)
     {
         var decoratorBuilder = new SoftawareCqsDecoratorBuilder(this.Services);
-        softawareCqsDecoratorBuilderAction.Invoke(decoratorBuilder);
 
-        // Register public decorators as last decorator if any decorators are registered.
-        this.Services.Decorate(typeof(IQueryHandler<,>), typeof(PublicQueryHandlerDecorator<,>));
-        this.Services.Decorate(typeof(ICommandHandler<>), typeof(PublicCommandHandlerDecorator<>));
+        softawareCqsDecoratorBuilderAction.Invoke(decoratorBuilder);
 
         return this;
     }

@@ -1,4 +1,4 @@
-﻿using softaware.Cqs.Decorators.Validation;
+using softaware.Cqs.Decorators.Validation;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class SoftawareCqsValidationDecoratorBuilderExtensions
 {
     /// <summary>
-    /// Registers the data annotations validation command and query decorators.
+    /// Registers the data annotations validation request handler decorators.
     /// </summary>
     /// <param name="decoratorBuilder">The CQS decorator builder.</param>
     /// <returns>The CQS decorator builder.</returns>
@@ -16,8 +16,7 @@ public static class SoftawareCqsValidationDecoratorBuilderExtensions
     {
         decoratorBuilder.Services.AddSingleton<IValidator>(new DataAnnotationsValidator());
 
-        decoratorBuilder.AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>));
-        decoratorBuilder.AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>));
 
         return decoratorBuilder;
     }

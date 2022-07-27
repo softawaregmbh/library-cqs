@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -21,7 +21,7 @@ public abstract class ValidationDecoratorTest : TestBase
             Value = "some value"
         };
 
-        await this.commandProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command);
     }
 
     [Test]
@@ -32,8 +32,8 @@ public abstract class ValidationDecoratorTest : TestBase
             Value = null
         };
 
-        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.commandProcessor.ExecuteAsync(command));
-        Assert.That(exception.Message, Is.EqualTo("The Value field is required."));
+        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(command));
+        Assert.That(exception!.Message, Is.EqualTo("The Value field is required."));
     }
 
     [Test]
@@ -41,7 +41,7 @@ public abstract class ValidationDecoratorTest : TestBase
     {
         var query = new GetSquare(4);
 
-        var result = await this.queryProcessor.ExecuteAsync(query);
+        var result = await this.requestProcessor.ExecuteAsync(query);
 
         Assert.That(result, Is.EqualTo(16));
     }
@@ -51,8 +51,8 @@ public abstract class ValidationDecoratorTest : TestBase
     {
         var query = new GetSquare(0);
 
-        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.queryProcessor.ExecuteAsync(query));
-        Assert.That(exception.Message, Is.EqualTo("The field Value must be between 1 and 10."));
+        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(query));
+        Assert.That(exception!.Message, Is.EqualTo("The field Value must be between 1 and 10."));
     }
 
     private class SimpleInjectorTest
@@ -68,8 +68,7 @@ public abstract class ValidationDecoratorTest : TestBase
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>)));
 
             this.container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
             this.container.Register<IDependency, Dependency>();
@@ -79,8 +78,7 @@ public abstract class ValidationDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
     }
 
     private class ServiceCollectionTest
@@ -108,7 +106,6 @@ public abstract class ValidationDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
     }
 }

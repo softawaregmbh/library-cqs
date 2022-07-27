@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using FluentValidation;
 using FluentValidation.Results;
@@ -6,35 +6,35 @@ using FluentValidation.Results;
 namespace softaware.Cqs.Decorators.FluentValidation;
 
 /// <summary>
-/// A decorator for validating the specified command with FluentValidation (https://fluentvalidation.net/).
+/// A decorator for validating the specified <see cref="IRequest{TResult}"/>s with FluentValidation (https://fluentvalidation.net/).
 /// Throws a <see cref="ValidationException"/> when the validation fails.
 /// </summary>
-/// <typeparam name="TQuery">The type of the query to execute.</typeparam>
-/// <typeparam name="TResult">The type of the query result.</typeparam>
-public class FluentValidationQueryHandlerDecorator<TQuery, TResult> : IQueryHandler<TQuery, TResult>
-    where TQuery : IQuery<TResult>
+/// <typeparam name="TRequest">The type of the request to execute.</typeparam>
+/// <typeparam name="TResult">The type of the result.</typeparam>
+public class FluentValidationRequestHandlerDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
 {
-    private readonly IReadOnlyList<IValidator<TQuery>> validators;
-    private readonly IQueryHandler<TQuery, TResult> decoratee;
+    private readonly IReadOnlyList<IValidator<TRequest>> validators;
+    private readonly IRequestHandler<TRequest, TResult> decoratee;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FluentValidationQueryHandlerDecorator{TQuery, TResult}"/> class.
+    /// Initializes a new instance of the <see cref="FluentValidationRequestHandlerDecorator{TQuery, TResult}"/> class.
     /// </summary>
     /// <param name="validators">The list of validators to apply.</param>
     /// <param name="decoratee">The decorated query handler.</param>
-    public FluentValidationQueryHandlerDecorator(
-        IEnumerable<IValidator<TQuery>> validators,
-        IQueryHandler<TQuery, TResult> decoratee)
+    public FluentValidationRequestHandlerDecorator(
+        IEnumerable<IValidator<TRequest>> validators,
+        IRequestHandler<TRequest, TResult> decoratee)
     {
         this.validators = validators?.ToList() ?? throw new ArgumentNullException(nameof(this.validators));
         this.decoratee = decoratee ?? throw new ArgumentNullException(nameof(decoratee));
     }
 
     /// <inheritdoc />
-    public Task<TResult> HandleAsync(TQuery query) => this.HandleAsync(query, default);
+    public Task<TResult> HandleAsync(TRequest query) => this.HandleAsync(query, default);
 
     /// <inheritdoc />
-    public async Task<TResult> HandleAsync(TQuery query, CancellationToken cancellationToken)
+    public async Task<TResult> HandleAsync(TRequest query, CancellationToken cancellationToken)
     {
         if (this.validators.Count == 1)
         {

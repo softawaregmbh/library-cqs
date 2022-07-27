@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -20,7 +20,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningCommand()
     {
-        await this.commandProcessor.ExecuteAsync(new LongRunningCommand());
+        await this.requestProcessor.ExecuteAsync(new LongRunningCommand());
     }
 
     [Test]
@@ -29,7 +29,7 @@ public abstract class CancellationTokenTest : TestBase
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // start task
-        var task = this.commandProcessor.ExecuteAsync(new LongRunningCommand(), cancellationTokenSource.Token);
+        var task = this.requestProcessor.ExecuteAsync(new LongRunningCommand(), cancellationTokenSource.Token);
         cancellationTokenSource.Cancel();
 
         Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
@@ -38,7 +38,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningQuery()
     {
-        await this.queryProcessor.ExecuteAsync(new LongRunningQuery());
+        await this.requestProcessor.ExecuteAsync(new LongRunningQuery());
     }
 
     [Test]
@@ -47,7 +47,7 @@ public abstract class CancellationTokenTest : TestBase
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // start task
-        var task = this.queryProcessor.ExecuteAsync(new LongRunningQuery(), cancellationTokenSource.Token);
+        var task = this.requestProcessor.ExecuteAsync(new LongRunningQuery(), cancellationTokenSource.Token);
         cancellationTokenSource.Cancel();
 
         Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
@@ -67,20 +67,16 @@ public abstract class CancellationTokenTest : TestBase
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(UsageAwareQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(UsageAwareCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(ValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(ValidationCommandHandlerDecorator<>))
-                    .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(TransactionAwareRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>)));
 
             this.container.RegisterInstance<Cqs.Decorators.Validation.IValidator>(new DataAnnotationsValidator());
             this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
             this.container.RegisterInstance<IUsageAwareLogger>(new FakeUsageAwareLogger());
-            this.container.Register(typeof(UsageAwareCommandLogger<>));
-            this.container.Register(typeof(UsageAwareQueryLogger<,>));
+            this.container.Register(typeof(UsageAwareLogger<,>));
             this.container.Register<IDependency, Dependency>();
 
             this.container.Verify();
@@ -88,8 +84,7 @@ public abstract class CancellationTokenTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
     }
 
     private class ServiceCollectionTest
@@ -124,7 +119,6 @@ public abstract class CancellationTokenTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
     }
 }

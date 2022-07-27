@@ -2,9 +2,9 @@ using softaware.Cqs.Tests.CQ.Contract.Commands;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers;
 
-internal class CallbackCommandHandler : ICommandHandler<CallbackCommand>
+internal class CallbackCommandHandler : IRequestHandler<CallbackCommand, NoResult>
 {
-    public Task HandleAsync(CallbackCommand command, CancellationToken cancellationToken)
+    public Task<NoResult> HandleAsync(CallbackCommand command, CancellationToken cancellationToken)
     {
         command.Action();
 
@@ -13,6 +13,6 @@ internal class CallbackCommandHandler : ICommandHandler<CallbackCommand>
             throw new InvalidOperationException("We throw here for testing the rollback of transactions.");
         }
 
-        return Task.CompletedTask;
+        return NoResult.Task;
     }
 }

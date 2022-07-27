@@ -2,7 +2,7 @@ using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers;
 
-internal class CallbackQueryHandler : IQueryHandler<CallbackQuery, int>
+internal class CallbackQueryHandler : IRequestHandler<CallbackQuery, int>
 {
     public Task<int> HandleAsync(CallbackQuery query, CancellationToken cancellationToken)
     {

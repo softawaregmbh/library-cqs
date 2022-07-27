@@ -1,19 +1,16 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 
 namespace softaware.Cqs.Tests;
 
 public abstract class TestBase
 {
-    protected ICommandProcessor commandProcessor;
-    protected IQueryProcessor queryProcessor;
+    protected IRequestProcessor requestProcessor;
 
     [SetUp]
     public virtual void SetUp()
     {
-        this.commandProcessor = this.GetCommandProcessor();
-        this.queryProcessor = this.GetQueryProcessor();
+        this.requestProcessor = this.GetRequestProcessor();
     }
 
-    protected abstract ICommandProcessor GetCommandProcessor();
-    protected abstract IQueryProcessor GetQueryProcessor();
+    protected abstract IRequestProcessor GetRequestProcessor();
 }

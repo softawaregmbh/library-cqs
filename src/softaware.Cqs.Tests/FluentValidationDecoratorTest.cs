@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -53,7 +53,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(1)
         };
 
-        await this.commandProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command);
 
         Assert.IsTrue(command.CommandExecuted);
     }
@@ -67,7 +67,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(-1)
         };
 
-        Assert.ThrowsAsync<ValidationException>(async () => await this.commandProcessor.ExecuteAsync(command));
+        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(command));
     }
 
     [Test]
@@ -109,7 +109,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(1)
         };
 
-        var result = await this.queryProcessor.ExecuteAsync(query);
+        var result = await this.requestProcessor.ExecuteAsync(query);
 
         Assert.IsTrue(result);
     }
@@ -123,7 +123,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(-1)
         };
 
-        Assert.ThrowsAsync<ValidationException>(async () => await this.queryProcessor.ExecuteAsync(query));
+        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(query));
     }
 
     public class SimpleInjectorTest : FluentValidationDecoratorTest
@@ -138,8 +138,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(FluentValidationQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(FluentValidationCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>)));
 
             this.container.Collection.Register(typeof(IValidator<>), Assembly.GetExecutingAssembly());
 
@@ -150,8 +149,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
 
         protected override IEnumerable<IValidator<T>> GetAllValidators<T>() => this.container.GetAllInstances<IValidator<T>>();
     }
@@ -182,8 +180,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
 
         protected override IEnumerable<IValidator<T>> GetAllValidators<T>() => this.serviceProvider.GetRequiredService<IEnumerable<IValidator<T>>>();
     }

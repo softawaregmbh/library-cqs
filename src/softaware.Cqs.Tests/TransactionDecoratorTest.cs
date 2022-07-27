@@ -22,13 +22,13 @@ public abstract class TransactionDecoratorTest : TestBase
             () =>
             {
                 Assert.That(Transaction.Current, Is.Not.Null);
-                Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
             },
             shouldThrow: false);
 
-        await this.commandProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command);
 
         Assert.That(transactionCommitted, Is.True);
     }
@@ -42,14 +42,14 @@ public abstract class TransactionDecoratorTest : TestBase
             () =>
             {
                 Assert.That(Transaction.Current, Is.Not.Null);
-                Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
             },
             shouldThrow: true);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.commandProcessor.ExecuteAsync(command));
-        Assert.That(exception.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(command));
+        Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
 
         Assert.That(transactionCommitted, Is.False);
     }
@@ -63,13 +63,13 @@ public abstract class TransactionDecoratorTest : TestBase
             () =>
             {
                 Assert.That(Transaction.Current, Is.Not.Null);
-                Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
             },
             shouldThrow: false);
 
-        await this.queryProcessor.ExecuteAsync(query);
+        await this.requestProcessor.ExecuteAsync(query);
 
         Assert.That(transactionCommitted, Is.True);
     }
@@ -83,14 +83,14 @@ public abstract class TransactionDecoratorTest : TestBase
             () =>
             {
                 Assert.That(Transaction.Current, Is.Not.Null);
-                Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
             },
             shouldThrow: true);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.queryProcessor.ExecuteAsync(query));
-        Assert.That(exception.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(query));
+        Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
 
         Assert.That(transactionCommitted, Is.False);
     }
@@ -108,8 +108,8 @@ public abstract class TransactionDecoratorTest : TestBase
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
                 .AddDecorators(b => b
-                    .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
-                    .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
+                    .AddRequestHandlerDecorator(typeof(TransactionAwareRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>)));
 
             this.container.Register<IDependency, Dependency>();
 
@@ -118,8 +118,7 @@ public abstract class TransactionDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
     }
 
     private class ServiceCollectionTest
@@ -149,7 +148,6 @@ public abstract class TransactionDecoratorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
     }
 }

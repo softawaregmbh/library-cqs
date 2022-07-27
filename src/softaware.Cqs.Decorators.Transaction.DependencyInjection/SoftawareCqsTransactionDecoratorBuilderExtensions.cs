@@ -14,7 +14,7 @@ public static class SoftawareCqsTransactionDecoratorBuilderExtensions
     /// <returns>The CQS decorator builder.</returns>
     public static SoftawareCqsDecoratorBuilder AddTransactionCommandHandlerDecorator(this SoftawareCqsDecoratorBuilder decoratorBuilder)
     {
-        decoratorBuilder.AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>));
 
         return decoratorBuilder;
     }
@@ -26,7 +26,7 @@ public static class SoftawareCqsTransactionDecoratorBuilderExtensions
     /// <returns>The CQS decorator builder.</returns>
     public static SoftawareCqsDecoratorBuilder AddTransactionQueryHandlerDecorator(this SoftawareCqsDecoratorBuilder decoratorBuilder)
     {
-        decoratorBuilder.AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>));
 
         return decoratorBuilder;
     }

@@ -1,4 +1,4 @@
-﻿using softaware.Cqs;
+using softaware.Cqs;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -16,30 +16,16 @@ public class SoftawareCqsDecoratorBuilder
     /// Initializes a new instance of the <see cref="SoftawareCqsDecoratorBuilder"/> class.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    public SoftawareCqsDecoratorBuilder(IServiceCollection services)
-    {
+    public SoftawareCqsDecoratorBuilder(IServiceCollection services) =>
         this.Services = services;
-    }
 
     /// <summary>
-    /// Adds a command handler decorator.
+    /// Adds a request handler decorator.
     /// </summary>
-    /// <param name="decoratorType">Type type of the decorator. The decorator must implement <see cref="ICommandHandler{TCommand}"/>.</param>
-    /// <returns></returns>
-    public SoftawareCqsDecoratorBuilder AddCommandHandlerDecorator(Type decoratorType)
+    /// <param name="decoratorType">Type type of the decorator. The decorator must implement <see cref="IRequestHandler{TRequest, TResult}"/>.</param>
+    public SoftawareCqsDecoratorBuilder AddRequestHandlerDecorator(Type decoratorType)
     {
-        this.Services.Decorate(typeof(ICommandHandler<>), decoratorType);
-        return this;
-    }
-
-    /// <summary>
-    /// Adds a query handler decorator.
-    /// </summary>
-    /// <param name="decoratorType">Type type of the decorator. The decorator must implement <see cref="IQueryHandler{TQuery, TResult}"/>.</param>
-    /// <returns></returns>
-    public SoftawareCqsDecoratorBuilder AddQueryHandlerDecorator(Type decoratorType)
-    {
-        this.Services.Decorate(typeof(IQueryHandler<,>), decoratorType);
+        this.Services.Decorate(typeof(IRequestHandler<,>), decoratorType);
         return this;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace softaware.Cqs.Tests.CQ.Contract.Commands;
+namespace softaware.Cqs.Tests.CQ.Contract.Commands;
 
 public class SimpleCommand : ICommand
 {

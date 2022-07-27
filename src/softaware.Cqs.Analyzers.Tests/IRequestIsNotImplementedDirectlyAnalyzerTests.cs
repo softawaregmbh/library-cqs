@@ -9,7 +9,7 @@ using Test = Microsoft.CodeAnalysis.CSharp.Testing.CSharpAnalyzerTest<
 using Verify = Microsoft.CodeAnalysis.CSharp.Testing.XUnit.AnalyzerVerifier<
     softaware.Cqs.Analyzers.IRequestShouldNotBeImplementedDirectlyAnalyzer>;
 
-namespace softaware.Cqs.MediatR.Analyzers.Tests;
+namespace softaware.Cqs.Analyzers.Tests;
 
 public class IRequestShouldNotBeImplementedDirectlyAnalyzerTests
 {

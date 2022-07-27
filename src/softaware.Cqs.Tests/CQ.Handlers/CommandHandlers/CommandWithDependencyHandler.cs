@@ -3,17 +3,17 @@ using softaware.Cqs.Tests.Fakes;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers;
 
-public class CommandWithDependencyHandler : ICommandHandler<CommandWithDependency>
+internal class CommandWithDependencyHandler : IRequestHandler<CommandWithDependency, NoResult>
 {
     private readonly IDependency dependency;
 
     public CommandWithDependencyHandler(IDependency dependency)
         => this.dependency = dependency;
 
-    public Task HandleAsync(CommandWithDependency command, CancellationToken cancellationToken)
+    public Task<NoResult> HandleAsync(CommandWithDependency command, CancellationToken cancellationToken)
     {
         this.dependency.SomeMethod();
 
-        return Task.CompletedTask;
+        return NoResult.Task;
     }
 }

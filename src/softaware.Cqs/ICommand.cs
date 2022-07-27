@@ -11,8 +11,8 @@ public interface ICommand<TResult> : IRequest<TResult>
 }
 
 /// <summary>
-/// Marker interface for commands.
+/// Marker interface for commands that don't return a result.
 /// </summary>
-public interface ICommand : ICommand<Void>
+public interface ICommand : ICommand<NoResult>
 {
 }

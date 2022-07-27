@@ -1,4 +1,3 @@
-﻿using softaware.Cqs;
 using softaware.Cqs.Decorators.UsageAware;
 using softaware.UsageAware;
 
@@ -10,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class SoftawareCqsUsageAwareDecoratorBuilderExtensions
 {
     /// <summary>
-    /// Registers the usage aware command and query loggers and decorators.
+    /// Registers the usage aware request loggers and decorators.
     /// </summary>
     /// <remarks>
     /// An instance of <see cref="IUsageAwareLogger"/> must be registered in the container.
@@ -19,11 +18,9 @@ public static class SoftawareCqsUsageAwareDecoratorBuilderExtensions
     /// <returns>The CQS decorator builder.</returns>
     public static SoftawareCqsDecoratorBuilder AddUsageAwareDecorators(this SoftawareCqsDecoratorBuilder decoratorBuilder)
     {
-        decoratorBuilder.Services.AddTransient(typeof(UsageAwareCommandLogger<>));
-        decoratorBuilder.Services.AddTransient(typeof(UsageAwareQueryLogger<,>));
+        decoratorBuilder.Services.AddTransient(typeof(UsageAwareLogger<,>));
 
-        decoratorBuilder.Services.Decorate(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
-        decoratorBuilder.Services.Decorate(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>));
 
         return decoratorBuilder;
     }

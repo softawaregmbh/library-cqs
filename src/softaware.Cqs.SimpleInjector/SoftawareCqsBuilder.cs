@@ -1,4 +1,4 @@
-﻿using softaware.Cqs;
+using softaware.Cqs;
 
 namespace SimpleInjector;
 
@@ -34,10 +34,6 @@ public class SoftawareCqsBuilder
     {
         var decoratorBuilder = new SoftawareCqsDecoratorBuilder(this.Container);
         softawareCqsDecoratorBuilderAction.Invoke(decoratorBuilder);
-
-        // Register public decorators as last decorator if any decorators are registered.
-        this.Container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(PublicQueryHandlerDecorator<,>));
-        this.Container.RegisterDecorator(typeof(ICommandHandler<>), typeof(PublicCommandHandlerDecorator<>));
 
         return this;
     }

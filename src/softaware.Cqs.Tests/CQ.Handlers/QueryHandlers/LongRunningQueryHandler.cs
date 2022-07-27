@@ -1,8 +1,8 @@
-﻿using softaware.Cqs.Tests.CQ.Contract.Queries;
+using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers;
 
-internal class LongRunningQueryHandler : IQueryHandler<LongRunningQuery, int>
+internal class LongRunningQueryHandler : IRequestHandler<LongRunningQuery, int>
 {
     public Task<int> HandleAsync(LongRunningQuery query)
     {

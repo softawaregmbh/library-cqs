@@ -1,7 +1,4 @@
-﻿#nullable enable
-
 using softaware.Cqs;
-using softaware.Cqs.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class SoftawareCqsExtensions
 {
     /// <summary>
-    /// Adds the softaware CQS infrastructure and registers all required instances in the SimpleInjector container.
+    /// Adds the softaware CQS infrastructure and registers all required instances in the <paramref name="services"/> collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <param name="softawareCqsTypesBuilderAction">The types builder for registering assemblies from where to find <see cref="ICommandHandler{TCommand}"/> and <see cref="IQueryHandler{TQuery, TResult}"/> instances.</param>
+    /// <param name="softawareCqsTypesBuilderAction">The types builder for registering assemblies from where to find <see cref="IRequestHandler{TRequest, TResult}"/> instances.</param>
     /// <returns>The softaware CQS builder.</returns>
     public static SoftawareCqsBuilder AddSoftawareCqs(
         this IServiceCollection services,
@@ -26,15 +23,11 @@ public static class SoftawareCqsExtensions
         services
             .Scan(scan => scan
                 .FromAssemblies(typesBuilder.RegisteredAssemblies)
-                .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
-                    .AsImplementedInterfaces()
-                    .WithTransientLifetime()
-                .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)))
+                .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
                     .AsImplementedInterfaces()
                     .WithTransientLifetime());
 
-        services.AddTransient<IQueryProcessor, DynamicQueryProcessor>();
-        services.AddTransient<ICommandProcessor, DynamicCommandProcessor>();
+        services.AddTransient<IRequestProcessor, DynamicRequestProcessor>();
 
         return new SoftawareCqsBuilder(services);
     }

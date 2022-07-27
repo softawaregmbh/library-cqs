@@ -16,7 +16,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     {
         var command = new SimpleCommand(value: 1);
 
-        await this.commandProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command);
 
         Assert.That(command.Value, Is.EqualTo(2));
     }
@@ -26,7 +26,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     {
         var query = new GetSquare(value: 4);
 
-        var result = await this.queryProcessor.ExecuteAsync(query);
+        var result = await this.requestProcessor.ExecuteAsync(query);
 
         Assert.That(result, Is.EqualTo(16));
     }
@@ -47,16 +47,14 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             this.RegisterDependency(container);
 
             this.container
-                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                .AddDecorators(b => { });
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));
 
             this.container.Verify();
 
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
         protected abstract void RegisterDependency(Container container);
 
         [Test]
@@ -65,7 +63,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             using (Scope scope = AsyncScopedLifestyle.BeginScope(container))
             {
                 var command = new CommandWithDependency();
-                await this.commandProcessor.ExecuteAsync(command);
+                await this.requestProcessor.ExecuteAsync(command);
             }
         }
 
@@ -108,8 +106,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             var services = new ServiceCollection();
 
             services
-                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                .AddDecorators(b => { });
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));                
 
             this.RegisterDependency(services);
 
@@ -122,8 +119,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             base.SetUp();
         }
 
-        protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-        protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
         protected abstract void RegisterDependency(ServiceCollection serviceCollection);
 
         [Test]
@@ -131,10 +127,10 @@ public abstract class CommandAndQueryProcessorTest : TestBase
         {
             using (var scope = this.serviceProvider.CreateScope())
             {
-                var commandProcessor = scope.ServiceProvider.GetRequiredService<ICommandProcessor>();
+                var requestProcessor = scope.ServiceProvider.GetRequiredService<IRequestProcessor>();
 
                 var command = new CommandWithDependency();
-                await commandProcessor.ExecuteAsync(command);
+                await requestProcessor.ExecuteAsync(command);
             }
         }
 
