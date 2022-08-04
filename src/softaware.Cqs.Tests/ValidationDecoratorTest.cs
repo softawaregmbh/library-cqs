@@ -21,7 +21,7 @@ public abstract class ValidationDecoratorTest : TestBase
             Value = "some value"
         };
 
-        await this.requestProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command, default);
     }
 
     [Test]
@@ -32,7 +32,7 @@ public abstract class ValidationDecoratorTest : TestBase
             Value = null
         };
 
-        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(command));
+        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(command, default));
         Assert.That(exception!.Message, Is.EqualTo("The Value field is required."));
     }
 
@@ -41,7 +41,7 @@ public abstract class ValidationDecoratorTest : TestBase
     {
         var query = new GetSquare(4);
 
-        var result = await this.requestProcessor.ExecuteAsync(query);
+        var result = await this.requestProcessor.ExecuteAsync(query, default);
 
         Assert.That(result, Is.EqualTo(16));
     }
@@ -51,7 +51,7 @@ public abstract class ValidationDecoratorTest : TestBase
     {
         var query = new GetSquare(0);
 
-        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(query));
+        var exception = Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(query, default));
         Assert.That(exception!.Message, Is.EqualTo("The field Value must be between 1 and 10."));
     }
 

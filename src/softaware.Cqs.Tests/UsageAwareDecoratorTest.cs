@@ -20,7 +20,7 @@ public abstract class UsageAwareDecoratorTest : TestBase
     {
         var command = new SimpleCommand(1);
 
-        this.requestProcessor.ExecuteAsync(command);
+        this.requestProcessor.ExecuteAsync(command, default);
 
         var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
         Assert.That(trackedEvent, Is.Not.Null);
@@ -35,7 +35,7 @@ public abstract class UsageAwareDecoratorTest : TestBase
     {
         var query = new GetSquare(4);
 
-        this.requestProcessor.ExecuteAsync(query);
+        this.requestProcessor.ExecuteAsync(query, default);
 
         var trackedEvent = this.GetUsageAwareLogger().TrackedEvents.SingleOrDefault();
         Assert.That(trackedEvent, Is.Not.Null);

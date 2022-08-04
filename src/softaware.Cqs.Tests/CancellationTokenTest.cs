@@ -20,7 +20,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningCommand()
     {
-        await this.requestProcessor.ExecuteAsync(new LongRunningCommand());
+        await this.requestProcessor.ExecuteAsync(new LongRunningCommand(), default);
     }
 
     [Test]
@@ -38,7 +38,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningQuery()
     {
-        await this.requestProcessor.ExecuteAsync(new LongRunningQuery());
+        await this.requestProcessor.ExecuteAsync(new LongRunningQuery(), default);
     }
 
     [Test]

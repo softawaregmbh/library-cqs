@@ -28,7 +28,7 @@ public abstract class TransactionDecoratorTest : TestBase
             },
             shouldThrow: false);
 
-        await this.requestProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command, default);
 
         Assert.That(transactionCommitted, Is.True);
     }
@@ -48,7 +48,7 @@ public abstract class TransactionDecoratorTest : TestBase
             },
             shouldThrow: true);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(command));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(command, default));
         Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
 
         Assert.That(transactionCommitted, Is.False);
@@ -69,7 +69,7 @@ public abstract class TransactionDecoratorTest : TestBase
             },
             shouldThrow: false);
 
-        await this.requestProcessor.ExecuteAsync(query);
+        await this.requestProcessor.ExecuteAsync(query, default);
 
         Assert.That(transactionCommitted, Is.True);
     }
@@ -89,7 +89,7 @@ public abstract class TransactionDecoratorTest : TestBase
             },
             shouldThrow: true);
 
-        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(query));
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.ExecuteAsync(query, default));
         Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
 
         Assert.That(transactionCommitted, Is.False);

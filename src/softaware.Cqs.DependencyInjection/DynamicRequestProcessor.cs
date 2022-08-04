@@ -25,7 +25,7 @@ public class DynamicRequestProcessor : IRequestProcessor
     /// <param name="request">The request to execute.</param>
     /// <param name="cancellationToken">The cancellation token for requesting the cancellation of the execution.</param>
     /// <returns>The result.</returns>
-    public async Task<TResult> ExecuteAsync<TResult>(IRequest<TResult> request, CancellationToken cancellationToken = default)
+    public async Task<TResult> ExecuteAsync<TResult>(IRequest<TResult> request, CancellationToken cancellationToken)
     {
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResult));
         var handler = this.serviceProvider.GetRequiredService(handlerType);
@@ -39,7 +39,7 @@ public class DynamicRequestProcessor : IRequestProcessor
 
         return await Expression.Lambda<Func<Task<TResult>>>(
             body: Expression.Call(
-                instance: Expression.Constant(handler, handlerType),
+                instance: Expression.Constant(handler, handlerType), // here we "cast" to the generic handler type 
                 methodName: nameof(IRequestHandler<IRequest<TResult>, TResult>.HandleAsync),
                 typeArguments: null,
                 // arguments:

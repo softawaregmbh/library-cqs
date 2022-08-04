@@ -16,7 +16,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     {
         var command = new SimpleCommand(value: 1);
 
-        await this.requestProcessor.ExecuteAsync(command);
+        await this.requestProcessor.ExecuteAsync(command, default);
 
         Assert.That(command.Value, Is.EqualTo(2));
     }
@@ -26,7 +26,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     {
         var query = new GetSquare(value: 4);
 
-        var result = await this.requestProcessor.ExecuteAsync(query);
+        var result = await this.requestProcessor.ExecuteAsync(query, default);
 
         Assert.That(result, Is.EqualTo(16));
     }
@@ -63,7 +63,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             using (Scope scope = AsyncScopedLifestyle.BeginScope(container))
             {
                 var command = new CommandWithDependency();
-                await this.requestProcessor.ExecuteAsync(command);
+                await this.requestProcessor.ExecuteAsync(command, default);
             }
         }
 
@@ -130,7 +130,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
                 var requestProcessor = scope.ServiceProvider.GetRequiredService<IRequestProcessor>();
 
                 var command = new CommandWithDependency();
-                await requestProcessor.ExecuteAsync(command);
+                await requestProcessor.ExecuteAsync(command, default);
             }
         }
 
