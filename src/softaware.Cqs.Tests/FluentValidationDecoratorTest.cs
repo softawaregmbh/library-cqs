@@ -53,7 +53,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(1)
         };
 
-        await this.requestProcessor.ExecuteAsync(command, default);
+        await this.requestProcessor.HandleAsync(command, default);
 
         Assert.IsTrue(command.CommandExecuted);
     }
@@ -67,7 +67,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(-1)
         };
 
-        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(command, default));
+        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.HandleAsync(command, default));
     }
 
     [Test]
@@ -109,7 +109,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(1)
         };
 
-        var result = await this.requestProcessor.ExecuteAsync(query, default);
+        var result = await this.requestProcessor.HandleAsync(query, default);
 
         Assert.IsTrue(result);
     }
@@ -123,7 +123,7 @@ public abstract class FluentValidationDecoratorTest : TestBase
             End = DateTime.Now.AddHours(-1)
         };
 
-        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.ExecuteAsync(query, default));
+        Assert.ThrowsAsync<ValidationException>(async () => await this.requestProcessor.HandleAsync(query, default));
     }
 
     public class SimpleInjectorTest : FluentValidationDecoratorTest

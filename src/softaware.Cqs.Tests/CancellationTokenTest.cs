@@ -20,7 +20,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningCommand()
     {
-        await this.requestProcessor.ExecuteAsync(new LongRunningCommand(), default);
+        await this.requestProcessor.HandleAsync(new LongRunningCommand(), default);
     }
 
     [Test]
@@ -29,7 +29,7 @@ public abstract class CancellationTokenTest : TestBase
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // start task
-        var task = this.requestProcessor.ExecuteAsync(new LongRunningCommand(), cancellationTokenSource.Token);
+        var task = this.requestProcessor.HandleAsync(new LongRunningCommand(), cancellationTokenSource.Token);
         cancellationTokenSource.Cancel();
 
         Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
@@ -38,7 +38,7 @@ public abstract class CancellationTokenTest : TestBase
     [Test]
     public async Task DoNotCancelLongRunningQuery()
     {
-        await this.requestProcessor.ExecuteAsync(new LongRunningQuery(), default);
+        await this.requestProcessor.HandleAsync(new LongRunningQuery(), default);
     }
 
     [Test]
@@ -47,7 +47,7 @@ public abstract class CancellationTokenTest : TestBase
         using var cancellationTokenSource = new CancellationTokenSource();
 
         // start task
-        var task = this.requestProcessor.ExecuteAsync(new LongRunningQuery(), cancellationTokenSource.Token);
+        var task = this.requestProcessor.HandleAsync(new LongRunningQuery(), cancellationTokenSource.Token);
         cancellationTokenSource.Cancel();
 
         Assert.ThrowsAsync<TaskCanceledException>(async () => await task);

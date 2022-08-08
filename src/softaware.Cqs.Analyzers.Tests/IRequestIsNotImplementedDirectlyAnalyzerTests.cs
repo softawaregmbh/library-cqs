@@ -27,7 +27,9 @@ public class IRequestShouldNotBeImplementedDirectlyAnalyzerTests
 
     [Theory]
     [InlineData("class Request : {|#0:softaware.Cqs.IRequest<string>|} { }")]
+    [InlineData("class Request : object, System.IDisposable, {|#0:softaware.Cqs.IRequest<string>|} { public void Dispose() { } }")]
     [InlineData("using softaware.Cqs; class Request : {|#0:IRequest<string>|} { }")]
+    [InlineData("using System; using softaware.Cqs; class Request : object, IDisposable, {|#0:IRequest<string>|} { public void Dispose() { } }")]
     public async Task ImplementingIRequest_DoesTriggerDiagnostic(string source)
     {
         await TestAsync(
@@ -37,6 +39,12 @@ public class IRequestShouldNotBeImplementedDirectlyAnalyzerTests
 
     private static async Task TestAsync(string source, params DiagnosticResult[] expectedDiagnostics)
     {
+#if DEBUG
+        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Debug/net6.0/softaware.Cqs.dll";
+#else
+        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Release/net6.0/softaware.Cqs.dll";
+#endif
+
         var test = new Test
         {
             TestState =
@@ -48,7 +56,7 @@ public class IRequestShouldNotBeImplementedDirectlyAnalyzerTests
                 ReferenceAssemblies = ReferenceAssemblies.Net.Net60,
                 AdditionalReferences =
                 {
-                    MetadataReference.CreateFromFile("../../../../softaware.Cqs/bin/Debug/net6.0/softaware.Cqs.dll")
+                    MetadataReference.CreateFromFile(softawareCqsDllPath)
                 }
             },
         };

@@ -7,6 +7,6 @@ public class AccessCheckedCommandHandler : IRequestHandler<AccessCheckedCommand,
     public Task<NoResult> HandleAsync(AccessCheckedCommand command, CancellationToken cancellationToken)
     {
         // nothing to do.
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }

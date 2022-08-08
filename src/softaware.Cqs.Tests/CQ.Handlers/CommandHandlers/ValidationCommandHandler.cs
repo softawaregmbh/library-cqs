@@ -6,6 +6,6 @@ public class ValidationCommandHandler : IRequestHandler<ValidationCommand, NoRes
 {
     public Task<NoResult> HandleAsync(ValidationCommand command, CancellationToken cancellationToken)
     {
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }

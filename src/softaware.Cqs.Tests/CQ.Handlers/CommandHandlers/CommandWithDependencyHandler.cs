@@ -14,6 +14,6 @@ internal class CommandWithDependencyHandler : IRequestHandler<CommandWithDepende
     {
         this.dependency.SomeMethod();
 
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }

@@ -1,6 +1,32 @@
 # Changelog
 
+## All packages
+
+### 4.0.0
+
+#### Breaking Changes
+
+* There is now an interface `ICommand<TResult>` for commands that return values. While this should be used sparingly, there are some cases where it can be useful.
+* `ICommand` (which should be the default for implementing commands) derives from this new `ICommand<NoResult>` interface.
+* There is now a common base interface for `IQuery<TResult>` and `ICommand<TResult>` (and thus `ICommand`): `IRequest<TResult`. This has the following advantages:
+  * There is no need to distinguish between `IQueryHandler<TResult>` and `ICommandHandler` anymore. Simply use `IRequestHandler<TResult>`.
+  * For cross-cutting concerns, you can write decorators that target `IRequestHandler<TResult>`. Before you had to write one for `IQueryHandler<TResult>` and one for `ICommandHandler`.
+  * Instead of `IQueryProcessor` and `ICommandProcessor`, you can simply use `IRequestProcessor`. `ExecuteAsync` has been renamed to `HandleAsync`.
+* The cancellation token is now a required parameter for the `HandleAsync` method.
+
+##### Upgrading
+
+* Replace `IQueryHandler<TQuery, TResult>` with `IRequestHandler<TQuery, TResult>`
+* Replace `ICommandHandler<TCommand>` with `IRequestHandler<TCommand, NoResult>`
+* Replace `IQueryProcessor` and `ICommandProcessor` with `IRequestProcessor`
+* Replace `AddQueryHandlerDecorator` and `AddCommandHandlerDecorator` with `AddRequestHandlerDecorator`
+* Add `CancellationToken` parameter to all `HandleAsync` methods
+* Remove `PublicQueryHandlerDecorator` and `PublicCommandHandlerDecorator` if you referenced them explicitely.
+* Optional: Combine duplicate decorators implementing `IQueryHandler<TResult>` and `ICommandHandler` into a single class implementing `IRequestHandler`
+* Optional: Use `ICommand<TResult>` instead of `ICommand` if you used some workarounds for returning values from commands (like setting a property on the command)
+
 ## softaware.Cqs.DependencyInjection
+
 ### 1.0.3
 
 * Fix: Update `Scrutor` to version 4.0.0 to support generic type constraints on decorators. (See also [Scrutor issue #159](https://github.com/khellang/Scrutor/issues/159))

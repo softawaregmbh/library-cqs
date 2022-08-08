@@ -9,14 +9,14 @@ using softaware.Cqs.Tests.Fakes;
 
 namespace softaware.Cqs.Tests;
 
-public abstract class CommandAndQueryProcessorTest : TestBase
+public abstract class RequestProcessorTest : TestBase
 {
     [Test]
     public async Task ExecuteCommand()
     {
         var command = new SimpleCommand(value: 1);
 
-        await this.requestProcessor.ExecuteAsync(command, default);
+        await this.requestProcessor.HandleAsync(command, default);
 
         Assert.That(command.Value, Is.EqualTo(2));
     }
@@ -26,7 +26,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     {
         var query = new GetSquare(value: 4);
 
-        var result = await this.requestProcessor.ExecuteAsync(query, default);
+        var result = await this.requestProcessor.HandleAsync(query, default);
 
         Assert.That(result, Is.EqualTo(16));
     }
@@ -35,7 +35,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
     public abstract Task ExecuteCommandWithDependency();
 
     private abstract class SimpleInjectorTest
-        : CommandAndQueryProcessorTest
+        : RequestProcessorTest
     {
         private Container container;
 
@@ -63,7 +63,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
             using (Scope scope = AsyncScopedLifestyle.BeginScope(container))
             {
                 var command = new CommandWithDependency();
-                await this.requestProcessor.ExecuteAsync(command, default);
+                await this.requestProcessor.HandleAsync(command, default);
             }
         }
 
@@ -96,7 +96,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
 
 
     private abstract class ServiceCollectionTest
-        : CommandAndQueryProcessorTest
+        : RequestProcessorTest
     {
         private IServiceProvider serviceProvider;
 
@@ -130,7 +130,7 @@ public abstract class CommandAndQueryProcessorTest : TestBase
                 var requestProcessor = scope.ServiceProvider.GetRequiredService<IRequestProcessor>();
 
                 var command = new CommandWithDependency();
-                await requestProcessor.ExecuteAsync(command, default);
+                await requestProcessor.HandleAsync(command, default);
             }
         }
 

@@ -18,7 +18,7 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
     {
         var command = new AccessCheckedCommand();
 
-        await this.requestProcessor.ExecuteAsync(command, default);
+        await this.requestProcessor.HandleAsync(command, default);
 
         Assert.That(command.AccessCheckHasBeenEvaluated, Is.True);
     }
@@ -28,7 +28,7 @@ public abstract class GenericTypeConstraintsDecoratorTest : TestBase
     {
         var query = new AccessCheckedQuery();
 
-        await this.requestProcessor.ExecuteAsync(query, default);
+        await this.requestProcessor.HandleAsync(query, default);
 
         Assert.That(query.AccessCheckHasBeenEvaluated, Is.True);
     }

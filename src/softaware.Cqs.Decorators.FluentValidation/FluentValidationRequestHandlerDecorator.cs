@@ -31,9 +31,6 @@ public class FluentValidationRequestHandlerDecorator<TRequest, TResult> : IReque
     }
 
     /// <inheritdoc />
-    public Task<TResult> HandleAsync(TRequest query) => this.HandleAsync(query, default);
-
-    /// <inheritdoc />
     public async Task<TResult> HandleAsync(TRequest query, CancellationToken cancellationToken)
     {
         if (this.validators.Count == 1)

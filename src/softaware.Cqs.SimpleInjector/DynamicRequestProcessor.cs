@@ -18,14 +18,8 @@ public class DynamicRequestProcessor : IRequestProcessor
     public DynamicRequestProcessor(Container container) =>
         this.container = container ?? throw new ArgumentNullException(nameof(container));
 
-    /// <summary>
-    /// Finds the matching <see cref="IRequestHandler{TRequest, TResult}"/> for a specified <see cref="IRequest{TResult}"/> and
-    /// calls <see cref="IRequestHandler{TRequest, TResult}.HandleAsync(TRequest, CancellationToken)"/> on that handler.
-    /// </summary>
-    /// <param name="request">The request to execute.</param>
-    /// <param name="cancellationToken">The cancellation token for requesting the cancellation of the execution.</param>
-    /// <returns>The result.</returns>
-    public async Task<TResult> ExecuteAsync<TResult>(IRequest<TResult> request, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<TResult> HandleAsync<TResult>(IRequest<TResult> request, CancellationToken cancellationToken)
     {
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResult));
         var handler = this.container.GetInstance(handlerType);

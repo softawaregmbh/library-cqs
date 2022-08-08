@@ -10,7 +10,7 @@ Commands and queries will be separated on class-level and will be represented by
 Define queries and commands in your application as classes/records implementing the `IQuery<TResult>` or `ICommand` interface. Both interfaces extend `IRequest<TResult>`, but differentiating between queries and commands allows us to apply decorators for cross-cutting concerns to only queries or only commands (for example, you might want to surround all command executions with a transaction). Therefore you shouldn't directly implement `IRequest<TResult>`:
 
 ```csharp
-public class GetThings() : IQuery<IReadOnlyCollection<Thing>>();
+public class GetThings : IQuery<IReadOnlyCollection<Thing>>;
 
 public record SaveThing(Thing thing) : ICommand;
 ```
@@ -94,6 +94,8 @@ services
             builder => builder.IncludeTypesFrom(Assembly.GetExecutingAssembly())));
 ```
 
+The decorators wrap the handler in the order they are added here (so they are called in opposite order). In this case, the `FluentValidationRequestHandlerDecorator` is the first decorator to be called. The `CommandLoggingDecorator` is the last one and calls the actual handler.
+
 #### SimpleInjector
 
 When using the `softaware.CQS.SimpleInjector` library, use `AddRequestHandlerDecorator` method to register decorators in the Simple Injector container:
@@ -137,7 +139,7 @@ Executing requests this way requires some boilerplate code (specifying all the g
 IRequestProcessor requestProcessor = serviceProvider.GetRequiredService<IRequestProcessor>();
 
 // or using SimpleInjector
-IRequestProcessor requestProcessor = this.container.GetInstance<RequestProcessor>();
+IRequestProcessor requestProcessor = this.container.GetInstance<IRequestProcessor>();
 
 // Execute a command without a return type.
 await requestProcessor.ExecuteAsync(new SaveThing(thing), cancellationToken);
@@ -173,7 +175,7 @@ Version 4.0 contains some breaking changes you need to be aware of before updati
 * There is now a common base interface for `IQuery<TResult>` and `ICommand<TResult>` (and thus `ICommand`): `IRequest<TResult`. This has the following advantages:
   * There is no need to distinguish between `IQueryHandler<TResult>` and `ICommandHandler` anymore. Simply use `IRequestHandler<TResult>`.
   * For cross-cutting concerns, you can write decorators that target `IRequestHandler<TResult>`. Before you had to write one for `IQueryHandler<TResult>` and one for `ICommandHandler`.
-  * Instead of `IQueryProcessor` and `ICommandProcessor`, you can simply use `IRequestProcessor`.
+  * Instead of `IQueryProcessor` and `ICommandProcessor`, you can simply use `IRequestProcessor`. `ExecuteAsync` has been renamed to `HandleAsync`.
 * The cancellation token is now a required parameter for the `HandleAsync` method.
 
 ### Upgrading
@@ -183,5 +185,6 @@ Version 4.0 contains some breaking changes you need to be aware of before updati
 * Replace `IQueryProcessor` and `ICommandProcessor` with `IRequestProcessor`
 * Replace `AddQueryHandlerDecorator` and `AddCommandHandlerDecorator` with `AddRequestHandlerDecorator`
 * Add `CancellationToken` parameter to all `HandleAsync` methods
+* Remove `PublicQueryHandlerDecorator` and `PublicCommandHandlerDecorator` if you referenced them explicitely.
 * Optional: Combine duplicate decorators implementing `IQueryHandler<TResult>` and `ICommandHandler` into a single class implementing `IRequestHandler`
 * Optional: Use `ICommand<TResult>` instead of `ICommand` if you used some workarounds for returning values from commands (like setting a property on the command)

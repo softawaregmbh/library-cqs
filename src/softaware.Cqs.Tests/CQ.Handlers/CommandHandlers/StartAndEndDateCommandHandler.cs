@@ -9,6 +9,6 @@ internal class StartAndEndDateCommandHandler : IRequestHandler<StartAndEndDateCo
         // Just for testing: Change the value and assert the change in test afterwards.
         command.CommandExecuted = true;
 
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }

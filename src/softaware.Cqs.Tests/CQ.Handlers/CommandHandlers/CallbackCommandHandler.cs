@@ -13,6 +13,6 @@ internal class CallbackCommandHandler : IRequestHandler<CallbackCommand, NoResul
             throw new InvalidOperationException("We throw here for testing the rollback of transactions.");
         }
 
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }

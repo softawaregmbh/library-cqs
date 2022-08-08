@@ -8,6 +8,6 @@ internal class SimpleCommandHandler : IRequestHandler<SimpleCommand, NoResult>
     {
         // Just for testing: Change the value and assert the change in test afterwards.
         command.Value += 1;
-        return NoResult.Task;
+        return NoResult.CompletedTask;
     }
 }
