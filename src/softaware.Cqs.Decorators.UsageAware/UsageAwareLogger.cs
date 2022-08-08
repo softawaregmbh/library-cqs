@@ -25,7 +25,7 @@ public class UsageAwareLogger<TRequest, TResult>
     static UsageAwareLogger()
     {
         var type = typeof(TRequest);
-        Area = type.Namespace![(type.Namespace!.LastIndexOf('.') + 1)..];
+        Area = type.Namespace.Substring(type.Namespace.LastIndexOf('.') + 1);
         Action = type.Name;
         Type = type.GetInterface("ICommand`1")?.Namespace == "softaware.Cqs" ? LogType.Command : LogType.Query;
     }
