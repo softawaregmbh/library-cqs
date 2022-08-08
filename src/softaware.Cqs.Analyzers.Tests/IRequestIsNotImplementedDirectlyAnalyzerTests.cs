@@ -40,9 +40,9 @@ public class IRequestShouldNotBeImplementedDirectlyAnalyzerTests
     private static async Task TestAsync(string source, params DiagnosticResult[] expectedDiagnostics)
     {
 #if DEBUG
-        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Debug/net6.0/softaware.Cqs.dll";
+        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Debug/netstandard2.0/softaware.Cqs.dll";
 #else
-        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Release/net6.0/softaware.Cqs.dll";
+        var softawareCqsDllPath = "../../../../softaware.Cqs/bin/Release/netstandard2.0/softaware.Cqs.dll";
 #endif
 
         var test = new Test
