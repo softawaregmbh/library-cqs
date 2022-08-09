@@ -13,7 +13,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
-		<Version>4.0.0</Version>
+		<Version>4.0.0-beta</Version>
 		<PackageId>softaware.CQS.DependencyInjection</PackageId>
 		<PackageIcon>package-icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

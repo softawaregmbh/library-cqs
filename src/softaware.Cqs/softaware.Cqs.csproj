@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <RootNamespace>softaware.Cqs</RootNamespace>
     <AssemblyName>softaware.Cqs</AssemblyName>
-    <Version>4.0.0</Version>
+    <Version>4.0.0-beta</Version>
     <PackageId>softaware.CQS</PackageId>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
