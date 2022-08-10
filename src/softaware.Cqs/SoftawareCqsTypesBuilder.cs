@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace softaware.Cqs;
 
@@ -7,13 +7,12 @@ namespace softaware.Cqs;
 /// </summary>
 public class SoftawareCqsTypesBuilder
 {
-    private readonly HashSet<Assembly> _registeredAssemblies = new HashSet<Assembly>();
+    private readonly HashSet<Assembly> registeredAssemblies = new();
 
     /// <summary>
     /// Gets the already registered assemblies.
     /// </summary>
-    public IReadOnlyCollection<Assembly> RegisteredAssemblies => this._registeredAssemblies;
-
+    public IReadOnlyCollection<Assembly> RegisteredAssemblies => this.registeredAssemblies;
 
     /// <summary>
     /// Registers the assemblies of the provided <paramref name="markerTypes"/>.
@@ -31,7 +30,7 @@ public class SoftawareCqsTypesBuilder
     {
         foreach (var assembly in assemblies)
         {
-            this._registeredAssemblies.Add(assembly);
+            this.registeredAssemblies.Add(assembly);
         }
 
         return this;
