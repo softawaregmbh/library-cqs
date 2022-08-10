@@ -1,4 +1,5 @@
 using softaware.Cqs;
+using softaware.Cqs.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +26,24 @@ public class SoftawareCqsDecoratorBuilder
     /// <param name="decoratorType">Type type of the decorator. The decorator must implement <see cref="IRequestHandler{TRequest, TResult}"/>.</param>
     public SoftawareCqsDecoratorBuilder AddRequestHandlerDecorator(Type decoratorType)
     {
-        this.Services.Decorate(typeof(IRequestHandler<,>), decoratorType);
+        var requestHandlerType = typeof(IRequestHandler<,>);
+
+        if (decoratorType.IsGenericType)
+        {
+            this.Services.Decorate(requestHandlerType, decoratorType);
+        }
+        else
+        {
+            // We have to register concrete decorators with concrete interface types:
+
+            // class Decorator<ConcreteCommand, NoResult> : IRequestHandler<ConcreteCommand, NoResult>
+
+            // has to be registered as IRequestHandler<ConcreteCommand, NoResult> and not IRequestHandler<,>.
+
+            var interfaceType = TypeHelper.GetConcreteDecoratorInterface(decoratorType);
+            this.Services.Decorate(interfaceType, decoratorType);
+        }
+
         return this;
     }
 }

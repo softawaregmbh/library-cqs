@@ -1,4 +1,5 @@
 using softaware.Cqs;
+using softaware.Cqs.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -23,9 +24,10 @@ public static class SoftawareCqsExtensions
         services
             .Scan(scan => scan
                 .FromAssemblies(typesBuilder.RegisteredAssemblies)
-                .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
-                    .AsImplementedInterfaces()
-                    .WithTransientLifetime());
+                .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>))
+                                              .Where(t => !t.IsDecorator()))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
 
         services.AddTransient<IRequestProcessor, DynamicRequestProcessor>();
 

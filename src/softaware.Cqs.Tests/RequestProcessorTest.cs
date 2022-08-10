@@ -44,7 +44,7 @@ public abstract class RequestProcessorTest : TestBase
         {
             this.container = new Container();
 
-            this.RegisterDependency(container);
+            this.RegisterDependency(this.container);
 
             this.container
                 .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));
@@ -60,7 +60,7 @@ public abstract class RequestProcessorTest : TestBase
         [Test]
         public override async Task ExecuteCommandWithDependency()
         {
-            using (Scope scope = AsyncScopedLifestyle.BeginScope(container))
+            using (Scope scope = AsyncScopedLifestyle.BeginScope(this.container))
             {
                 var command = new CommandWithDependency();
                 await this.requestProcessor.HandleAsync(command, default);
@@ -94,7 +94,6 @@ public abstract class RequestProcessorTest : TestBase
         }
     }
 
-
     private abstract class ServiceCollectionTest
         : RequestProcessorTest
     {
@@ -106,7 +105,7 @@ public abstract class RequestProcessorTest : TestBase
             var services = new ServiceCollection();
 
             services
-                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));                
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()));
 
             this.RegisterDependency(services);
 
