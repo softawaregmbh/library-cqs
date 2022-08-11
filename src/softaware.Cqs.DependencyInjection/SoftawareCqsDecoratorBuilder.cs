@@ -26,22 +26,54 @@ public class SoftawareCqsDecoratorBuilder
     /// <param name="decoratorType">Type type of the decorator. The decorator must implement <see cref="IRequestHandler{TRequest, TResult}"/>.</param>
     public SoftawareCqsDecoratorBuilder AddRequestHandlerDecorator(Type decoratorType)
     {
-        var requestHandlerType = typeof(IRequestHandler<,>);
-
-        if (decoratorType.IsGenericType)
+        var implementedInterfaceType = decoratorType.GetImplementedRequestHandlerInterfaceType();
+        if (implementedInterfaceType == null)
         {
-            this.Services.Decorate(requestHandlerType, decoratorType);
+            throw new ArgumentException($"Type '{decoratorType}' cannot be used as decorator because it does not implement IRequestHandler<TRequest, TResult>.", nameof(decoratorType));
         }
-        else
+
+        if (!decoratorType.IsDecorator())
         {
-            // We have to register concrete decorators with concrete interface types:
+            throw new ArgumentException($"Type '{decoratorType}' cannot be used as decorator for '{implementedInterfaceType}' because it has no constructor parameter with this type.", nameof(decoratorType));
+        }
 
-            // class Decorator<ConcreteCommand, NoResult> : IRequestHandler<ConcreteCommand, NoResult>
+        // We have to distinguish between generic IRequestHandler implementations
+        // (e.g. class Decorator<TRequest, TResult>: IRequestHandler<TRequest, TResult>)
+        // that should be applied to different request types (based on the generic
+        // constraints) and non-generic implementations that target a specific request type
+        // (e.g. class Decorator: IRequestHandler<ICommand, NoResult).
+        // A mix of both is currently not supported.
 
-            // has to be registered as IRequestHandler<ConcreteCommand, NoResult> and not IRequestHandler<,>.
+        int genericParametersInImplementedInterface = implementedInterfaceType.GetGenericArguments().Count(t => t.IsGenericParameter);
 
-            var interfaceType = TypeHelper.GetConcreteDecoratorInterface(decoratorType);
-            this.Services.Decorate(interfaceType, decoratorType);
+        switch (genericParametersInImplementedInterface)
+        {
+            case 0:
+                // register as IRequestHandler<ICommand, NoResult>
+                this.Services.Decorate(implementedInterfaceType, decoratorType);
+                break;
+
+            case 2:
+                // register as IRequestHandler<,>
+                this.Services.Decorate(RequestHandlerTypeHelper.GenericRequestHandlerTypeDefinition, decoratorType);
+                break;
+
+            default:
+                var message =
+@"Sorry, partially closed decorators are not supported at the moment. You can achieve the same behavior by changing your decorator class definition to a generic type with two type arguments and applying type constraints:
+
+For example:
+
+class Decorator<TResult> : IRequestHandler<SomeRequest, TResult>
+    where TRequest : IRequest<TResult>
+
+can be changed to
+
+class Decorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : SomeRequest
+
+Alternatively, you can use softaware.CQS.SimpleInjector instead of softaware.CQS.DependencyInjection.";
+                throw new NotSupportedException(message);
         }
 
         return this;
