@@ -14,16 +14,82 @@
   * Instead of `IQueryProcessor` and `ICommandProcessor`, you can simply use `IRequestProcessor`. `ExecuteAsync` has been renamed to `HandleAsync`.
 * The cancellation token is now a required parameter for the `HandleAsync` method.
 
-##### Upgrading
+<details>
+  <summary>Show detailed upgrade instructions</summary>
+  
+  * Update all `softaware.CQS` packages to version 4.0.0 or higher
+  * Replace `IQueryHandler<TQuery, TResult>` with `IRequestHandler<TQuery, TResult>`:
+    * Replace in files (Use regular expression)
+      ```csharp
+      IQueryHandler<(.*?), (.*?)>
+      IRequestHandler<$1, $2>
+      ```
+  * Replace `ICommandHandler<TCommand>` with `IRequestHandler<TCommand, NoResult>`
+    * Replace
+      ```csharp
+      ICommandHandler<(.*?)>
+      IRequestHandler<$1, NoResult>
+      ```
+  
+  * Replace query handler `HandleAsync` interface implementation: Add `CancellationToken`
+    * Replace
+      ```csharp
+      Task<(.+?)> HandleAsync\(([^,]+?) ([^,]+?)\)
+      Task<$1> HandleAsync($2 $3, System.Threading.CancellationToken cancellationToken)
+      ```
+	
+  * Replace command handler `HandleAsync`: add `NoResult` and `CancellationToken`
+    * Replace
+      ```csharp
+      Task HandleAsync\(([^,]+?) ([^,]+?)\)
+      Task<NoResult> HandleAsync($1 $2, System.Threading.CancellationToken cancellationToken)
+      ```
 
-* Replace `IQueryHandler<TQuery, TResult>` with `IRequestHandler<TQuery, TResult>`
-* Replace `ICommandHandler<TCommand>` with `IRequestHandler<TCommand, NoResult>`
-* Replace `IQueryProcessor` and `ICommandProcessor` with `IRequestProcessor`
-* Replace `AddQueryHandlerDecorator` and `AddCommandHandlerDecorator` with `AddRequestHandlerDecorator`
-* Add `CancellationToken` parameter to all `HandleAsync` methods
-* Remove `PublicQueryHandlerDecorator` and `PublicCommandHandlerDecorator` if you referenced them explicitely.
-* Optional: Combine duplicate decorators implementing `IQueryHandler<TResult>` and `ICommandHandler` into a single class implementing `IRequestHandler`
-* Optional: Use `ICommand<TResult>` instead of `ICommand` if you used some workarounds for returning values from commands (like setting a property on the command)
+  * Remove `HandleAsync` overloads delegating to `CancellationToken` version
+    * Replace with empty string (You might need to adjust the expressions based on your formatting):
+      ```csharp
+      Task<(.+?)> HandleAsync\(([^,]+?) ([^,]+?)\) =>
+      ```
+    * Replace with empty string
+      ```csharp
+      public  this.HandleAsync(query, default);
+      ```
+
+  * Replace `IQueryProcessor` and `ICommandProcessor` with `IRequestProcessor`
+    * Replace `IQueryProcessor` with `IRequestProcessor`
+    * Replace `ICommandProcessor` with `IRequestProcessor`
+    * Replace `queryProcessor` with `requestProcessor`
+    * Replace `commandProcessor` with `requestProcessor`
+    * Replace
+      ```csharp
+      requestProcessor.ExecuteAsync\(([^,]+?)\);
+      requestProcessor.HandleAsync($1, cancellationToken);
+      ```
+    * Remove duplicates where `IQueryProcessor` and `ICommandProcessor` were injected
+  
+  * Add `return NoResult.Value` to command handlers
+
+  * Optional: Add `CancellationToken` to Controller actions
+	  * Replace with file pattern: *Controller.cs
+      * With parameters:
+        ```csharp
+        public async (.+)\((.+)\)
+        public async $1($2, System.Threading.CancellationToken cancellationToken)
+        ```
+	
+	    * Without parameters:
+        ```csharp
+        public async (.+)\(\)
+        public async $1(System.Threading.CancellationToken cancellationToken)
+        ```
+
+  * Add missing `CancellationToken` parameters
+  * Decorators: Refactor command handler decorators to 2 generic type parameters
+  * Replace `AddQueryHandlerDecorator` and `AddCommandHandlerDecorator` with `AddRequestHandlerDecorator`
+  * Remove `PublicQueryHandlerDecorator` and `PublicCommandHandlerDecorator` if you referenced them explicitely.
+  * Optional: Combine duplicate decorators implementing `IQueryHandler<TResult>` and `ICommandHandler` into a single class implementing `IRequestHandler`
+  * Optional: Use `ICommand<TResult>` instead of `ICommand` if you used some workarounds for returning values from commands (like setting a property on the command)
+</details>
 
 ## softaware.Cqs.DependencyInjection
 
