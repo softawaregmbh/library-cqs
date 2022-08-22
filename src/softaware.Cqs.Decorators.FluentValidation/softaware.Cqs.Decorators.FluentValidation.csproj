@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
     <RootNamespace>softaware.Cqs.Decorators.FluentValidation</RootNamespace>
     <AssemblyName>softaware.Cqs.Decorators.FluentValidation</AssemblyName>
-    <Version>4.0.0-beta</Version>
+    <Version>4.0.0</Version>
     <PackageId>softaware.CQS.Decorators.FluentValidation</PackageId>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

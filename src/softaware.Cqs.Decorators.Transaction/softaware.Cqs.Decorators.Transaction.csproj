@@ -14,7 +14,7 @@
     <PackageTags>softaware, command-query-separation</PackageTags>
     <Description>A decorator for command-query architecture, which supports transactions.</Description>
     <PackageId>softaware.CQS.Decorators.Transaction</PackageId>
-    <Version>4.0.0-beta</Version>
+    <Version>4.0.0</Version>
     <PackageIcon>package-icon.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

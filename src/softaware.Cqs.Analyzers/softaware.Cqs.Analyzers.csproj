@@ -7,7 +7,7 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>softaware.CQS.Analyzers</PackageId>
-    <PackageVersion>4.0.0-beta</PackageVersion>
+    <PackageVersion>4.0.0</PackageVersion>
     <Authors>softaware gmbh</Authors>
     <Company>softaware gmbh</Company>
     <PackageIcon>package-icon.png</PackageIcon>
