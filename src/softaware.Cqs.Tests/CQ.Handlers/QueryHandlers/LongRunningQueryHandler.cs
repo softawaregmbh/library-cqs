@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
-namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers
+namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers;
+
+internal class LongRunningQueryHandler : IRequestHandler<LongRunningQuery, int>
 {
-    internal class LongRunningQueryHandler : IQueryHandler<LongRunningQuery, int>
+    public Task<int> HandleAsync(LongRunningQuery query)
     {
-        public Task<int> HandleAsync(LongRunningQuery query)
-        {
-            return this.HandleAsync(query, default);
-        }
+        return this.HandleAsync(query, default);
+    }
 
-        public async Task<int> HandleAsync(LongRunningQuery query, CancellationToken cancellationToken)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+    public async Task<int> HandleAsync(LongRunningQuery query, CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
 
-            return 1;
-        }
+        return 1;
     }
 }

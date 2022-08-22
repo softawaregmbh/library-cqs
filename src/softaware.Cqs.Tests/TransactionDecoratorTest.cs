@@ -1,6 +1,4 @@
-﻿using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -10,149 +8,146 @@ using softaware.Cqs.Tests.CQ.Contract.Commands;
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 using softaware.Cqs.Tests.Fakes;
 
-namespace softaware.Cqs.Tests
+namespace softaware.Cqs.Tests;
+
+[TestFixture]
+public abstract class TransactionDecoratorTest : TestBase
 {
-    [TestFixture]
-    public abstract class TransactionDecoratorTest : TestBase
+    [Test]
+    public async Task TestCommandTransaction_CommandDoesNotThrow_CommitsTransaction()
     {
-        [Test]
-        public async Task TestCommandTransaction_CommandDoesNotThrow_CommitsTransaction()
-        {
-            var transactionCommitted = false;
+        var transactionCommitted = false;
 
-            var command = new CallbackCommand(
-                () =>
-                {
-                    Assert.That(Transaction.Current, Is.Not.Null);
-                    Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
-
-                    Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-                },
-                shouldThrow: false);
-
-            await this.commandProcessor.ExecuteAsync(command);
-
-            Assert.That(transactionCommitted, Is.True);
-        }
-
-        [Test]
-        public void TestCommandTransaction_CommandThrows_RollsBackTransaction()
-        {
-            var transactionCommitted = false;
-
-            var command = new CallbackCommand(
-                () =>
-                {
-                    Assert.That(Transaction.Current, Is.Not.Null);
-                    Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
-
-                    Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-                },
-                shouldThrow: true);
-
-            var exception = Assert.ThrowsAsync<Exception>(async () => await this.commandProcessor.ExecuteAsync(command));
-            Assert.That(exception.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
-
-            Assert.That(transactionCommitted, Is.False);
-        }
-
-        [Test]
-        public async Task TestQueryTransaction_QueryDoesNotThrow_CommitsTransaction()
-        {
-            var transactionCommitted = false;
-
-            var query = new CallbackQuery(
-                () =>
-                {
-                    Assert.That(Transaction.Current, Is.Not.Null);
-                    Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
-
-                    Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-                },
-                shouldThrow: false);
-
-            await this.queryProcessor.ExecuteAsync(query);
-
-            Assert.That(transactionCommitted, Is.True);
-        }
-
-        [Test]
-        public void TestQueryTransaction_QueryThrows_RollsBackTransaction()
-        {
-            var transactionCommitted = false;
-
-            var query = new CallbackQuery(
-                () =>
-                {
-                    Assert.That(Transaction.Current, Is.Not.Null);
-                    Assert.That(Transaction.Current.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
-
-                    Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction.TransactionInformation.Status == TransactionStatus.Committed;
-                },
-                shouldThrow: true);
-
-            var exception = Assert.ThrowsAsync<Exception>(async () => await this.queryProcessor.ExecuteAsync(query));
-            Assert.That(exception.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
-
-            Assert.That(transactionCommitted, Is.False);
-        }
-
-        private class SimpleInjectorTest
-            : TransactionDecoratorTest
-        {
-            private Container container;
-
-            [SetUp]
-            public override void SetUp()
+        var command = new CallbackCommand(
+            () =>
             {
-                this.container = new Container();
+                Assert.That(Transaction.Current, Is.Not.Null);
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                this.container
-                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b
-                        .AddQueryHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))
-                        .AddCommandHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<>)));
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
+            },
+            shouldThrow: false);
 
-                this.container.Register<IDependency, Dependency>();
+        await this.requestProcessor.HandleAsync(command, default);
 
-                this.container.Verify();
+        Assert.That(transactionCommitted, Is.True);
+    }
 
-                base.SetUp();
-            }
+    [Test]
+    public void TestCommandTransaction_CommandThrows_RollsBackTransaction()
+    {
+        var transactionCommitted = false;
 
-            protected override ICommandProcessor GetCommandProcessor() => this.container.GetRequiredService<ICommandProcessor>();
-            protected override IQueryProcessor GetQueryProcessor() => this.container.GetRequiredService<IQueryProcessor>();
-        }
-
-        private class ServiceCollectionTest
-            : TransactionDecoratorTest
-        {
-            private IServiceProvider serviceProvider;
-
-            [SetUp]
-            public override void SetUp()
+        var command = new CallbackCommand(
+            () =>
             {
-                var services = new ServiceCollection();
+                Assert.That(Transaction.Current, Is.Not.Null);
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
 
-                services
-                    .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
-                    .AddDecorators(b => b
-                        .AddTransactionCommandHandlerDecorator()
-                        .AddTransactionQueryHandlerDecorator());
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
+            },
+            shouldThrow: true);
 
-                services.AddTransient<IDependency, Dependency>();
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.HandleAsync(command, default));
+        Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
 
-                this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
-                {
-                    ValidateOnBuild = true,
-                    ValidateScopes = true
-                });
+        Assert.That(transactionCommitted, Is.False);
+    }
 
-                base.SetUp();
-            }
+    [Test]
+    public async Task TestQueryTransaction_QueryDoesNotThrow_CommitsTransaction()
+    {
+        var transactionCommitted = false;
 
-            protected override ICommandProcessor GetCommandProcessor() => this.serviceProvider.GetRequiredService<ICommandProcessor>();
-            protected override IQueryProcessor GetQueryProcessor() => this.serviceProvider.GetRequiredService<IQueryProcessor>();
+        var query = new CallbackQuery(
+            () =>
+            {
+                Assert.That(Transaction.Current, Is.Not.Null);
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
+            },
+            shouldThrow: false);
+
+        await this.requestProcessor.HandleAsync(query, default);
+
+        Assert.That(transactionCommitted, Is.True);
+    }
+
+    [Test]
+    public void TestQueryTransaction_QueryThrows_RollsBackTransaction()
+    {
+        var transactionCommitted = false;
+
+        var query = new CallbackQuery(
+            () =>
+            {
+                Assert.That(Transaction.Current, Is.Not.Null);
+                Assert.That(Transaction.Current!.IsolationLevel, Is.EqualTo(IsolationLevel.ReadCommitted));
+
+                Transaction.Current.TransactionCompleted += (s, e) => transactionCommitted = e.Transaction!.TransactionInformation.Status == TransactionStatus.Committed;
+            },
+            shouldThrow: true);
+
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await this.requestProcessor.HandleAsync(query, default));
+        Assert.That(exception!.Message, Is.EqualTo("We throw here for testing the rollback of transactions."));
+
+        Assert.That(transactionCommitted, Is.False);
+    }
+
+    private class SimpleInjectorTest
+        : TransactionDecoratorTest
+    {
+        private Container container;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            this.container = new Container();
+
+            this.container
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddRequestHandlerDecorator(typeof(TransactionAwareRequestHandlerDecorator<,>))
+                    .AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>)));
+
+            this.container.Register<IDependency, Dependency>();
+
+            this.container.Verify();
+
+            base.SetUp();
         }
+
+        protected override IRequestProcessor GetRequestProcessor() => this.container.GetRequiredService<IRequestProcessor>();
+    }
+
+    private class ServiceCollectionTest
+        : TransactionDecoratorTest
+    {
+        private IServiceProvider serviceProvider;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            var services = new ServiceCollection();
+
+            services
+                .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+                .AddDecorators(b => b
+                    .AddTransactionCommandHandlerDecorator()
+                    .AddTransactionQueryHandlerDecorator());
+
+            services.AddTransient<IDependency, Dependency>();
+
+            this.serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            });
+
+            base.SetUp();
+        }
+
+        protected override IRequestProcessor GetRequestProcessor() => this.serviceProvider.GetRequiredService<IRequestProcessor>();
     }
 }

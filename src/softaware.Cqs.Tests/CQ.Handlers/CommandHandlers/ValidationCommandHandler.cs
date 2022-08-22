@@ -1,13 +1,11 @@
-﻿using System.Threading.Tasks;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 
-namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers
+namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers;
+
+public class ValidationCommandHandler : IRequestHandler<ValidationCommand, NoResult>
 {
-    public class ValidationCommandHandler : ICommandHandler<ValidationCommand>
+    public Task<NoResult> HandleAsync(ValidationCommand command, CancellationToken cancellationToken)
     {
-        public Task HandleAsync(ValidationCommand command)
-        {
-            return Task.CompletedTask;
-        }
+        return NoResult.CompletedTask;
     }
 }

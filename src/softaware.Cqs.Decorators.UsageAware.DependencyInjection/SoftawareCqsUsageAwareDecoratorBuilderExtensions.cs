@@ -1,31 +1,27 @@
-﻿using softaware.Cqs;
 using softaware.Cqs.Decorators.UsageAware;
 using softaware.UsageAware;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+/// <summary>
+/// Provides extension methods to add usage aware decorators.
+/// </summary>
+public static class SoftawareCqsUsageAwareDecoratorBuilderExtensions
 {
     /// <summary>
-    /// Provides extension methods to add usage aware decorators.
+    /// Registers the usage aware request loggers and decorators.
     /// </summary>
-    public static class SoftawareCqsUsageAwareDecoratorBuilderExtensions
+    /// <remarks>
+    /// An instance of <see cref="IUsageAwareLogger"/> must be registered in the container.
+    /// </remarks>
+    /// <param name="decoratorBuilder">The CQS decorator builder.</param>
+    /// <returns>The CQS decorator builder.</returns>
+    public static SoftawareCqsDecoratorBuilder AddUsageAwareDecorators(this SoftawareCqsDecoratorBuilder decoratorBuilder)
     {
-        /// <summary>
-        /// Registers the usage aware command and query loggers and decorators.
-        /// </summary>
-        /// <remarks>
-        /// An instance of <see cref="IUsageAwareLogger"/> must be registered in the container.
-        /// </remarks>
-        /// <param name="decoratorBuilder">The CQS decorator builder.</param>
-        /// <returns>The CQS decorator builder.</returns>
-        public static SoftawareCqsDecoratorBuilder AddUsageAwareDecorators(this SoftawareCqsDecoratorBuilder decoratorBuilder)
-        {
-            decoratorBuilder.Services.AddTransient(typeof(UsageAwareCommandLogger<>));
-            decoratorBuilder.Services.AddTransient(typeof(UsageAwareQueryLogger<,>));
+        decoratorBuilder.Services.AddTransient(typeof(UsageAwareLogger<,>));
 
-            decoratorBuilder.Services.Decorate(typeof(ICommandHandler<>), typeof(UsageAwareCommandHandlerDecorator<>));
-            decoratorBuilder.Services.Decorate(typeof(IQueryHandler<,>), typeof(UsageAwareQueryHandlerDecorator<,>));
+        decoratorBuilder.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>));
 
-            return decoratorBuilder;
-        }
+        return decoratorBuilder;
     }
 }

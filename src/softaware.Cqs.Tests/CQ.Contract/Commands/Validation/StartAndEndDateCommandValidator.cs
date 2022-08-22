@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace softaware.Cqs.Tests.CQ.Contract.Commands.Validation
+namespace softaware.Cqs.Tests.CQ.Contract.Commands.Validation;
+
+public class StartAndEndDateCommandValidator : AbstractValidator<StartAndEndDateCommand>
 {
-    public class StartAndEndDateCommandValidator : AbstractValidator<StartAndEndDateCommand>
+    public StartAndEndDateCommandValidator()
     {
-        public StartAndEndDateCommandValidator()
-        {
-            this.RuleFor(c => c.End).GreaterThan(c => c.Start);
-        }
+        this.RuleFor(c => c.End).GreaterThan(c => c.Start);
     }
 }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace softaware.Cqs.Tests.CQ.Contract.Queries;
 
-namespace softaware.Cqs.Tests.CQ.Contract.Queries
+public class LongRunningQuery : IQuery<int>
 {
-    public class LongRunningQuery : IQuery<int>
-    {
-    }
 }

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 
-namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers
-{
-    internal class StartAndEndDateCommandHandler : ICommandHandler<StartAndEndDateCommand>
-    {
-        public Task HandleAsync(StartAndEndDateCommand command)
-        {
-            // Just for testing: Change the value and assert the change in test afterwards.
-            command.CommandExecuted = true;
+namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers;
 
-            return Task.CompletedTask;
-        }
+internal class StartAndEndDateCommandHandler : IRequestHandler<StartAndEndDateCommand, NoResult>
+{
+    public Task<NoResult> HandleAsync(StartAndEndDateCommand command, CancellationToken cancellationToken)
+    {
+        // Just for testing: Change the value and assert the change in test afterwards.
+        command.CommandExecuted = true;
+
+        return NoResult.CompletedTask;
     }
 }

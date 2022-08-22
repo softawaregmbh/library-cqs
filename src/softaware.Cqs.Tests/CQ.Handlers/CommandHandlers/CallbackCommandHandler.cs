@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using softaware.Cqs.Tests.CQ.Contract.Commands;
 
-namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers
+namespace softaware.Cqs.Tests.CQ.Handlers.CommandHandlers;
+
+internal class CallbackCommandHandler : IRequestHandler<CallbackCommand, NoResult>
 {
-    internal class CallbackCommandHandler : ICommandHandler<CallbackCommand>
+    public Task<NoResult> HandleAsync(CallbackCommand command, CancellationToken cancellationToken)
     {
-        public Task HandleAsync(CallbackCommand command)
+        command.Action();
+
+        if (command.ShouldThrow)
         {
-            command.Action();
-
-            if (command.ShouldThrow)
-            {
-                throw new Exception("We throw here for testing the rollback of transactions.");
-            }
-
-            return Task.CompletedTask;
+            throw new InvalidOperationException("We throw here for testing the rollback of transactions.");
         }
+
+        return NoResult.CompletedTask;
     }
 }

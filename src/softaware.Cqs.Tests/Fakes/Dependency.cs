@@ -1,10 +1,9 @@
-﻿namespace softaware.Cqs.Tests.Fakes
+﻿namespace softaware.Cqs.Tests.Fakes;
+
+public class Dependency : IDependency
 {
-    public class Dependency : IDependency
+    public void SomeMethod()
     {
-        public void SomeMethod()
-        {
-            // Nothing to do.
-        }
+        // Nothing to do.
     }
 }

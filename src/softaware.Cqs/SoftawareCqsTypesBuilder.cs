@@ -1,43 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace softaware.Cqs
+namespace softaware.Cqs;
+
+/// <summary>
+/// Provides a builder to configure registered assemblies.
+/// </summary>
+public class SoftawareCqsTypesBuilder
 {
+    private readonly HashSet<Assembly> registeredAssemblies = new();
+
     /// <summary>
-    /// Provides a builder to configure registered assemblies.
+    /// Gets the already registered assemblies.
     /// </summary>
-    public class SoftawareCqsTypesBuilder
+    public IReadOnlyCollection<Assembly> RegisteredAssemblies => this.registeredAssemblies;
+
+    /// <summary>
+    /// Registers the assemblies of the provided <paramref name="markerTypes"/>.
+    /// </summary>
+    public SoftawareCqsTypesBuilder IncludeTypesFrom(params Type[] markerTypes)
     {
-        private readonly HashSet<Assembly> _registeredAssemblies = new HashSet<Assembly>();
+        this.IncludeTypesFrom(markerTypes.Select(t => t.Assembly).ToArray());
+        return this;
+    }
 
-        /// <summary>
-        /// Gets the already registered assemblies.
-        /// </summary>
-        public IReadOnlyCollection<Assembly> RegisteredAssemblies => this._registeredAssemblies;
-
-
-        /// <summary>
-        /// Registers the assemblies of the provided <paramref name="markerTypes"/>.
-        /// </summary>
-        public SoftawareCqsTypesBuilder IncludeTypesFrom(params Type[] markerTypes)
+    /// <summary>
+    /// Registers the provided <paramref name="assemblies"/> for later CQS configuration.
+    /// </summary>
+    public SoftawareCqsTypesBuilder IncludeTypesFrom(params Assembly[] assemblies)
+    {
+        foreach (var assembly in assemblies)
         {
-            this.IncludeTypesFrom(markerTypes.Select(t => t.Assembly).ToArray());
-            return this;
+            this.registeredAssemblies.Add(assembly);
         }
 
-        /// <summary>
-        /// Registers the provided <paramref name="assemblies"/> for later CQS configuration.
-        /// </summary>
-        public SoftawareCqsTypesBuilder IncludeTypesFrom(params Assembly[] assemblies)
-        {
-            foreach (var assembly in assemblies)
-            {
-                this._registeredAssemblies.Add(assembly);
-            }
-
-            return this;
-        }
+        return this;
     }
 }
