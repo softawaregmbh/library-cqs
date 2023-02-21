@@ -82,7 +82,7 @@ var services = new ServiceCollection();
 services
     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly())) // this registers all request handlers
     .AddDecorators(b => b
-        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>); // this registers the CommandLoggingDecorator for all command types
+        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>)); // this registers the CommandLoggingDecorator for all command types
 ```
 
 The following NuGet packages provide extension methods for the builder to easily add some predefined decorators:
@@ -97,7 +97,7 @@ var services = new ServiceCollection();
 services
     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
     .AddDecorators(b => b
-        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>)
+        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>))
         .AddTransactionCommandHandlerDecorator()
         .AddUsageAwareDecorators()
         .AddDataAnnotationsValidationDecorators()
