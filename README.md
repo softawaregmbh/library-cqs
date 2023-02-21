@@ -18,11 +18,22 @@ public record SaveThing(Thing thing) : ICommand;
 When you have defined your queries and commands, the next step is to define the according handlers by implementing the `IRequestHandler<TRequest, TResult>` interface:
 
 ```csharp
+// Query Handler
 public class GetThingsHandler : IRequestHandler<GetThings, IReadOnlyCollection<Thing>>
 {
     public async Task<IReadOnlyCollection<Thing>> HandleAsync(GetThings query, CancellationToken cancellationToken)
     {
       // return things
+    }
+}
+
+// Command Handler
+public class SaveThingHandler : IRequestHandler<SaveThing, NoResult>
+{
+    public async Task<NoResult> HandleAsync(SaveThing command, CancellationToken cancellationToken)
+    {
+        // save thing
+        return NoResult.CompletedTask;
     }
 }
 ```
@@ -86,7 +97,7 @@ var services = new ServiceCollection();
 services
     .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
     .AddDecorators(b => b
-        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>);
+        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<>)
         .AddTransactionCommandHandlerDecorator()
         .AddUsageAwareDecorators()
         .AddDataAnnotationsValidationDecorators()
@@ -112,7 +123,8 @@ this.container
 ##### Validation Decorators
 
 To use validation decorators from (1) `softaware.CQS.Decorators.Validation` or (2) `softaware.CQS.Decorators.FluentValidation` with SimpleInjector configure it like following:
-``` csharp
+
+```csharp
 // (1) Register validator
 container.RegisterInstance<IValidator>(new DataAnnotationsValidator());
 
@@ -142,10 +154,10 @@ IRequestProcessor requestProcessor = serviceProvider.GetRequiredService<IRequest
 IRequestProcessor requestProcessor = this.container.GetInstance<IRequestProcessor>();
 
 // Execute a command without a return type.
-await requestProcessor.ExecuteAsync(new SaveThing(thing), cancellationToken);
+await requestProcessor.HandleAsync(new SaveThing(thing), cancellationToken);
 
 // Execute a query with a return type.
-var queryResult = await requestProcessor.ExecuteAsync(new GetThings(), cancellationToken);
+var queryResult = await requestProcessor.HandleAsync(new GetThings(), cancellationToken);
 ```
 
 ## Packages
