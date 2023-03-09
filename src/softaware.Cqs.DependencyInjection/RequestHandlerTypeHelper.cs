@@ -19,39 +19,49 @@ internal static class RequestHandlerTypeHelper
     /// </code>
     /// </summary>
     /// <param name="type">The type to search for the <see cref="IRequestHandler{TRequest, TResult}"/> interface.</param>
-    /// <returns>The implemented <see cref="IRequestHandler{TRequest, TResult}"/> interface type
-    /// with type arguments, or <c>null</c> if none is found.</returns>
-    public static Type? GetImplementedRequestHandlerInterfaceType(this Type type)
+    /// <returns>The implemented <see cref="IRequestHandler{TRequest, TResult}"/> interface types
+    /// with type arguments. Can be empty if none is found.</returns>
+    public static IEnumerable<Type> GetImplementedRequestHandlerInterfaceTypes(this Type type)
     {
-        var requestHandlerInterfaceType = type.GetInterfaces().SingleOrDefault(
-            type => type.IsGenericType && type.GetGenericTypeDefinition() == GenericRequestHandlerTypeDefinition);
+        var requestHandlerInterfaceTypes = type.GetInterfaces()
+            .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == GenericRequestHandlerTypeDefinition);
 
-        return requestHandlerInterfaceType;
+        return requestHandlerInterfaceTypes;
     }
 
     /// <summary>
     /// Checks if a type is a decorator. For our purpose, we define a decorator as a type implementing <see cref="IRequestHandler{TRequest, TResult}"/>
     /// that has a constructor parameter of the same interface type.
     /// </summary>
+    /// <remarks>
+    /// If the decorator implements multiple <see cref="IRequestHandler{TRequest, TResult}"/> interfaces,
+    /// it is still a decorator but we don't support this case and treat it as invalid decorator configuration.
+    /// This distinction is needed so that we don't register this invalid decorator configuration as regular <see cref="IRequestHandler{TRequest, TResult}"/> and therfore avoid registering handlers for the same <see cref="IRequest{TResult}"/> multiple times.
+    /// </remarks>
     /// <param name="type">The type to check.</param>
-    public static bool IsDecorator(this Type type)
+    public static (bool IsDecorator, bool IsValidDecoratorConfiguration) GetDecoratorInfo(this Type type)
     {
         if (type.IsInterface)
         {
-            return false;
+            return (IsDecorator: false, IsValidDecoratorConfiguration: false);
         }
 
-        var requestHandlerInterfaceType = GetImplementedRequestHandlerInterfaceType(type);
-        if (requestHandlerInterfaceType == null)
+        var requestHandlerInterfaceTypes = GetImplementedRequestHandlerInterfaceTypes(type);
+        if (!requestHandlerInterfaceTypes.Any())
         {
-            return false;
+            return (IsDecorator: false, IsValidDecoratorConfiguration: false);
         }
 
-        var hasConstructorParameterOfSameInterfaceType =
-            type.GetConstructors()
-                .SelectMany(c => c.GetParameters())
-                .Any(p => p.ParameterType == requestHandlerInterfaceType);
+        var isDecorator = requestHandlerInterfaceTypes.All(requestHandlerInterfaceType =>
+        {
+            var hasConstructorParameterOfSameInterfaceType =
+                type.GetConstructors()
+                    .SelectMany(c => c.GetParameters())
+                    .Any(p => p.ParameterType == requestHandlerInterfaceType);
 
-        return hasConstructorParameterOfSameInterfaceType;
+            return hasConstructorParameterOfSameInterfaceType;
+        });
+
+        return (isDecorator, IsValidDecoratorConfiguration: requestHandlerInterfaceTypes.Count() == 1);
     }
 }

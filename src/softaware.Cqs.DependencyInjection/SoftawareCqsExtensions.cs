@@ -25,7 +25,7 @@ public static class SoftawareCqsExtensions
             .Scan(scan => scan
                 .FromAssemblies(typesBuilder.RegisteredAssemblies)
                 .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>))
-                                              .Where(t => !t.IsDecorator()))
+                                              .Where(t => !t.GetDecoratorInfo().IsDecorator))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
 

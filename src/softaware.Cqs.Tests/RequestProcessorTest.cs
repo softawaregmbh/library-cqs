@@ -32,6 +32,19 @@ public abstract class RequestProcessorTest : TestBase
     }
 
     [Test]
+    public async Task ExecuteSimpleQueriesInSameHandler()
+    {
+        var query1 = new SimpleQuery1();
+        var query2 = new SimpleQuery2();
+
+        var result1 = await this.requestProcessor.HandleAsync(query1, default);
+        var result2 = await this.requestProcessor.HandleAsync(query2, default);
+
+        Assert.That(result1, Is.EqualTo("Simple Query 1 Result"));
+        Assert.That(result2, Is.EqualTo("Simple Query 2 Result"));
+    }
+
+    [Test]
     public abstract Task ExecuteCommandWithDependency();
 
     private abstract class SimpleInjectorTest
