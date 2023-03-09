@@ -124,6 +124,23 @@ public class GenericTypeArgumentDecoratorSimpleInjectorTests
 
         Assert.AreEqual(2, command.Value);
     }
+
+    [Test]
+    public void InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers_Throws()
+    {
+        var container = new Container();
+
+        container
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+            .AddDecorators(b => b
+                .AddRequestHandlerDecorator(typeof(InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers)));
+
+        container.Register<IDependency, Dependency>();
+
+        var exception = Assert.Throws<InvalidOperationException>(container.Verify);
+
+        Assert.AreEqual("The configuration is invalid. Creating the instance for type IRequestHandler<CommandWithResult, Guid> failed. The configuration is invalid. The type CommandWithResultHandler is directly or indirectly depending on itself. The cyclic graph contains the following types: InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers -> InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers -> CommandWithResultHandler.", exception!.Message);
+    }
 }
 
 [TestFixture]
@@ -256,5 +273,18 @@ Alternatively, you can use softaware.CQS.SimpleInjector instead of softaware.CQS
         await requestProcessor.HandleAsync(command, default);
 
         Assert.AreEqual(2, command.Value);
+    }
+
+    [Test]
+    public void InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers_Throws()
+    {
+        var services = new ServiceCollection();
+
+        var exception = Assert.Throws<ArgumentException>(() => services
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(Assembly.GetExecutingAssembly()))
+            .AddDecorators(b => b
+                .AddRequestHandlerDecorator(typeof(InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers))));
+
+        Assert.AreEqual("Type 'softaware.Cqs.Tests.Decorators.InvalidDecoratorWithoutGenericArgumentsMultipleRequestHandlers' cannot be used as decorator for ['softaware.Cqs.IRequestHandler`2[softaware.Cqs.Tests.CQ.Contract.Commands.SimpleCommand,softaware.Cqs.NoResult]', 'softaware.Cqs.IRequestHandler`2[softaware.Cqs.Tests.CQ.Contract.Commands.CommandWithResult,System.Guid]'] because it is not supported that decorators implement multiple IRequestHandler<TRequest, TResult> interfaces. (Parameter 'decoratorType')", exception!.Message);
     }
 }
