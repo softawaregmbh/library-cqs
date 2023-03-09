@@ -5,7 +5,7 @@ internal static class RequestHandlerTypeHelper
     public static readonly Type GenericRequestHandlerTypeDefinition = typeof(IRequestHandler<,>);
 
     /// <summary>
-    /// Tries to find the <see cref="IRequestHandler{TRequest, TResult}"/> interface with
+    /// Tries to find the <see cref="IRequestHandler{TRequest, TResult}"/> interfaces with
     /// type arguments the provided <paramref name="type"/> implements.
     /// The type arguments can either be concrete types, type arguments of the provided
     /// <paramref name="type"/>, or a combination - which is currently not supported):
@@ -18,7 +18,7 @@ internal static class RequestHandlerTypeHelper
     ///                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     /// </code>
     /// </summary>
-    /// <param name="type">The type to search for the <see cref="IRequestHandler{TRequest, TResult}"/> interface.</param>
+    /// <param name="type">The type to search for the <see cref="IRequestHandler{TRequest, TResult}"/> interfaces.</param>
     /// <returns>The implemented <see cref="IRequestHandler{TRequest, TResult}"/> interface types
     /// with type arguments. Can be empty if none is found.</returns>
     public static IEnumerable<Type> GetImplementedRequestHandlerInterfaceTypes(this Type type)
