@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>softaware gmbh</Authors>
+    <Company>softaware gmbh</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>A decorator for command-query architecture, which adds support for application insights.</Description>
+    <PackageProjectUrl>https://github.com/softawaregmbh/library-cqs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/softawaregmbh/library-cqs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>softaware, command-query-separation</PackageTags>
+    <PackageId>softaware.CQS.Decorators.ApplicationInsights</PackageId>
+    <Version>1.0.0</Version>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\softaware.Cqs\softaware.Cqs.csproj" />
+  </ItemGroup>
+
+</Project>
