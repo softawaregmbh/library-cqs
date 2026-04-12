@@ -1,5 +1,13 @@
 # Changelog
 
+## softaware.Cqs.DependencyInjection.SourceGenerated
+
+### 1.0.0
+
+A **compile-time** alternative to `softaware.Cqs.DependencyInjection` that uses a Roslyn source generator instead of Scrutor-based runtime reflection to register CQS handlers and decorators.
+
+See [the package-specific README](./src/softaware.Cqs.DependencyInjection.SourceGenerated/README.md) for details.
+
 ## All packages
 
 ### 4.0.0
