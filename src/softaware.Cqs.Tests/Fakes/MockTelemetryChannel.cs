@@ -2,9 +2,10 @@ using System.Collections.Concurrent;
 using Microsoft.ApplicationInsights.Channel;
 
 namespace softaware.Cqs.Tests.Fakes;
-public class MockTelemetryChannel : ITelemetryChannel
+
+public sealed class MockTelemetryChannel : ITelemetryChannel
 {
-    public ConcurrentBag<ITelemetry> SentTelemetries { get; } = new ConcurrentBag<ITelemetry>();
+    public ConcurrentBag<ITelemetry> SentTelemetries { get; } = [];
     public bool IsFlushed { get; private set; }
     public bool? DeveloperMode { get; set; }
     public string EndpointAddress { get; set; } = string.Empty;

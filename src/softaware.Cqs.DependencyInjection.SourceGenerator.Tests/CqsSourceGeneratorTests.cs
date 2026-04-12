@@ -742,5 +742,100 @@ public class Startup
 
         // Should register a default CqsDecoratorRegistry
         Assert.Contains("CqsDecoratorRegistry", registrationSource);
+
+        // CQ0010 info diagnostic should be reported for the conditional decorator
+        var conditionalDiagnostics = runResult.Results
+            .SelectMany(r => r.Diagnostics)
+            .Where(d => d.Id == "CQ0010")
+            .ToList();
+
+        Assert.Single(conditionalDiagnostics);
+        Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Info, conditionalDiagnostics[0].Severity);
+    }
+
+    [Fact]
+    public void IncludeTypesFrom_WithAssemblyAccess_GeneratesUnsupportedAssemblyOverloadError()
+    {
+        var source = @"
+using System;
+using System.Reflection;
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class MyQuery : IQuery<int> { }
+public class MyQueryHandler : IRequestHandler<MyQuery, int>
+{
+    public System.Threading.Tasks.Task<int> HandleAsync(MyQuery q, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult(42);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyQuery).Assembly));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var errors = runResult.Results
+            .SelectMany(r => r.Diagnostics)
+            .Where(d => d.Id == "CQ0003")
+            .ToList();
+
+        Assert.Single(errors);
+        Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Error, errors[0].Severity);
+        Assert.Contains("IncludeTypesFrom", errors[0].GetMessage(CultureInfo.InvariantCulture));
+
+        // Should NOT generate any source files when there are errors
+        Assert.Empty(runResult.Results.SelectMany(r => r.GeneratedSources));
+    }
+
+    [Fact]
+    public void RequestTypeWithoutHandler_GeneratesMissingHandlerError()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class HandledQuery : IQuery<int> { }
+public class HandledQueryHandler : IRequestHandler<HandledQuery, int>
+{
+    public System.Threading.Tasks.Task<int> HandleAsync(HandledQuery q, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult(42);
+}
+
+public class OrphanCommand : ICommand { }
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(HandledQuery)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var errors = runResult.Results
+            .SelectMany(r => r.Diagnostics)
+            .Where(d => d.Id == "CQ0002")
+            .ToList();
+
+        Assert.Single(errors);
+        Assert.Contains("OrphanCommand", errors[0].GetMessage(CultureInfo.InvariantCulture));
+        Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Error, errors[0].Severity);
+
+        // The handled query should still be generated
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        Assert.Contains("HandledQueryHandler", registrationSource);
+        Assert.DoesNotContain("OrphanCommand", registrationSource);
     }
 }

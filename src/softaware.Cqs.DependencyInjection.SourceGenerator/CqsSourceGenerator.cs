@@ -147,6 +147,17 @@ public class CqsSourceGenerator : IIncrementalGenerator
                             config.MarkerTypes.Add(namedType);
                         }
                     }
+                    else if (arg.Expression is MemberAccessExpressionSyntax memberAccess
+                        && memberAccess.Name.Identifier.Text == "Assembly"
+                        && memberAccess.Expression is TypeOfExpressionSyntax)
+                    {
+                        config.PendingDiagnostics.Add(new PendingDiagnostic
+                        {
+                            Descriptor = DiagnosticDescriptors.UnsupportedAssemblyOverload,
+                            Location = arg.GetLocation(),
+                            MessageArgs = []
+                        });
+                    }
                     else
                     {
                         config.PendingDiagnostics.Add(new PendingDiagnostic
@@ -217,6 +228,16 @@ public class CqsSourceGenerator : IIncrementalGenerator
         foreach (var invocation in invocations)
         {
             var isConditional = IsInsideConditional(invocation, lambdaExpression);
+
+            if (isConditional)
+            {
+                config.PendingDiagnostics.Add(new PendingDiagnostic
+                {
+                    Descriptor = DiagnosticDescriptors.ConditionalDecoratorRegistration,
+                    Location = invocation.GetLocation(),
+                    MessageArgs = []
+                });
+            }
 
             var arg = invocation.ArgumentList.Arguments[0].Expression;
             if (arg is TypeOfExpressionSyntax typeOfExpr)
@@ -329,6 +350,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         // Discover handlers in the assemblies of marker types
         var handlers = DiscoverHandlers(mergedConfig, requestHandlerType, context);
 
+        // Check for request types without handlers
+        ReportMissingHandlers(mergedConfig, handlers, requestType, context);
+
         // For each handler, determine which decorators apply
         foreach (var handler in handlers)
         {
@@ -426,6 +450,58 @@ public class CqsSourceGenerator : IIncrementalGenerator
         }
 
         return handlers;
+    }
+
+    private static void ReportMissingHandlers(
+        CqsConfiguration config,
+        List<HandlerInfo> handlers,
+        INamedTypeSymbol requestType,
+        SourceProductionContext context)
+    {
+        var handledRequestTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+        foreach (var handler in handlers)
+        {
+            handledRequestTypes.Add(handler.RequestType);
+        }
+
+        var processedAssemblies = new HashSet<string>();
+
+        foreach (var markerType in config.MarkerTypes)
+        {
+            var assembly = markerType.ContainingAssembly;
+            if (assembly == null || !processedAssemblies.Add(assembly.Name))
+            {
+                continue;
+            }
+
+            foreach (var type in GetAllTypes(assembly.GlobalNamespace))
+            {
+                if (type.IsAbstract || type.IsStatic || type.TypeKind != TypeKind.Class || type.TypeParameters.Length > 0)
+                {
+                    continue;
+                }
+
+                foreach (var iface in type.AllInterfaces)
+                {
+                    if (!SymbolEqualityComparer.Default.Equals(iface.OriginalDefinition, requestType))
+                    {
+                        continue;
+                    }
+
+                    if (!handledRequestTypes.Contains(type))
+                    {
+                        var resultArg = iface.TypeArguments[0];
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DiagnosticDescriptors.MissingHandler,
+                            Location.None,
+                            type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat),
+                            resultArg.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)));
+                    }
+
+                    break;
+                }
+            }
+        }
     }
 
     private static bool IsDecorator(INamedTypeSymbol type, INamedTypeSymbol requestHandlerType)
