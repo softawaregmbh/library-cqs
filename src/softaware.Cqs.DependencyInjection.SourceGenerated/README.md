@@ -15,6 +15,137 @@ services
 > **Important:** All arguments to `IncludeTypesFrom` and `AddRequestHandlerDecorator` **must** be `typeof()` expressions.  
 > Variables, method calls, or other expressions will produce a compile error (`SACQS007`).
 
+## Migration Guide: from `softaware.Cqs.DependencyInjection`
+
+### Step 1 — Replace the NuGet package
+
+```xml
+<!-- Remove -->
+<PackageReference Include="softaware.CQS.DependencyInjection" Version="..." />
+
+<!-- Add -->
+<PackageReference Include="softaware.CQS.DependencyInjection.SourceGenerated" Version="..." />
+```
+
+### Step 2 — Change `IncludeTypesFrom` to use `typeof()`
+
+The runtime package accepts an `Assembly` directly. The source generator can only work with `typeof()` expressions — a marker type from each assembly is enough.
+
+```csharp
+// Before
+services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyHandler).Assembly));
+
+// After
+services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyHandler)));
+```
+
+If you were passing multiple assemblies, pass a marker type from each:
+
+```csharp
+// Before
+services.AddSoftawareCqs(b => b
+    .IncludeTypesFrom(typeof(SomeHandler).Assembly)
+    .IncludeTypesFrom(typeof(OtherHandler).Assembly));
+
+// After
+services.AddSoftawareCqs(b => b
+    .IncludeTypesFrom(typeof(SomeHandler))
+    .IncludeTypesFrom(typeof(OtherHandler)));
+```
+
+### Step 3 — Replace convenience decorator methods
+
+The source generator cannot trace through extension methods. Replace all convenience methods with explicit `AddRequestHandlerDecorator(typeof(...))` calls:
+
+| Convenience method (remove) | Replace with |
+|---|---|
+| `.AddTransactionCommandHandlerDecorator()` | `.AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>))` |
+| `.AddTransactionQueryHandlerDecorator()` | `.AddRequestHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))` |
+| `.AddDataAnnotationsValidationDecorators()` | `.AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>))` |
+| `.AddFluentValidationDecorators()` | `.AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>))` |
+| `.AddUsageAwareDecorators()` | `.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))` |
+| `.AddApplicationInsightsDependencyTelemetryDecorator()` | `.AddRequestHandlerDecorator(typeof(DependencyTelemetryRequestHandlerDecorator<,>))` |
+
+A build warning (`SACQS003`) is emitted for every detected convenience method.
+
+```csharp
+// Before
+.AddDecorators(b => b
+    .AddTransactionCommandHandlerDecorator()
+    .AddUsageAwareDecorators());
+
+// After
+.AddDecorators(b => b
+    .AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>))
+    .AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>)));
+```
+
+### Step 4 — Rebuild
+
+Build the project. If the generator is working correctly you will see:
+
+```
+warning SACQS006: softaware.Cqs source generator: Registered 12 handler(s) with 5 decorator(s). IRequestProcessor → GeneratedRequestProcessor
+```
+
+---
+
+## What is NOT supported
+
+### Open generic request types
+
+Request types with type parameters cannot be registered by the source generator, because it generates one explicit registration per concrete request type.
+
+```csharp
+// ❌ NOT supported — causes SACQS008 (error)
+public class GetNextLogicalId<TEntity> : IQuery<int> { }
+public class GetNextLogicalIdHandler<TEntity> : IRequestHandler<GetNextLogicalId<TEntity>, int> { }
+```
+
+**Workaround:** Keep this handler registered via the runtime package, or refactor to a non-generic design (e.g. pass a `Type` parameter or use a separate handler per entity type).
+
+### Convenience decorator extension methods
+
+The generator cannot statically trace extension method calls.
+
+```csharp
+// ❌ NOT supported — causes SACQS003 (warning, handler skipped)
+.AddDecorators(b => b.AddTransactionCommandHandlerDecorator())
+```
+
+**Fix:** Use explicit `typeof()` calls as shown in Step 3 above.
+
+### `IncludeTypesFrom` with anything other than `typeof()`
+
+The generator reads types from the syntax tree — expressions that produce an `Assembly` or `Type` at runtime cannot be evaluated at compile time.
+
+```csharp
+// ❌ NOT supported — causes SACQS007 (error)
+var marker = typeof(MyHandler);
+services.AddSoftawareCqs(b => b.IncludeTypesFrom(marker));
+
+// ❌ NOT supported — causes SACQS007 (error)
+services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyHandler).Assembly));
+
+// ✅ OK
+services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyHandler)));
+```
+
+### Partially closed decorators
+
+Decorators with only one type parameter (partially closed generics) are not supported. The runtime Scrutor package throws a `NotSupportedException` for these too, and the same restriction applies here.
+
+```csharp
+// ❌ NOT supported by either package
+class Decorator<TResult> : IRequestHandler<SomeRequest, TResult> { }
+
+// ✅ Refactor to fully generic with type constraint
+class Decorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : SomeRequest { }
+```
+
+---
+
 ## What the Source Generator Does
 
 At compile time, the generator:
@@ -26,7 +157,7 @@ At compile time, the generator:
 5. Generates a `GeneratedRequestProcessor` for static dispatch (registered as `IRequestProcessor`)
 
 At runtime, the `AddSoftawareCqs()` call locates the generated `CqsServiceRegistration` class via reflection and invokes `RegisterAll(IServiceCollection)`.  
-The `AddDecorators()` call is a **no-op at runtime** — the generator already read it at compile time.
+The `AddDecorators()` lambda is **executed at runtime** to capture conditional registrations — see [Conditional Decorator Registration](#conditional-decorator-registration) below.
 
 ## Diagnostics
 
@@ -44,7 +175,7 @@ The `AddDecorators()` call is a **no-op at runtime** — the generator already r
 
 Unlike the runtime (Scrutor-based) package, the source generator reads **all** `AddRequestHandlerDecorator` calls from the syntax tree at compile time — including those inside `if`/`switch` blocks.
 
-To handle this correctly, when the generator detects a decorator inside a conditional block, it generates an `if (registry.IsEnabled(...))` guard in the factory lambda. At runtime, the `AddDecorators` lambda is **actually executed** (it's not a no-op), and the `SoftawareCqsDecoratorBuilder` records which decorators were called. This information is stored in a `CqsDecoratorRegistry` singleton.
+To handle this correctly, when the generator detects a decorator inside a conditional block, it generates an `if (registry.IsEnabled(...))` guard in the factory lambda. At runtime, the `AddDecorators` lambda is **actually executed**, and the `SoftawareCqsDecoratorBuilder` records which decorators were called. This information is stored in a `CqsDecoratorRegistry` singleton.
 
 ```csharp
 services
@@ -136,7 +267,7 @@ This triggers `Debugger.Launch()` and lets you step through the generator in Vis
 | No warnings, no generated files | Generator not running | Clear NuGet cache, rebuild |
 | `SACQS004` — "No AddSoftawareCqs call found" | Missing or incorrect `AddSoftawareCqs` call | Ensure you call `services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(...)))` |
 | `SACQS005` — "Core CQS types not resolved" | Missing `softaware.CQS` package reference | Add `<PackageReference Include="softaware.CQS" />` |
-| `SACQS007` — "must be a typeof() expression" | Using a variable instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
+| `SACQS007` — "must be a typeof() expression" | Using a variable or `.Assembly` instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
 | `InvalidOperationException` at runtime | Generated class not found | Ensure the NuGet package is installed and project was rebuilt |
 | `SACQS008` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
 
