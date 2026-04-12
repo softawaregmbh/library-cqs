@@ -11,13 +11,13 @@ internal sealed class CqsConfiguration
     /// <summary>
     /// Marker types from IncludeTypesFrom(typeof(...)). Used to identify assemblies containing handlers.
     /// </summary>
-    public List<INamedTypeSymbol> MarkerTypes { get; } = new();
+    public List<INamedTypeSymbol> MarkerTypes { get; } = [];
 
     /// <summary>
     /// Decorator registrations from AddRequestHandlerDecorator(typeof(...)), in registration order.
     /// First registered = closest to handler, last registered = outermost.
     /// </summary>
-    public List<DecoratorRegistration> DecoratorTypes { get; } = new();
+    public List<DecoratorRegistration> DecoratorTypes { get; } = [];
 
     /// <summary>
     /// Location of the AddSoftawareCqs invocation (for diagnostics).
@@ -27,7 +27,7 @@ internal sealed class CqsConfiguration
     /// <summary>
     /// Diagnostics collected during syntax extraction that must be reported in the source output phase.
     /// </summary>
-    public List<PendingDiagnostic> PendingDiagnostics { get; } = new();
+    public List<PendingDiagnostic> PendingDiagnostics { get; } = [];
 }
 
 /// <summary>
@@ -52,7 +52,7 @@ internal sealed class PendingDiagnostic
 {
     public DiagnosticDescriptor Descriptor { get; set; } = null!;
     public Location Location { get; set; } = Location.None;
-    public object[] MessageArgs { get; set; } = new object[0];
+    public object[] MessageArgs { get; set; } = [];
 }
 
 /// <summary>
@@ -67,5 +67,5 @@ internal sealed class HandlerInfo
     /// <summary>
     /// Decorators applicable to this handler, in registration order (first = closest to handler).
     /// </summary>
-    public List<DecoratorRegistration> ApplicableDecorators { get; } = new();
+    public List<DecoratorRegistration> ApplicableDecorators { get; } = [];
 }

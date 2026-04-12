@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -22,9 +22,7 @@
     <ProjectReference Include="..\softaware.Cqs.DependencyInjection.SourceGenerated\softaware.Cqs.DependencyInjection.SourceGenerated.csproj">
       <Aliases>GeneratedDI</Aliases>
     </ProjectReference>
-    <ProjectReference Include="..\softaware.Cqs.DependencyInjection.SourceGenerator\softaware.Cqs.DependencyInjection.SourceGenerator.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\softaware.Cqs.DependencyInjection.SourceGenerator\softaware.Cqs.DependencyInjection.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

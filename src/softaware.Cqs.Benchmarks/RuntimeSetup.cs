@@ -11,7 +11,7 @@ internal static class RuntimeSetup
 {
     public static IServiceProvider CreateServiceProvider()
     {
-        var services = new global::Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
 #pragma warning disable SACQS007 // This file uses the runtime (Scrutor-based) DI package, not the source generator
         services

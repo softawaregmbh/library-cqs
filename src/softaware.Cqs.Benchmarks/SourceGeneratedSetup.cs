@@ -1,8 +1,6 @@
 extern alias GeneratedDI;
-
-using softaware.Cqs;
-using softaware.Cqs.Benchmarks.Decorators;
 using GeneratedDI::Microsoft.Extensions.DependencyInjection;
+using softaware.Cqs.Benchmarks.Decorators;
 
 namespace softaware.Cqs.Benchmarks;
 
@@ -13,7 +11,7 @@ internal static class SourceGeneratedSetup
 {
     public static IServiceProvider CreateServiceProvider()
     {
-        var services = new global::Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        var services = new ServiceCollection();
 
         services
             .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(SourceGeneratedSetup)))

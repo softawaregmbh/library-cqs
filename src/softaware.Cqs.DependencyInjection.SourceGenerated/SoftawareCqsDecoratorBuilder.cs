@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -8,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public class SoftawareCqsDecoratorBuilder
 {
-    internal HashSet<Type> EnabledDecorators { get; } = new();
+    internal HashSet<Type> EnabledDecorators { get; } = [];
 
     /// <summary>
     /// Adds a request handler decorator.

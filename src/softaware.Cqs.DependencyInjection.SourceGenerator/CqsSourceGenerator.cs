@@ -31,7 +31,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         // Find convenience method calls (for warning diagnostic)
         var convenienceMethodCalls = context.SyntaxProvider.CreateSyntaxProvider(
             predicate: static (node, _) => IsConvenienceMethodCandidate(node),
-            transform: static (ctx, ct) => ExtractConvenienceMethodInfo(ctx, ct))
+            transform: static (ctx, ct) => ExtractConvenienceMethodInfo(ctx))
             .Where(static info => info is not null);
 
         // Combine configurations with compilation
@@ -42,14 +42,16 @@ public class CqsSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(compilationAndConfigs, static (spc, source) =>
         {
             var ((compilation, configurations), convenienceMethods) = source;
-            Execute(compilation, configurations!, convenienceMethods!, spc);
+            Execute(compilation, configurations, convenienceMethods, spc);
         });
     }
 
     private static bool IsAddSoftawareCqsCandidate(SyntaxNode node)
     {
         if (node is not InvocationExpressionSyntax invocation)
+        {
             return false;
+        }
 
         var name = GetMethodName(invocation);
         return name == "AddSoftawareCqs";
@@ -58,7 +60,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
     private static bool IsConvenienceMethodCandidate(SyntaxNode node)
     {
         if (node is not InvocationExpressionSyntax invocation)
+        {
             return false;
+        }
 
         var name = GetMethodName(invocation);
         return name is "AddTransactionCommandHandlerDecorator"
@@ -85,7 +89,10 @@ public class CqsSourceGenerator : IIncrementalGenerator
         while (current != null && current != boundary)
         {
             if (current is IfStatementSyntax or SwitchStatementSyntax or SwitchExpressionSyntax or ConditionalExpressionSyntax)
+            {
                 return true;
+            }
+
             current = current.Parent;
         }
         return false;
@@ -110,7 +117,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         ExtractDecoratorTypes(invocation, context.SemanticModel, config, ct);
 
         if (config.MarkerTypes.Count == 0 && config.PendingDiagnostics.Count == 0)
+        {
             return null;
+        }
 
         return config;
     }
@@ -144,7 +153,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
                         {
                             Descriptor = DiagnosticDescriptors.TypeofExpressionRequired,
                             Location = arg.GetLocation(),
-                            MessageArgs = new object[] { "IncludeTypesFrom" }
+                            MessageArgs = ["IncludeTypesFrom"]
                         });
                     }
                 }
@@ -184,7 +193,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
 
             // Stop at statement level
             if (current is StatementSyntax or MemberDeclarationSyntax)
+            {
                 break;
+            }
         }
     }
 
@@ -226,19 +237,22 @@ public class CqsSourceGenerator : IIncrementalGenerator
                 {
                     Descriptor = DiagnosticDescriptors.TypeofExpressionRequired,
                     Location = arg.GetLocation(),
-                    MessageArgs = new object[] { "AddRequestHandlerDecorator" }
+                    MessageArgs = ["AddRequestHandlerDecorator"]
                 });
             }
         }
     }
 
     private static (string Name, Location Location)? ExtractConvenienceMethodInfo(
-        GeneratorSyntaxContext context,
-        CancellationToken ct)
+        GeneratorSyntaxContext context)
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
         var name = GetMethodName(invocation);
-        if (name == null) return null;
+        if (name == null)
+        {
+            return null;
+        }
+
         return (name, invocation.GetLocation());
     }
 
@@ -313,7 +327,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         }
 
         // Discover handlers in the assemblies of marker types
-        var handlers = DiscoverHandlers(compilation, mergedConfig, requestHandlerType, context);
+        var handlers = DiscoverHandlers(mergedConfig, requestHandlerType, context);
 
         // For each handler, determine which decorators apply
         foreach (var handler in handlers)
@@ -328,11 +342,11 @@ public class CqsSourceGenerator : IIncrementalGenerator
         }
 
         // Generate registration code
-        var registrationSource = GenerateRegistrationCode(handlers, compilation);
+        var registrationSource = GenerateRegistrationCode(handlers);
         context.AddSource("CqsServiceRegistration.g.cs", registrationSource);
 
         // Generate static request processor
-        var processorSource = GenerateRequestProcessorCode(handlers, compilation);
+        var processorSource = GenerateRequestProcessorCode(handlers);
         context.AddSource("GeneratedRequestProcessor.g.cs", processorSource);
 
         // Report success diagnostic so users know the generator ran
@@ -345,7 +359,6 @@ public class CqsSourceGenerator : IIncrementalGenerator
     }
 
     private static List<HandlerInfo> DiscoverHandlers(
-        Compilation compilation,
         CqsConfiguration config,
         INamedTypeSymbol requestHandlerType,
         SourceProductionContext context)
@@ -357,7 +370,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         {
             var assembly = markerType.ContainingAssembly;
             if (assembly == null || !processedAssemblies.Add(assembly.Name))
+            {
                 continue;
+            }
 
             // Walk all types in this assembly
             var allTypes = GetAllTypes(assembly.GlobalNamespace);
@@ -365,23 +380,28 @@ public class CqsSourceGenerator : IIncrementalGenerator
             foreach (var type in allTypes)
             {
                 if (type.IsAbstract || type.IsStatic || type.TypeKind != TypeKind.Class)
+                {
                     continue;
+                }
 
                 // Find IRequestHandler<TRequest, TResult> implementations
                 foreach (var iface in type.AllInterfaces)
                 {
                     if (!SymbolEqualityComparer.Default.Equals(iface.OriginalDefinition, requestHandlerType))
+                    {
                         continue;
+                    }
 
-                    var requestArg = iface.TypeArguments[0] as INamedTypeSymbol;
-                    var resultArg = iface.TypeArguments[1] as INamedTypeSymbol;
-
-                    if (requestArg == null || resultArg == null)
+                    if (iface.TypeArguments[0] is not INamedTypeSymbol requestArg || iface.TypeArguments[1] is not INamedTypeSymbol resultArg)
+                    {
                         continue;
+                    }
 
                     // Skip decorators (types that have a constructor parameter of IRequestHandler<,>)
                     if (IsDecorator(type, requestHandlerType))
+                    {
                         continue;
+                    }
 
                     // Open generic handlers (e.g. MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>)
                     // cannot be registered because the generator produces explicit closed-type registrations.
@@ -478,40 +498,60 @@ public class CqsSourceGenerator : IIncrementalGenerator
         }
 
         if (requestTypeParam == null || resultTypeParam == null)
+        {
             return false;
+        }
 
         // Build a mapping from type parameters to concrete types
         var typeParamMap = new Dictionary<ITypeParameterSymbol, ITypeSymbol>(SymbolEqualityComparer.Default);
 
         if (requestTypeParam is ITypeParameterSymbol requestTp)
+        {
             typeParamMap[requestTp] = requestType;
+        }
         else if (!SymbolEqualityComparer.Default.Equals(requestTypeParam, requestType))
+        {
             return false;
+        }
 
         if (resultTypeParam is ITypeParameterSymbol resultTp)
+        {
             typeParamMap[resultTp] = resultType;
+        }
         else if (!SymbolEqualityComparer.Default.Equals(resultTypeParam, resultType))
+        {
             return false;
+        }
 
         // Check all constraints on all type parameters
         foreach (var tp in typeParams)
         {
             if (!typeParamMap.TryGetValue(tp, out var concreteType))
+            {
                 continue;
+            }
 
             // Check each constraint
             foreach (var constraintType in tp.ConstraintTypes)
             {
                 var substituted = SubstituteTypeParameters(constraintType, typeParamMap);
                 if (!IsAssignableTo(compilation, concreteType, substituted))
+                {
                     return false;
+                }
             }
 
             // Check special constraints
             if (tp.HasReferenceTypeConstraint && !concreteType.IsReferenceType)
+            {
                 return false;
+            }
+
             if (tp.HasValueTypeConstraint && !concreteType.IsValueType)
+            {
                 return false;
+            }
+
             if (tp.HasConstructorConstraint)
             {
                 if (concreteType is INamedTypeSymbol namedConcrete)
@@ -519,7 +559,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
                     var hasParameterlessCtor = namedConcrete.Constructors
                         .Any(c => c.Parameters.Length == 0 && c.DeclaredAccessibility == Accessibility.Public);
                     if (!hasParameterlessCtor)
+                    {
                         return false;
+                    }
                 }
             }
         }
@@ -532,7 +574,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         Dictionary<ITypeParameterSymbol, ITypeSymbol> map)
     {
         if (type is ITypeParameterSymbol tp && map.TryGetValue(tp, out var substituted))
+        {
             return substituted;
+        }
 
         if (type is INamedTypeSymbol named && named.IsGenericType)
         {
@@ -544,7 +588,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
             {
                 newArgs[i] = SubstituteTypeParameters(args[i], map);
                 if (!SymbolEqualityComparer.Default.Equals(newArgs[i], args[i]))
+                {
                     changed = true;
+                }
             }
 
             if (changed)
@@ -559,7 +605,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
     private static bool IsAssignableTo(Compilation compilation, ITypeSymbol source, ITypeSymbol target)
     {
         if (SymbolEqualityComparer.Default.Equals(source, target))
+        {
             return true;
+        }
 
         // Check if source implements/extends target
         if (target is INamedTypeSymbol namedTarget)
@@ -575,7 +623,10 @@ public class CqsSourceGenerator : IIncrementalGenerator
             while (current != null)
             {
                 if (SymbolEqualityComparer.Default.Equals(current, namedTarget))
+                {
                     return true;
+                }
+
                 current = current.BaseType;
             }
         }
@@ -591,13 +642,17 @@ public class CqsSourceGenerator : IIncrementalGenerator
         {
             yield return type;
             foreach (var nested in GetNestedTypes(type))
+            {
                 yield return nested;
+            }
         }
 
         foreach (var childNs in ns.GetNamespaceMembers())
         {
             foreach (var type in GetAllTypes(childNs))
+            {
                 yield return type;
+            }
         }
     }
 
@@ -607,7 +662,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         {
             yield return nested;
             foreach (var deepNested in GetNestedTypes(nested))
+            {
                 yield return deepNested;
+            }
         }
     }
 
@@ -616,7 +673,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     }
 
-    private static string GenerateRegistrationCode(List<HandlerInfo> handlers, Compilation compilation)
+    private static string GenerateRegistrationCode(List<HandlerInfo> handlers)
     {
         var hasAnyConditionalDecorator = handlers.Any(h => h.ApplicableDecorators.Any(d => d.IsConditional));
 
@@ -717,7 +774,9 @@ public class CqsSourceGenerator : IIncrementalGenerator
         INamedTypeSymbol resultType)
     {
         if (!openDecoratorType.IsGenericType)
+        {
             return GetFullyQualifiedName(openDecoratorType);
+        }
 
         // Build the mapping from the decorator's IRequestHandler<TRequest, TResult> interface implementation
         var requestHandlerDef = openDecoratorType.AllInterfaces
@@ -737,9 +796,13 @@ public class CqsSourceGenerator : IIncrementalGenerator
                 for (int i = 0; i < typeParams.Length; i++)
                 {
                     if (SymbolEqualityComparer.Default.Equals(iface.TypeArguments[0], typeParams[i]))
+                    {
                         args[i] = requestType;
+                    }
                     else if (SymbolEqualityComparer.Default.Equals(iface.TypeArguments[1], typeParams[i]))
+                    {
                         args[i] = resultType;
+                    }
                 }
                 break;
             }
@@ -755,7 +818,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         return GetFullyQualifiedName(closedType);
     }
 
-    private static string GenerateRequestProcessorCode(List<HandlerInfo> handlers, Compilation compilation)
+    private static string GenerateRequestProcessorCode(List<HandlerInfo> handlers)
     {
         var sb = new StringBuilder();
         sb.AppendLine("// <auto-generated />");

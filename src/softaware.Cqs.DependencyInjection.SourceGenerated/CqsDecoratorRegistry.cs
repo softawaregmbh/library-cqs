@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace softaware.Cqs.DependencyInjection;
 
 /// <summary>
@@ -15,19 +12,13 @@ public sealed class CqsDecoratorRegistry
     /// <summary>
     /// Creates an empty registry (no decorators enabled).
     /// </summary>
-    public CqsDecoratorRegistry()
-    {
-        this.enabledDecorators = new HashSet<Type>();
-    }
+    public CqsDecoratorRegistry() => this.enabledDecorators = [];
 
     /// <summary>
     /// Creates a registry with the specified decorator types enabled.
     /// </summary>
     /// <param name="enabledDecorators">The set of open generic decorator types that were registered at runtime.</param>
-    public CqsDecoratorRegistry(HashSet<Type> enabledDecorators)
-    {
-        this.enabledDecorators = enabledDecorators ?? throw new ArgumentNullException(nameof(enabledDecorators));
-    }
+    public CqsDecoratorRegistry(HashSet<Type> enabledDecorators) => this.enabledDecorators = enabledDecorators ?? throw new ArgumentNullException(nameof(enabledDecorators));
 
     /// <summary>
     /// Returns <c>true</c> if the given open generic decorator type was registered at runtime.

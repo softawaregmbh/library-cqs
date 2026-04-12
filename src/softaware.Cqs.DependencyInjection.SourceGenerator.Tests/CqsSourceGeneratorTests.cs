@@ -1,3 +1,4 @@
+using System.Globalization;
 using Xunit;
 
 namespace softaware.Cqs.DependencyInjection.SourceGenerator.Tests;
@@ -127,7 +128,7 @@ public class Startup
 
         var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
 
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
         Assert.NotNull(registrationSource);
 
         // CommandOnlyDecorator should appear in MyCommand registration
@@ -144,18 +145,29 @@ public class Startup
         foreach (var line in lines)
         {
             if (line.Contains("MyQueryHandler"))
+            {
                 querySection = true;
+            }
+
             if (line.Contains("MyCommandHandler"))
+            {
                 commandSection = true;
+            }
+
             if (line.Contains("return current;") || (line.Contains("AddTransient") && !line.Contains("IRequestProcessor")))
             {
                 querySection = false;
                 commandSection = false;
             }
             if (querySection && line.Contains("CommandOnlyDecorator"))
+            {
                 decoratorInQuery = true;
+            }
+
             if (commandSection && line.Contains("CommandOnlyDecorator"))
+            {
                 decoratorInCommand = true;
+            }
         }
 
         Assert.True(decoratorInCommand, "CommandOnlyDecorator should be applied to command handler");
@@ -212,12 +224,12 @@ public class Startup
 
         var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
 
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
         Assert.NotNull(registrationSource);
 
         // DecoratorA should appear BEFORE DecoratorB (A is closer to handler, B wraps A)
-        var indexA = registrationSource.IndexOf("DecoratorA");
-        var indexB = registrationSource.IndexOf("DecoratorB");
+        var indexA = registrationSource.IndexOf("DecoratorA", StringComparison.Ordinal);
+        var indexB = registrationSource.IndexOf("DecoratorB", StringComparison.Ordinal);
         Assert.True(indexA > 0, "DecoratorA should be in the generated code");
         Assert.True(indexB > 0, "DecoratorB should be in the generated code");
         Assert.True(indexA < indexB, "DecoratorA (closest to handler) should appear before DecoratorB (outermost)");
@@ -278,7 +290,7 @@ public class Startup
 
         var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
 
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
         Assert.NotNull(registrationSource);
 
         // AccessCheckDecorator should apply to CheckedCommand but not UncheckedCommand
@@ -328,7 +340,7 @@ public class Startup
 
         var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
 
-        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs")!;
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
         Assert.NotNull(processorSource);
         Assert.Contains("Cmd1", processorSource);
         Assert.Contains("Cmd2", processorSource);
@@ -384,7 +396,7 @@ public static class FakeExtensions
             .ToList();
 
         Assert.Single(generatorDiagnostics);
-        Assert.Contains("AddTransactionCommandHandlerDecorator", generatorDiagnostics[0].GetMessage());
+        Assert.Contains("AddTransactionCommandHandlerDecorator", generatorDiagnostics[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -414,8 +426,8 @@ public class Startup
 ";
 
         var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
-        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
 
         // Snapshot assertions: verify exact structure
         Assert.Contains("namespace softaware.Cqs.Generated;", registrationSource);
@@ -484,8 +496,8 @@ public class Startup
         Assert.Contains("CommandDecorator<global::TestApp.DoWork", registrationSource);
 
         // AllRequestDecorator registered first (closer to handler), CommandDecorator second (outermost)
-        var indexAll = registrationSource.IndexOf("AllRequestDecorator");
-        var indexCmd = registrationSource.IndexOf("CommandDecorator");
+        var indexAll = registrationSource.IndexOf("AllRequestDecorator", StringComparison.Ordinal);
+        var indexCmd = registrationSource.IndexOf("CommandDecorator", StringComparison.Ordinal);
         Assert.True(indexAll < indexCmd);
     }
 
@@ -515,7 +527,7 @@ public class Startup
 ";
 
         var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
 
         // The generated RegisterAll method must register IRequestProcessor → GeneratedRequestProcessor
         Assert.Contains("IRequestProcessor", registrationSource);
@@ -558,7 +570,7 @@ public class Startup
             .ToList();
 
         Assert.Single(errors);
-        Assert.Contains("IncludeTypesFrom", errors[0].GetMessage());
+        Assert.Contains("IncludeTypesFrom", errors[0].GetMessage(CultureInfo.InvariantCulture));
         Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Error, errors[0].Severity);
 
         // Should NOT generate any source files when there are errors
@@ -610,7 +622,7 @@ public class Startup
             .ToList();
 
         Assert.Single(errors);
-        Assert.Contains("AddRequestHandlerDecorator", errors[0].GetMessage());
+        Assert.Contains("AddRequestHandlerDecorator", errors[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
     [Fact]
@@ -654,11 +666,11 @@ public class Startup
             .ToList();
 
         Assert.Single(errors);
-        Assert.Contains("GetNextLogicalIdHandler", errors[0].GetMessage());
-        Assert.Contains("GetNextLogicalId", errors[0].GetMessage());
+        Assert.Contains("GetNextLogicalIdHandler", errors[0].GetMessage(CultureInfo.InvariantCulture));
+        Assert.Contains("GetNextLogicalId", errors[0].GetMessage(CultureInfo.InvariantCulture));
 
         // The non-generic handler should still be generated
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
         Assert.Contains("SimpleQueryHandler", registrationSource);
         Assert.DoesNotContain("GetNextLogicalIdHandler", registrationSource);
     }
@@ -716,7 +728,7 @@ public class Startup
 
         var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
 
-        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
         Assert.NotNull(registrationSource);
 
         // DecoratorA (conditional) should be wrapped in a registry check
@@ -725,7 +737,7 @@ public class Startup
         // DecoratorB (unconditional) should be applied directly without a registry check
         Assert.Contains("DecoratorB", registrationSource);
         // Count occurrences of IsEnabled — should only appear once (for DecoratorA)
-        var isEnabledCount = registrationSource.Split(new[] { "IsEnabled" }, StringSplitOptions.None).Length - 1;
+        var isEnabledCount = registrationSource.Split(["IsEnabled"], StringSplitOptions.None).Length - 1;
         Assert.Equal(1, isEnabledCount);
 
         // Should register a default CqsDecoratorRegistry

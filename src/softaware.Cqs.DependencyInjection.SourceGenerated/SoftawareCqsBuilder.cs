@@ -1,4 +1,3 @@
-using System;
 using softaware.Cqs.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -6,19 +5,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// <summary>
 /// Provides methods for configuring the softaware CQS infrastructure with source-generated registrations.
 /// </summary>
-public class SoftawareCqsBuilder
+/// <remarks>
+/// Initializes a new instance of the <see cref="SoftawareCqsBuilder"/> class.
+/// </remarks>
+/// <param name="services">The service collection.</param>
+public class SoftawareCqsBuilder(IServiceCollection services)
 {
     /// <summary>
     /// The service collection.
     /// </summary>
-    public IServiceCollection Services { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SoftawareCqsBuilder"/> class.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    public SoftawareCqsBuilder(IServiceCollection services) =>
-        this.Services = services ?? throw new ArgumentNullException(nameof(services));
+    public IServiceCollection Services { get; } = services ?? throw new ArgumentNullException(nameof(services));
 
     /// <summary>
     /// Configures decorators for the softaware CQS infrastructure.

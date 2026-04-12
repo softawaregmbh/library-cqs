@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -82,28 +81,36 @@ internal static class TestHelper
         var collectionsAssembly = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(a => a.GetName().Name == "System.Collections");
         if (collectionsAssembly != null)
+        {
             references.Add(MetadataReference.CreateFromFile(collectionsAssembly.Location));
+        }
 
         // Add softaware.Cqs core (IRequest, ICommand, IQuery, IRequestHandler, IRequestProcessor, NoResult)
-        references.Add(MetadataReference.CreateFromFile(typeof(softaware.Cqs.IRequestProcessor).Assembly.Location));
+        references.Add(MetadataReference.CreateFromFile(typeof(IRequestProcessor).Assembly.Location));
 
         // Add Microsoft.Extensions.DependencyInjection.Abstractions
         var diAbstractionsAssembly = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(a => a.GetName().Name == "Microsoft.Extensions.DependencyInjection.Abstractions");
         if (diAbstractionsAssembly != null)
+        {
             references.Add(MetadataReference.CreateFromFile(diAbstractionsAssembly.Location));
+        }
 
         // Add system threading
         var threadingAssembly = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(a => a.GetName().Name == "System.Threading");
         if (threadingAssembly != null)
+        {
             references.Add(MetadataReference.CreateFromFile(threadingAssembly.Location));
+        }
 
         // Add netstandard
         var netstandardAssembly = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(a => a.GetName().Name == "netstandard");
         if (netstandardAssembly != null)
+        {
             references.Add(MetadataReference.CreateFromFile(netstandardAssembly.Location));
+        }
 
         return references;
     }
