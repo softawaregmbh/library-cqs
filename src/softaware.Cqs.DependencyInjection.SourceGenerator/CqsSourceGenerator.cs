@@ -753,6 +753,24 @@ public class CqsSourceGenerator : IIncrementalGenerator
         return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     }
 
+    private static string GetOpenGenericTypeName(INamedTypeSymbol openGenericType)
+    {
+        // For typeof() expressions of open generic types, we need syntax like:
+        // typeof(global::TestApp.DecoratorA<,>) for a type with 2 type parameters.
+        // FullyQualifiedFormat produces e.g. "global::TestApp.DecoratorA<TRequest, TResult>"
+        // which is not valid in a typeof() context.
+        var fqn = GetFullyQualifiedName(openGenericType);
+        var angleBracketIndex = fqn.IndexOf('<');
+        if (angleBracketIndex < 0)
+        {
+            return fqn;
+        }
+
+        var baseName = fqn.Substring(0, angleBracketIndex);
+        var commas = new string(',', openGenericType.TypeParameters.Length - 1);
+        return $"{baseName}<{commas}>";
+    }
+
     private static string GenerateRegistrationCode(List<HandlerInfo> handlers)
     {
         var hasAnyConditionalDecorator = handlers.Any(h => h.ApplicableDecorators.Any(d => d.IsConditional));
@@ -821,7 +839,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
 
                     if (decoratorReg.IsConditional)
                     {
-                        var openDecoratorFqn = GetFullyQualifiedName(decoratorReg.Type);
+                        var openDecoratorFqn = GetOpenGenericTypeName(decoratorReg.Type);
                         sb.AppendLine($"                if (__decoratorRegistry.IsEnabled(typeof({openDecoratorFqn})))");
                         sb.AppendLine($"                {{");
                         sb.AppendLine($"                    current = global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance<{closedDecoratorFqn}>(sp, current);");

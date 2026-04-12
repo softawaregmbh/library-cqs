@@ -732,7 +732,7 @@ public class Startup
         Assert.NotNull(registrationSource);
 
         // DecoratorA (conditional) should be wrapped in a registry check
-        Assert.Contains("__decoratorRegistry.IsEnabled(typeof(global::TestApp.DecoratorA<", registrationSource);
+        Assert.Contains("__decoratorRegistry.IsEnabled(typeof(global::TestApp.DecoratorA<,>))", registrationSource);
 
         // DecoratorB (unconditional) should be applied directly without a registry check
         Assert.Contains("DecoratorB", registrationSource);
