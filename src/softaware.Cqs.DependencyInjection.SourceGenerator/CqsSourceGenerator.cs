@@ -16,11 +16,10 @@ public class CqsSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Allow attaching a debugger by setting CQ_DEBUG_GENERATOR=1
-        if (Environment.GetEnvironmentVariable("CQ_DEBUG_GENERATOR") == "1" && !Debugger.IsAttached)
-        {
-            Debugger.Launch();
-        }
+        var debugEnabled = context.AnalyzerConfigOptionsProvider
+            .Select(static (options, _) =>
+                options.GlobalOptions.TryGetValue("build_property.CqsDebugSourceGenerator", out var value)
+                && string.Equals(value, "true", StringComparison.OrdinalIgnoreCase));
 
         // Find all InvocationExpression nodes that could be AddSoftawareCqs calls
         var cqsInvocations = context.SyntaxProvider.CreateSyntaxProvider(
@@ -39,9 +38,14 @@ public class CqsSourceGenerator : IIncrementalGenerator
             .Combine(cqsInvocations.Collect())
             .Combine(convenienceMethodCalls.Collect());
 
-        context.RegisterSourceOutput(compilationAndConfigs, static (spc, source) =>
+        context.RegisterSourceOutput(compilationAndConfigs.Combine(debugEnabled), static (spc, source) =>
         {
-            var ((compilation, configurations), convenienceMethods) = source;
+            var (data, shouldDebug) = source;
+            if (shouldDebug && !Debugger.IsAttached)
+            {
+                Debugger.Launch();
+            }
+            var ((compilation, configurations), convenienceMethods) = data;
             Execute(compilation, configurations, convenienceMethods, spc);
         });
     }

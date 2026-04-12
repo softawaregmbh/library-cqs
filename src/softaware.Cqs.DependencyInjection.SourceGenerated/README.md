@@ -251,14 +251,17 @@ You should see:
 
 ### Attach a debugger
 
-Set the environment variable `CQ_DEBUG_GENERATOR=1` before building:
+Add the MSBuild property `CqsDebugSourceGenerator` to your project for the duration of the debugging session:
 
-```powershell
-$env:CQ_DEBUG_GENERATOR = "1"
-dotnet build
+```xml
+<PropertyGroup>
+    <CqsDebugSourceGenerator>true</CqsDebugSourceGenerator>
+</PropertyGroup>
 ```
 
-This triggers `Debugger.Launch()` and lets you step through the generator in Visual Studio.
+Then build the project. This triggers `Debugger.Launch()` and lets you step through the generator in Visual Studio.
+
+> **Note:** Remove this property once you are done debugging — it causes a debugger prompt on every build.
 
 ### Common pitfalls
 

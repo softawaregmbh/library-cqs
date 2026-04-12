@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Content Include="..\Assets\package-icon.png" Link="package-icon.png" Pack="true" PackagePath="/" />
+    <None Include="build\softaware.CQS.DependencyInjection.SourceGenerated.targets" Pack="true" PackagePath="build" />
   </ItemGroup>
 
   <ItemGroup>
