@@ -16,8 +16,8 @@ public class CqsSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Allow attaching a debugger by setting SACQS_DEBUG_GENERATOR=1
-        if (Environment.GetEnvironmentVariable("SACQS_DEBUG_GENERATOR") == "1" && !Debugger.IsAttached)
+        // Allow attaching a debugger by setting CQ_DEBUG_GENERATOR=1
+        if (Environment.GetEnvironmentVariable("CQ_DEBUG_GENERATOR") == "1" && !Debugger.IsAttached)
         {
             Debugger.Launch();
         }

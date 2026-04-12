@@ -251,10 +251,10 @@ You should see:
 
 ### Attach a debugger
 
-Set the environment variable `SACQS_DEBUG_GENERATOR=1` before building:
+Set the environment variable `CQ_DEBUG_GENERATOR=1` before building:
 
 ```powershell
-$env:SACQS_DEBUG_GENERATOR = "1"
+$env:CQ_DEBUG_GENERATOR = "1"
 dotnet build
 ```
 
