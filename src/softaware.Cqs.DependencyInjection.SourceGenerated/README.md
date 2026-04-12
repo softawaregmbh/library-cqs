@@ -215,13 +215,13 @@ services.AddTransient<IRequestHandler<MyCommand, NoResult>>(sp =>
 
 ### Is the generator running?
 
-Build the project and look for warning `CQ0005`, `CQ0006`, or `CQ0007` in the build output:
+Build the project and look for warning `CQ0005` and `CQ0006`, or info `CQ0007` in the build output:
 
 ```
-warning CQ0007: softaware.Cqs source generator: Registered 5 handler(s) with 3 decorator(s). IRequestProcessor → GeneratedRequestProcessor
+info CQ0007: softaware.Cqs source generator: Registered 5 handler(s) with 3 decorator(s). IRequestProcessor → GeneratedRequestProcessor
 ```
 
-If you see **no SACQS warnings at all**, the generator is not running. Check:
+If you see **no CQ warnings at all**, the generator is not running. Check:
 
 - The NuGet package is properly installed (`dotnet list package`)
 - Clear the NuGet cache: `dotnet nuget locals all --clear`
@@ -231,7 +231,11 @@ If you see **no SACQS warnings at all**, the generator is not running. Check:
 
 ### Inspect generated files
 
-Add this to your `.csproj`:
+You should find the two files in Visual Studio Search (<kbd>Ctrl</kbd> + <kbd>T</kbd> shortcut):
+- `CqsServiceRegistration.g.cs` — handler and decorator registrations
+- `GeneratedRequestProcessor.g.cs` — static request dispatch
+
+If not, add this to your `.csproj`:
 
 ```xml
 <PropertyGroup>
