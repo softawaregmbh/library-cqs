@@ -13,7 +13,7 @@ services
 ```
 
 > **Important:** All arguments to `IncludeTypesFrom` and `AddRequestHandlerDecorator` **must** be `typeof()` expressions.  
-> Variables, method calls, or other expressions will produce a compile error (`SACQS007`).
+> Variables, method calls, or other expressions will produce a compile error (`CQ0008`).
 
 ## Migration Guide: from `softaware.Cqs.DependencyInjection`
 
@@ -66,7 +66,7 @@ The source generator cannot trace through extension methods. Replace all conveni
 | `.AddUsageAwareDecorators()` | `.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))` |
 | `.AddApplicationInsightsDependencyTelemetryDecorator()` | `.AddRequestHandlerDecorator(typeof(DependencyTelemetryRequestHandlerDecorator<,>))` |
 
-A build warning (`SACQS003`) is emitted for every detected convenience method.
+A build warning (`CQ0004`) is emitted for every detected convenience method.
 
 ```csharp
 // Before
@@ -85,7 +85,7 @@ A build warning (`SACQS003`) is emitted for every detected convenience method.
 Build the project. If the generator is working correctly you will see:
 
 ```
-info SACQS006: softaware.Cqs source generator: Registered 12 handler(s) with 5 decorator(s). IRequestProcessor → GeneratedRequestProcessor
+info CQ0007: softaware.Cqs source generator: Registered 12 handler(s) with 5 decorator(s). IRequestProcessor → GeneratedRequestProcessor
 ```
 
 ---
@@ -97,7 +97,7 @@ info SACQS006: softaware.Cqs source generator: Registered 12 handler(s) with 5 d
 Request types with type parameters cannot be registered by the source generator, because it generates one explicit registration per concrete request type.
 
 ```csharp
-// ❌ NOT supported — causes SACQS008 (error)
+// ❌ NOT supported — causes CQ0009 (error)
 public class GetNextLogicalId<TEntity> : IQuery<int> { }
 public class GetNextLogicalIdHandler<TEntity> : IRequestHandler<GetNextLogicalId<TEntity>, int> { }
 ```
@@ -109,7 +109,7 @@ public class GetNextLogicalIdHandler<TEntity> : IRequestHandler<GetNextLogicalId
 The generator cannot statically trace extension method calls.
 
 ```csharp
-// ❌ NOT supported — causes SACQS003 (warning, handler skipped)
+// ❌ NOT supported — causes CQ0004 (warning, handler skipped)
 .AddDecorators(b => b.AddTransactionCommandHandlerDecorator())
 ```
 
@@ -120,11 +120,11 @@ The generator cannot statically trace extension method calls.
 The generator reads types from the syntax tree — expressions that produce an `Assembly` or `Type` at runtime cannot be evaluated at compile time.
 
 ```csharp
-// ❌ NOT supported — causes SACQS007 (error)
+// ❌ NOT supported — causes CQ0008 (error)
 var marker = typeof(MyHandler);
 services.AddSoftawareCqs(b => b.IncludeTypesFrom(marker));
 
-// ❌ NOT supported — causes SACQS007 (error)
+// ❌ NOT supported — causes CQ0008 (error)
 services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyHandler).Assembly));
 
 // ✅ OK
@@ -163,13 +163,13 @@ The `AddDecorators()` lambda is **executed at runtime** to capture conditional r
 
 | ID | Severity | Description |
 |---|---|---|
-| `SACQS003` | Warning | Convenience method (e.g. `AddTransactionCommandHandlerDecorator`) detected. Use `AddRequestHandlerDecorator(typeof(...))` instead. |
-| `SACQS004` | Warning | No `AddSoftawareCqs` call found. The generator has nothing to generate. |
-| `SACQS005` | Warning | Core CQS types (`IRequestHandler`, `IRequest`, `IRequestProcessor`) could not be resolved. Ensure `softaware.CQS` is referenced. |
-| `SACQS006` | Info | Generation succeeded. Shows handler and decorator counts. Only visible in IDE Error List (with Info filter) or `dotnet build -v detailed`. |
-| `SACQS007` | Error | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression. |
-| `SACQS008` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
-| `SACQS009` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
+| `CQ0004` | Warning | Convenience method (e.g. `AddTransactionCommandHandlerDecorator`) detected. Use `AddRequestHandlerDecorator(typeof(...))` instead. |
+| `CQ0005` | Warning | No `AddSoftawareCqs` call found. The generator has nothing to generate. |
+| `CQ0006` | Warning | Core CQS types (`IRequestHandler`, `IRequest`, `IRequestProcessor`) could not be resolved. Ensure `softaware.CQS` is referenced. |
+| `CQ0007` | Info | Generation succeeded. Shows handler and decorator counts. Only visible in IDE Error List (with Info filter) or `dotnet build -v detailed`. |
+| `CQ0008` | Error | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression. |
+| `CQ0009` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
+| `CQ0010` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
 
 ## Conditional Decorator Registration
 
@@ -215,10 +215,10 @@ services.AddTransient<IRequestHandler<MyCommand, NoResult>>(sp =>
 
 ### Is the generator running?
 
-Build the project and look for warning `SACQS004`, `SACQS005`, or `SACQS006` in the build output:
+Build the project and look for warning `CQ0005`, `CQ0006`, or `CQ0007` in the build output:
 
 ```
-warning SACQS006: softaware.Cqs source generator: Registered 5 handler(s) with 3 decorator(s). IRequestProcessor → GeneratedRequestProcessor
+warning CQ0007: softaware.Cqs source generator: Registered 5 handler(s) with 3 decorator(s). IRequestProcessor → GeneratedRequestProcessor
 ```
 
 If you see **no SACQS warnings at all**, the generator is not running. Check:
@@ -227,7 +227,7 @@ If you see **no SACQS warnings at all**, the generator is not running. Check:
 - Clear the NuGet cache: `dotnet nuget locals all --clear`
 - Rebuild from scratch: `dotnet clean && dotnet build`
 
-> **Note:** `SACQS006` is an Info-level diagnostic that only appears in Visual Studio's Error List (enable the "Messages" filter) or when building with `dotnet build -v detailed`. The warning-level diagnostics (`SACQS004`, `SACQS005`) always appear in normal build output.
+> **Note:** `CQ0007` is an Info-level diagnostic that only appears in Visual Studio's Error List (enable the "Messages" filter) or when building with `dotnet build -v detailed`. The warning-level diagnostics (`CQ0005`, `CQ0006`) always appear in normal build output.
 
 ### Inspect generated files
 
@@ -265,11 +265,11 @@ This triggers `Debugger.Launch()` and lets you step through the generator in Vis
 | Symptom | Cause | Fix |
 |---|---|---|
 | No warnings, no generated files | Generator not running | Clear NuGet cache, rebuild |
-| `SACQS004` — "No AddSoftawareCqs call found" | Missing or incorrect `AddSoftawareCqs` call | Ensure you call `services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(...)))` |
-| `SACQS005` — "Core CQS types not resolved" | Missing `softaware.CQS` package reference | Add `<PackageReference Include="softaware.CQS" />` |
-| `SACQS007` — "must be a typeof() expression" | Using a variable or `.Assembly` instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
+| `CQ0005` — "No AddSoftawareCqs call found" | Missing or incorrect `AddSoftawareCqs` call | Ensure you call `services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(...)))` |
+| `CQ0006` — "Core CQS types not resolved" | Missing `softaware.CQS` package reference | Add `<PackageReference Include="softaware.CQS" />` |
+| `CQ0008` — "must be a typeof() expression" | Using a variable or `.Assembly` instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
 | `InvalidOperationException` at runtime | Generated class not found | Ensure the NuGet package is installed and project was rebuilt |
-| `SACQS008` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
+| `CQ0009` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
 
 ## Decorator Order
 

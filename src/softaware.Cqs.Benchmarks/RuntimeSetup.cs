@@ -13,7 +13,7 @@ internal static class RuntimeSetup
     {
         var services = new ServiceCollection();
 
-#pragma warning disable SACQS007 // This file uses the runtime (Scrutor-based) DI package, not the source generator
+#pragma warning disable CQ0008 // This file uses the runtime (Scrutor-based) DI package, not the source generator
         services
             .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(RuntimeSetup).Assembly))
             .AddDecorators(b => b
@@ -22,7 +22,7 @@ internal static class RuntimeSetup
                 .AddRequestHandlerDecorator(typeof(CachingDecorator<,>))
                 .AddRequestHandlerDecorator(typeof(AccessCheckDecorator<,>))
                 .AddRequestHandlerDecorator(typeof(PriorityDecorator<,>)));
-#pragma warning restore SACQS007
+#pragma warning restore CQ0008
 
         return services.BuildServiceProvider();
     }

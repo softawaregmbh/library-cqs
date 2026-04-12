@@ -392,7 +392,7 @@ public static class FakeExtensions
 
         var generatorDiagnostics = runResult.Results
             .SelectMany(r => r.Diagnostics)
-            .Where(d => d.Id == "SACQS003")
+            .Where(d => d.Id == "CQ0004")
             .ToList();
 
         Assert.Single(generatorDiagnostics);
@@ -566,7 +566,7 @@ public class Startup
 
         var errors = runResult.Results
             .SelectMany(r => r.Diagnostics)
-            .Where(d => d.Id == "SACQS007")
+            .Where(d => d.Id == "CQ0008")
             .ToList();
 
         Assert.Single(errors);
@@ -618,7 +618,7 @@ public class Startup
 
         var errors = runResult.Results
             .SelectMany(r => r.Diagnostics)
-            .Where(d => d.Id == "SACQS007")
+            .Where(d => d.Id == "CQ0008")
             .ToList();
 
         Assert.Single(errors);
@@ -662,7 +662,7 @@ public class Startup
 
         var errors = runResult.Results
             .SelectMany(r => r.Diagnostics)
-            .Where(d => d.Id == "SACQS008")
+            .Where(d => d.Id == "CQ0009")
             .ToList();
 
         Assert.Single(errors);
