@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -5,12 +8,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public class SoftawareCqsDecoratorBuilder
 {
+    internal HashSet<Type> EnabledDecorators { get; } = new();
+
     /// <summary>
     /// Adds a request handler decorator.
     /// </summary>
     /// <remarks>
-    /// At runtime this method is a no-op. The source generator reads the <c>typeof()</c> argument
-    /// from the syntax tree at compile time and generates explicit decorator chains for each handler.
+    /// The source generator reads the <c>typeof()</c> argument from the syntax tree at compile time
+    /// and generates explicit decorator chains for each handler.
+    /// At runtime, the type is recorded so that conditional registrations (inside <c>if</c> blocks)
+    /// can be evaluated correctly.
     /// </remarks>
     /// <param name="decoratorType">
     /// The type of the decorator. The decorator must implement
@@ -19,7 +26,7 @@ public class SoftawareCqsDecoratorBuilder
     /// <returns>The decorator builder for chaining.</returns>
     public SoftawareCqsDecoratorBuilder AddRequestHandlerDecorator(Type decoratorType)
     {
-        // No-op at runtime. The source generator reads this call syntactically at compile time.
+        this.EnabledDecorators.Add(decoratorType);
         return this;
     }
 }

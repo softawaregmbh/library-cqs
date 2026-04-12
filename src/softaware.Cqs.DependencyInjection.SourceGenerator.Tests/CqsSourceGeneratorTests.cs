@@ -662,4 +662,73 @@ public class Startup
         Assert.Contains("SimpleQueryHandler", registrationSource);
         Assert.DoesNotContain("GetNextLogicalIdHandler", registrationSource);
     }
+
+    [Fact]
+    public void ConditionalDecoratorRegistration_GeneratesRegistryCheck()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class MyCommand : ICommand { }
+public class MyCommandHandler : IRequestHandler<MyCommand, NoResult>
+{
+    public System.Threading.Tasks.Task<NoResult> HandleAsync(MyCommand c, System.Threading.CancellationToken ct)
+        => NoResult.CompletedTask;
+}
+
+public class DecoratorA<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+{
+    private readonly IRequestHandler<TRequest, TResult> d;
+    public DecoratorA(IRequestHandler<TRequest, TResult> d) => this.d = d;
+    public System.Threading.Tasks.Task<TResult> HandleAsync(TRequest r, System.Threading.CancellationToken ct) => d.HandleAsync(r, ct);
+}
+
+public class DecoratorB<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+{
+    private readonly IRequestHandler<TRequest, TResult> d;
+    public DecoratorB(IRequestHandler<TRequest, TResult> d) => this.d = d;
+    public System.Threading.Tasks.Task<TResult> HandleAsync(TRequest r, System.Threading.CancellationToken ct) => d.HandleAsync(r, ct);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services, bool useDecoratorA)
+    {
+        services
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyCommand)))
+            .AddDecorators(b =>
+            {
+                if (useDecoratorA)
+                {
+                    b.AddRequestHandlerDecorator(typeof(DecoratorA<,>));
+                }
+
+                b.AddRequestHandlerDecorator(typeof(DecoratorB<,>));
+            });
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs")!;
+        Assert.NotNull(registrationSource);
+
+        // DecoratorA (conditional) should be wrapped in a registry check
+        Assert.Contains("__decoratorRegistry.IsEnabled(typeof(global::TestApp.DecoratorA<", registrationSource);
+
+        // DecoratorB (unconditional) should be applied directly without a registry check
+        Assert.Contains("DecoratorB", registrationSource);
+        // Count occurrences of IsEnabled — should only appear once (for DecoratorA)
+        var isEnabledCount = registrationSource.Split(new[] { "IsEnabled" }, StringSplitOptions.None).Length - 1;
+        Assert.Equal(1, isEnabledCount);
+
+        // Should register a default CqsDecoratorRegistry
+        Assert.Contains("CqsDecoratorRegistry", registrationSource);
+    }
 }

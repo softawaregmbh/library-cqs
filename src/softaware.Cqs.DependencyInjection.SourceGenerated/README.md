@@ -38,6 +38,47 @@ The `AddDecorators()` call is a **no-op at runtime** — the generator already r
 | `SACQS006` | Info | Generation succeeded. Shows handler and decorator counts. Only visible in IDE Error List (with Info filter) or `dotnet build -v detailed`. |
 | `SACQS007` | Error | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression. |
 | `SACQS008` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
+| `SACQS009` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
+
+## Conditional Decorator Registration
+
+Unlike the runtime (Scrutor-based) package, the source generator reads **all** `AddRequestHandlerDecorator` calls from the syntax tree at compile time — including those inside `if`/`switch` blocks.
+
+To handle this correctly, when the generator detects a decorator inside a conditional block, it generates an `if (registry.IsEnabled(...))` guard in the factory lambda. At runtime, the `AddDecorators` lambda is **actually executed** (it's not a no-op), and the `SoftawareCqsDecoratorBuilder` records which decorators were called. This information is stored in a `CqsDecoratorRegistry` singleton.
+
+```csharp
+services
+    .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyMarker)))
+    .AddDecorators(b =>
+    {
+        if (useLogging) // ✅ This works — evaluated at runtime
+        {
+            b.AddRequestHandlerDecorator(typeof(LoggingDecorator<,>));
+        }
+
+        b.AddRequestHandlerDecorator(typeof(ValidationDecorator<,>)); // Always applied
+    });
+```
+
+The generated code for a handler would look like:
+
+```csharp
+services.AddTransient<IRequestHandler<MyCommand, NoResult>>(sp =>
+{
+    var __decoratorRegistry = sp.GetRequiredService<CqsDecoratorRegistry>();
+    IRequestHandler<MyCommand, NoResult> current = ActivatorUtilities.CreateInstance<MyCommandHandler>(sp);
+
+    if (__decoratorRegistry.IsEnabled(typeof(LoggingDecorator<,>)))
+    {
+        current = ActivatorUtilities.CreateInstance<LoggingDecorator<MyCommand, NoResult>>(sp, current);
+    }
+
+    current = ActivatorUtilities.CreateInstance<ValidationDecorator<MyCommand, NoResult>>(sp, current);
+    return current;
+});
+```
+
+> **Note:** When no decorators are conditional (the common case), the registry is not used and there is zero runtime overhead.
 
 ## Debugging
 

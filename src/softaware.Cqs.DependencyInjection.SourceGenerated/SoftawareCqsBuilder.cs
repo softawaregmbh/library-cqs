@@ -1,3 +1,6 @@
+using System;
+using softaware.Cqs.DependencyInjection;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -24,14 +27,26 @@ public class SoftawareCqsBuilder
     /// Decorators are applied in reverse order. This means decorators which are registered last will be executed first.
     /// Decorators which are registered earlier will be executed "closer" to the actual handler.
     ///
-    /// At runtime this method is a no-op. The source generator reads the decorator configuration
-    /// from the syntax tree at compile time and generates explicit decorator chains.
+    /// The source generator reads all decorator types from the syntax tree at compile time.
+    /// At runtime, this method executes the lambda to record which decorators were actually requested,
+    /// enabling conditional registration (decorators inside <c>if</c> blocks).
     /// </remarks>
     /// <param name="softawareCqsDecoratorBuilderAction">Provides an action to configure decorators.</param>
     /// <returns>The CQS builder.</returns>
     public SoftawareCqsBuilder AddDecorators(Action<SoftawareCqsDecoratorBuilder> softawareCqsDecoratorBuilderAction)
     {
-        // No-op at runtime. The source generator reads this call syntactically at compile time.
+        var builder = new SoftawareCqsDecoratorBuilder();
+        softawareCqsDecoratorBuilderAction(builder);
+
+        // Replace the default empty registry with one containing the actually-enabled decorators.
+        // This allows conditional decorators (inside if/switch blocks) to work correctly:
+        // the generated factory lambdas check registry.IsEnabled() at resolution time.
+        var descriptor = new ServiceDescriptor(
+            typeof(CqsDecoratorRegistry),
+            new CqsDecoratorRegistry(builder.EnabledDecorators));
+        Extensions.ServiceCollectionDescriptorExtensions.RemoveAll<CqsDecoratorRegistry>(this.Services);
+        this.Services.Add(descriptor);
+
         return this;
     }
 }

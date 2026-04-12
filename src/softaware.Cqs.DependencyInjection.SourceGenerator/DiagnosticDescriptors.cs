@@ -78,4 +78,13 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: "The source generator cannot register handlers for open generic request types because it generates explicit registrations for each concrete request type. Refactor to use a closed generic type or a non-generic base type.");
+
+    public static readonly DiagnosticDescriptor ConditionalDecoratorRegistration = new(
+        id: "SACQS009",
+        title: "Conditional decorator registration detected",
+        messageFormat: "AddRequestHandlerDecorator inside a conditional block will use a runtime registry check. Ensure the AddDecorators lambda is executed at runtime",
+        category: "softaware.Cqs",
+        defaultSeverity: DiagnosticSeverity.Info,
+        isEnabledByDefault: true,
+        description: "The source generator detected an AddRequestHandlerDecorator call inside an if/switch block. The generated code will check a runtime registry to determine if the decorator should be applied. The AddDecorators lambda must be executed at runtime for conditional decorators to work correctly.");
 }

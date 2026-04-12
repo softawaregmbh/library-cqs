@@ -14,10 +14,10 @@ internal sealed class CqsConfiguration
     public List<INamedTypeSymbol> MarkerTypes { get; } = new();
 
     /// <summary>
-    /// Decorator types from AddRequestHandlerDecorator(typeof(...)), in registration order.
+    /// Decorator registrations from AddRequestHandlerDecorator(typeof(...)), in registration order.
     /// First registered = closest to handler, last registered = outermost.
     /// </summary>
-    public List<INamedTypeSymbol> DecoratorTypes { get; } = new();
+    public List<DecoratorRegistration> DecoratorTypes { get; } = new();
 
     /// <summary>
     /// Location of the AddSoftawareCqs invocation (for diagnostics).
@@ -28,6 +28,21 @@ internal sealed class CqsConfiguration
     /// Diagnostics collected during syntax extraction that must be reported in the source output phase.
     /// </summary>
     public List<PendingDiagnostic> PendingDiagnostics { get; } = new();
+}
+
+/// <summary>
+/// A decorator type extracted from the syntax tree, with metadata about whether it appeared
+/// inside a conditional block (if/switch).
+/// </summary>
+internal sealed class DecoratorRegistration
+{
+    public INamedTypeSymbol Type { get; set; } = null!;
+
+    /// <summary>
+    /// True if this AddRequestHandlerDecorator call was inside an if/switch block.
+    /// Conditional decorators are wrapped in a runtime registry check in the generated code.
+    /// </summary>
+    public bool IsConditional { get; set; }
 }
 
 /// <summary>
@@ -52,5 +67,5 @@ internal sealed class HandlerInfo
     /// <summary>
     /// Decorators applicable to this handler, in registration order (first = closest to handler).
     /// </summary>
-    public List<INamedTypeSymbol> ApplicableDecorators { get; } = new();
+    public List<DecoratorRegistration> ApplicableDecorators { get; } = new();
 }
