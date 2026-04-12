@@ -59,7 +59,7 @@ internal static class DiagnosticDescriptors
         category: "softaware.Cqs",
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        description: "The source generator successfully generated handler registrations and the static request processor.");
+        description: "The source generator successfully generated handler registrations (`CqsServiceRegistration.g.cs`) and the static request processor (`GeneratedRequestProcessor.g.cs`).");
 
     public static readonly DiagnosticDescriptor TypeofExpressionRequired = new(
         id: "SACQS007",
@@ -68,7 +68,7 @@ internal static class DiagnosticDescriptors
         category: "softaware.Cqs",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
-        description: "The source generator resolves types at compile time by reading typeof() expressions directly from the syntax tree. Variables, method calls, or other expressions cannot be evaluated.");
+        description: "The source generator resolves types at compile time by reading typeof() expressions directly from the syntax tree. Variables, method calls, or other expressions cannot be evaluated. Use a marker type/interface and typeof(Marker) instead.");
 
     public static readonly DiagnosticDescriptor OpenGenericRequestNotSupported = new(
         id: "SACQS008",

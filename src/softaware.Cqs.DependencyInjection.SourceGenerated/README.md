@@ -85,7 +85,7 @@ A build warning (`SACQS003`) is emitted for every detected convenience method.
 Build the project. If the generator is working correctly you will see:
 
 ```
-warning SACQS006: softaware.Cqs source generator: Registered 12 handler(s) with 5 decorator(s). IRequestProcessor → GeneratedRequestProcessor
+info SACQS006: softaware.Cqs source generator: Registered 12 handler(s) with 5 decorator(s). IRequestProcessor → GeneratedRequestProcessor
 ```
 
 ---
