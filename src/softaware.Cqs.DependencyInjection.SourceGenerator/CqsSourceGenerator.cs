@@ -339,8 +339,6 @@ public class CqsSourceGenerator : IIncrementalGenerator
         // Resolve core CQS type symbols
         var requestHandlerType = compilation.GetTypeByMetadataName("softaware.Cqs.IRequestHandler`2");
         var requestType = compilation.GetTypeByMetadataName("softaware.Cqs.IRequest`1");
-        var commandType = compilation.GetTypeByMetadataName("softaware.Cqs.ICommand`1");
-        var queryType = compilation.GetTypeByMetadataName("softaware.Cqs.IQuery`1");
         var requestProcessorType = compilation.GetTypeByMetadataName("softaware.Cqs.IRequestProcessor");
 
         if (requestHandlerType == null || requestType == null || requestProcessorType == null)
@@ -365,6 +363,28 @@ public class CqsSourceGenerator : IIncrementalGenerator
                 if (DecoratorApplies(compilation, decoratorReg.Type, handler.RequestType, handler.ResultType, requestHandlerType))
                 {
                     handler.ApplicableDecorators.Add(decoratorReg);
+                }
+            }
+        }
+
+        // Validate decorator generic shapes and report diagnostics for unsupported ones
+        var reportedDecoratorShapes = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var handler in handlers)
+        {
+            foreach (var decoratorReg in handler.ApplicableDecorators)
+            {
+                if (decoratorReg.Type.IsGenericType &&
+                    GetClosedDecoratorName(decoratorReg.Type, handler.RequestType, handler.ResultType) is null)
+                {
+                    var decoratorName = decoratorReg.Type.ToDisplayString();
+                    if (reportedDecoratorShapes.Add(decoratorName))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DiagnosticDescriptors.UnsupportedDecoratorGenericShape,
+                            mergedConfig.InvocationLocation ?? Location.None,
+                            decoratorReg.Type.Name,
+                            decoratorReg.Type.TypeParameters.Length));
+                    }
                 }
             }
         }
@@ -837,6 +857,12 @@ public class CqsSourceGenerator : IIncrementalGenerator
                 {
                     var closedDecoratorFqn = GetClosedDecoratorName(decoratorReg.Type, handler.RequestType, handler.ResultType);
 
+                    if (closedDecoratorFqn is null)
+                    {
+                        // Decorator has an unsupported generic shape — skip (diagnostic reported separately)
+                        continue;
+                    }
+
                     if (decoratorReg.IsConditional)
                     {
                         var openDecoratorFqn = GetOpenGenericTypeName(decoratorReg.Type);
@@ -866,7 +892,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         return sb.ToString();
     }
 
-    private static string GetClosedDecoratorName(
+    private static string? GetClosedDecoratorName(
         INamedTypeSymbol openDecoratorType,
         INamedTypeSymbol requestType,
         INamedTypeSymbol resultType)
@@ -875,10 +901,6 @@ public class CqsSourceGenerator : IIncrementalGenerator
         {
             return GetFullyQualifiedName(openDecoratorType);
         }
-
-        // Build the mapping from the decorator's IRequestHandler<TRequest, TResult> interface implementation
-        var requestHandlerDef = openDecoratorType.AllInterfaces
-            .FirstOrDefault(i => i.OriginalDefinition.ToDisplayString() == "softaware.Cqs.IRequestHandler<TRequest, TResult>");
 
         // Simple approach: construct the closed type with concrete request and result types
         // The decorator has type params that map to TRequest and TResult
@@ -906,10 +928,13 @@ public class CqsSourceGenerator : IIncrementalGenerator
             }
         }
 
-        // Fill any remaining unmapped params (shouldn't happen for well-formed decorators)
+        // If any type parameters could not be mapped, the decorator has an unsupported generic shape
         for (int i = 0; i < args.Length; i++)
         {
-            args[i] ??= requestType; // fallback
+            if (args[i] is null)
+            {
+                return null;
+            }
         }
 
         var closedType = openDecoratorType.Construct(args);

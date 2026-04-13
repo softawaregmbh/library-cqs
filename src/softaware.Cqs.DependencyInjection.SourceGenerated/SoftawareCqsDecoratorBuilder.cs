@@ -23,7 +23,16 @@ public class SoftawareCqsDecoratorBuilder
     /// <returns>The decorator builder for chaining.</returns>
     public SoftawareCqsDecoratorBuilder AddRequestHandlerDecorator(Type decoratorType)
     {
-        this.EnabledDecorators.Add(decoratorType);
+        if (decoratorType is null)
+        {
+            throw new ArgumentNullException(nameof(decoratorType));
+        }
+
+        var normalizedDecoratorType = decoratorType.IsConstructedGenericType
+            ? decoratorType.GetGenericTypeDefinition()
+            : decoratorType;
+
+        this.EnabledDecorators.Add(normalizedDecoratorType);
         return this;
     }
 }

@@ -14,3 +14,4 @@ CQ0007  | Usage    | Info     | GenerationSucceeded
 CQ0008  | Usage    | Error    | TypeofExpressionRequired
 CQ0009  | Usage    | Error    | OpenGenericRequestNotSupported
 CQ0010  | Usage    | Info     | ConditionalDecoratorRegistration
+CQ0011  | Usage    | Error    | UnsupportedDecoratorGenericShape

@@ -32,13 +32,32 @@ public static class SoftawareCqsExtensions
         Action<SoftawareCqsTypesBuilder> softawareCqsTypesBuilderAction)
 #pragma warning restore IDE0060 // Remove unused parameter
     {
+        if (softawareCqsTypesBuilderAction is null)
+        {
+            throw new ArgumentNullException(nameof(softawareCqsTypesBuilderAction));
+        }
+
         var callingAssembly = Assembly.GetCallingAssembly();
         var registrationType = callingAssembly.GetType("softaware.Cqs.Generated.CqsServiceRegistration") ?? throw new InvalidOperationException(
                 $"Source-generated CQS registration class not found in assembly '{callingAssembly.GetName().Name}'. " +
                 "Ensure the softaware.Cqs.DependencyInjection.SourceGenerated NuGet package is referenced " +
                 "(which includes the source generator), and that the project has been rebuilt.");
 
-        var method = registrationType.GetMethod("RegisterAll", BindingFlags.Public | BindingFlags.Static);
+        var method = registrationType.GetMethod(
+            "RegisterAll",
+            BindingFlags.Public | BindingFlags.Static,
+            binder: null,
+            types: [typeof(IServiceCollection)],
+            modifiers: null);
+
+        if (method is null || method.ReturnType != typeof(void))
+        {
+            throw new InvalidOperationException(
+                $"Source-generated CQS registration method 'public static void RegisterAll(IServiceCollection)' " +
+                $"was not found on type '{registrationType.FullName}' in assembly '{callingAssembly.GetName().Name}'. " +
+                "Ensure the generated registration code is up to date and that the project has been rebuilt.");
+        }
+
         method.Invoke(null, [services]);
 
         return new SoftawareCqsBuilder(services);

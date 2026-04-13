@@ -170,6 +170,7 @@ The `AddDecorators()` lambda is **executed at runtime** to capture conditional r
 | `CQ0008` | Error | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression. |
 | `CQ0009` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
 | `CQ0010` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
+| `CQ0011` | Error | Decorator has generic type parameters that could not be mapped to `TRequest`/`TResult` from `IRequestHandler<TRequest, TResult>`. |
 
 ## Conditional Decorator Registration
 
@@ -277,6 +278,7 @@ Then build the project. This triggers `Debugger.Launch()` and lets you step thro
 | `CQ0008` — "must be a typeof() expression" | Using a variable or `.Assembly` instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
 | `InvalidOperationException` at runtime | Generated class not found | Ensure the NuGet package is installed and project was rebuilt |
 | `CQ0009` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
+| `CQ0011` — "unsupported decorator generic shape" | Decorator has extra generic parameters beyond `TRequest`/`TResult` | Ensure all generic parameters are used by the `IRequestHandler<TRequest, TResult>` implementation |
 
 ## Decorator Order
 

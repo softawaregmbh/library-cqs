@@ -87,4 +87,13 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "The source generator detected an AddRequestHandlerDecorator call inside an if/switch block. The generated code will check a runtime registry to determine if the decorator should be applied. The AddDecorators lambda must be executed at runtime for conditional decorators to work correctly.");
+
+    public static readonly DiagnosticDescriptor UnsupportedDecoratorGenericShape = new(
+        id: "CQ0011",
+        title: "Unsupported decorator generic shape",
+        messageFormat: "Decorator '{0}' has {1} generic type parameter(s) but not all could be mapped to TRequest/TResult from IRequestHandler<TRequest, TResult>. Decorators must have exactly the type parameters used by their IRequestHandler implementation.",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        description: "The source generator could not map all generic type parameters of the decorator to the handler's request and result types. Ensure the decorator's generic parameters align with the IRequestHandler<TRequest, TResult> interface it implements.");
 }
