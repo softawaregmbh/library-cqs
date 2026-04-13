@@ -28,9 +28,7 @@ public static class SoftawareCqsExtensions
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static SoftawareCqsBuilder AddSoftawareCqs(
         this IServiceCollection services,
-#pragma warning disable IDE0060 // Remove unused parameter - needed for source generator to identify assemblies to scan for handlers and decorators
         Action<SoftawareCqsTypesBuilder> softawareCqsTypesBuilderAction)
-#pragma warning restore IDE0060 // Remove unused parameter
     {
         if (softawareCqsTypesBuilderAction is null)
         {

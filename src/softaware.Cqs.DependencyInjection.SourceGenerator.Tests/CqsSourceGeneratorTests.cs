@@ -838,4 +838,55 @@ public class Startup
         Assert.Contains("HandledQueryHandler", registrationSource);
         Assert.DoesNotContain("OrphanCommand", registrationSource);
     }
+
+    [Fact]
+    public void UnsupportedMethodInAddDecorators_GeneratesWarning()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class MyCommand : ICommand { }
+public class MyCommandHandler : IRequestHandler<MyCommand, NoResult>
+{
+    public System.Threading.Tasks.Task<NoResult> HandleAsync(MyCommand c, System.Threading.CancellationToken ct)
+        => NoResult.CompletedTask;
+}
+
+public class MyDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+{
+    private readonly IRequestHandler<TRequest, TResult> d;
+    public MyDecorator(IRequestHandler<TRequest, TResult> d) => this.d = d;
+    public System.Threading.Tasks.Task<TResult> HandleAsync(TRequest r, System.Threading.CancellationToken ct) => d.HandleAsync(r, ct);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyCommand)))
+            .AddDecorators(b =>
+            {
+                b.AddRequestHandlerDecorator(typeof(MyDecorator<,>));
+                b.SomeCustomMethod();
+            });
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var warnings = runResult.Results
+            .SelectMany(r => r.Diagnostics)
+            .Where(d => d.Id == "CQ0012")
+            .ToList();
+
+        Assert.Single(warnings);
+        Assert.Contains("SomeCustomMethod", warnings[0].GetMessage(CultureInfo.InvariantCulture));
+        Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Warning, warnings[0].Severity);
+    }
 }

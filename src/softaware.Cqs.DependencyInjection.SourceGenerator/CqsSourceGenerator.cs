@@ -223,9 +223,27 @@ public class CqsSourceGenerator : IIncrementalGenerator
         // In fluent chains like b.AddA(typeof(A)).AddB(typeof(B)), both InvocationExpressions
         // start at the same SpanStart (the 'b' identifier). Use ArgumentList position to
         // preserve registration order (first-registered = closest to handler).
-        var invocations = lambdaExpression
+        var allInvocations = lambdaExpression
             .DescendantNodesAndSelf()
             .OfType<InvocationExpressionSyntax>()
+            .ToList();
+
+        // Warn about any method calls that are not AddRequestHandlerDecorator
+        foreach (var inv in allInvocations)
+        {
+            var name = GetMethodName(inv);
+            if (name != null && name != "AddRequestHandlerDecorator")
+            {
+                config.PendingDiagnostics.Add(new PendingDiagnostic
+                {
+                    Descriptor = DiagnosticDescriptors.UnsupportedMethodInAddDecorators,
+                    Location = inv.GetLocation(),
+                    MessageArgs = [name]
+                });
+            }
+        }
+
+        var invocations = allInvocations
             .Where(inv => GetMethodName(inv) == "AddRequestHandlerDecorator" && inv.ArgumentList.Arguments.Count > 0)
             .OrderBy(inv => inv.ArgumentList.SpanStart);
 

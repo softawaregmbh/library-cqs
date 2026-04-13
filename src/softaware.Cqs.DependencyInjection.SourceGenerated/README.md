@@ -115,6 +115,27 @@ The generator cannot statically trace extension method calls.
 
 **Fix:** Use explicit `typeof()` calls as shown in Step 3 above.
 
+### Custom helper methods inside `AddDecorators`
+
+Any method call other than `AddRequestHandlerDecorator` inside the `AddDecorators` lambda is silently ignored by the source generator — even if that method internally calls `AddRequestHandlerDecorator`. The generator cannot trace through arbitrary method calls.
+
+```csharp
+// ❌ NOT supported — causes CQ0012 (warning, decorator silently skipped)
+.AddDecorators(b =>
+{
+    b.AddRequestHandlerDecorator(typeof(LoggingDecorator<,>)); // ✅ recognized
+    MyHelper.RegisterAllDecorators(b);                         // ❌ ignored
+})
+```
+
+**Fix:** Register each decorator directly with `AddRequestHandlerDecorator(typeof(...))`:
+
+```csharp
+.AddDecorators(b => b
+    .AddRequestHandlerDecorator(typeof(LoggingDecorator<,>))
+    .AddRequestHandlerDecorator(typeof(ValidationDecorator<,>)))
+```
+
 ### `IncludeTypesFrom` with anything other than `typeof()`
 
 The generator reads types from the syntax tree — expressions that produce an `Assembly` or `Type` at runtime cannot be evaluated at compile time.
@@ -171,6 +192,7 @@ The `AddDecorators()` lambda is **executed at runtime** to capture conditional r
 | `CQ0009` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
 | `CQ0010` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
 | `CQ0011` | Error | Decorator has generic type parameters that could not be mapped to `TRequest`/`TResult` from `IRequestHandler<TRequest, TResult>`. |
+| `CQ0012` | Warning | A method other than `AddRequestHandlerDecorator` was called inside `AddDecorators`. The call is ignored by the source generator. |
 
 ## Conditional Decorator Registration
 
@@ -279,6 +301,7 @@ Then build the project. This triggers `Debugger.Launch()` and lets you step thro
 | `InvalidOperationException` at runtime | Generated class not found | Ensure the NuGet package is installed and project was rebuilt |
 | `CQ0009` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
 | `CQ0011` — "unsupported decorator generic shape" | Decorator has extra generic parameters beyond `TRequest`/`TResult` | Ensure all generic parameters are used by the `IRequestHandler<TRequest, TResult>` implementation |
+| `CQ0012` — "unsupported method call in AddDecorators" | A helper or extension method was called inside `AddDecorators` | Register decorators directly via `AddRequestHandlerDecorator(typeof(...))` |
 
 ## Decorator Order
 

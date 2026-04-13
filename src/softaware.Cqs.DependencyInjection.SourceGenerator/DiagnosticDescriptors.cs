@@ -96,4 +96,13 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: "The source generator could not map all generic type parameters of the decorator to the handler's request and result types. Ensure the decorator's generic parameters align with the IRequestHandler<TRequest, TResult> interface it implements.");
+
+    public static readonly DiagnosticDescriptor UnsupportedMethodInAddDecorators = new(
+        id: "CQ0012",
+        title: "Unsupported method call in AddDecorators",
+        messageFormat: "Method '{0}' inside AddDecorators is not supported by the source generator. Only AddRequestHandlerDecorator calls are recognized; this call will be silently ignored during code generation.",
+        category: "Usage",
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "The source generator only processes AddRequestHandlerDecorator calls inside the AddDecorators lambda. Other method calls (e.g. custom extension methods or helpers that register decorators internally) cannot be traced by the source generator and will be ignored. Register decorators directly via AddRequestHandlerDecorator(typeof(...)).");
 }
