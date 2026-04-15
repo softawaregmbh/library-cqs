@@ -27,6 +27,24 @@ services
 <PackageReference Include="softaware.CQS.DependencyInjection.SourceGenerated" Version="..." />
 ```
 
+Also replace any convenience `.DependencyInjection` decorator packages with their non-DI counterparts. Those packages depend on `softaware.CQS.DependencyInjection`, which transitively pulls **Scrutor** into your project — exactly what this package is designed to avoid. Since you will be using explicit `AddRequestHandlerDecorator(typeof(...))` calls (see Step 3), the extension methods provided by those packages are no longer needed anyway.
+
+```xml
+<!-- Remove — these transitively pull in softaware.CQS.DependencyInjection and Scrutor -->
+<PackageReference Include="softaware.CQS.Decorators.Validation.DependencyInjection" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.FluentValidation.DependencyInjection" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.Transaction.DependencyInjection" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.UsageAware.DependencyInjection" Version="..." />
+
+<!-- Add — the base packages without the DI extension methods -->
+<PackageReference Include="softaware.CQS.Decorators.Validation" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.FluentValidation" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.Transaction" Version="..." />
+<PackageReference Include="softaware.CQS.Decorators.UsageAware" Version="..." />
+```
+
+> **Tip:** After the migration, run `dotnet list package --include-transitive | Select-String Scrutor` to verify that Scrutor is no longer in your dependency tree.
+
 ### Step 2 — Change `IncludeTypesFrom` to use `typeof()`
 
 The runtime package accepts an `Assembly` directly. The source generator can only work with `typeof()` expressions — a marker type from each assembly is enough.
