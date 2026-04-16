@@ -202,6 +202,8 @@ The `AddDecorators()` lambda is **executed at runtime** to capture conditional r
 
 | ID | Severity | Description |
 |---|---|---|
+| `CQ0002` | Error | A handler is missing for the command or query. |
+| `CQ0003` | Error | The overload taking an assembly is not supported. Use the overload with a `typeof(HandlerMarker)` instead. |
 | `CQ0004` | Warning | Convenience method (e.g. `AddTransactionCommandHandlerDecorator`) detected. Use `AddRequestHandlerDecorator(typeof(...))` instead. |
 | `CQ0005` | Warning | No `AddSoftawareCqs` call found. The generator has nothing to generate. |
 | `CQ0006` | Warning | Core CQS types (`IRequestHandler`, `IRequest`, `IRequestProcessor`) could not be resolved. Ensure `softaware.CQS` is referenced. |
