@@ -889,4 +889,97 @@ public class Startup
         Assert.Contains("SomeCustomMethod", warnings[0].GetMessage(CultureInfo.InvariantCulture));
         Assert.Equal(Microsoft.CodeAnalysis.DiagnosticSeverity.Warning, warnings[0].Severity);
     }
+
+    [Theory]
+    [InlineData("int[]")]
+    [InlineData("string[]")]
+    [InlineData("byte[]")]
+    [InlineData("int[][]")]
+    public void ArrayResultType_HandlerIsDiscovered(string arrayType)
+    {
+        var source = @$"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class MyQuery : IQuery<{arrayType}>
+{{
+}}
+
+public class MyQueryHandler : IRequestHandler<MyQuery, {arrayType}>
+{{
+    public System.Threading.Tasks.Task<{arrayType}> HandleAsync(MyQuery query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<{arrayType}>(default!);
+}}
+
+public class Startup
+{{
+    public void Configure(IServiceCollection services)
+    {{
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyQuery)));
+    }}
+}}
+";
+
+        var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("MyQueryHandler", registrationSource);
+        Assert.Contains("MyQuery", processorSource);
+    }
+
+    [Theory]
+    [InlineData("int[]")]
+    [InlineData("byte[]")]
+    public void ArrayResultType_WithDecorator_DecoratorIsApplied(string arrayType)
+    {
+        var source = @$"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class MyQuery : IQuery<{arrayType}>
+{{
+}}
+
+public class MyQueryHandler : IRequestHandler<MyQuery, {arrayType}>
+{{
+    public System.Threading.Tasks.Task<{arrayType}> HandleAsync(MyQuery query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<{arrayType}>(default!);
+}}
+
+public class LoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+{{
+    private readonly IRequestHandler<TRequest, TResult> decoratee;
+    public LoggingDecorator(IRequestHandler<TRequest, TResult> decoratee) => this.decoratee = decoratee;
+    public System.Threading.Tasks.Task<TResult> HandleAsync(TRequest r, System.Threading.CancellationToken ct)
+        => this.decoratee.HandleAsync(r, ct);
+}}
+
+public class Startup
+{{
+    public void Configure(IServiceCollection services)
+    {{
+        services
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyQuery)))
+            .AddDecorators(b => b.AddRequestHandlerDecorator(typeof(LoggingDecorator<,>)));
+    }}
+}}
+";
+
+        var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.Contains("MyQueryHandler", registrationSource);
+        Assert.Contains("LoggingDecorator", registrationSource);
+    }
 }

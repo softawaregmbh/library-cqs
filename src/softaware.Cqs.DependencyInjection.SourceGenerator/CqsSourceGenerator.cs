@@ -458,10 +458,12 @@ public class CqsSourceGenerator : IIncrementalGenerator
                         continue;
                     }
 
-                    if (iface.TypeArguments[0] is not INamedTypeSymbol requestArg || iface.TypeArguments[1] is not INamedTypeSymbol resultArg)
+                    if (iface.TypeArguments[0] is not INamedTypeSymbol requestArg)
                     {
                         continue;
                     }
+
+                    var resultArg = iface.TypeArguments[1];
 
                     // Skip decorators (types that have a constructor parameter of IRequestHandler<,>)
                     if (IsDecorator(type, requestHandlerType))
@@ -568,7 +570,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
         Compilation compilation,
         INamedTypeSymbol openDecoratorType,
         INamedTypeSymbol requestType,
-        INamedTypeSymbol resultType,
+        ITypeSymbol resultType,
         INamedTypeSymbol requestHandlerType)
     {
         // The decorator is an open generic like Decorator<TRequest, TResult>
@@ -913,7 +915,7 @@ public class CqsSourceGenerator : IIncrementalGenerator
     private static string? GetClosedDecoratorName(
         INamedTypeSymbol openDecoratorType,
         INamedTypeSymbol requestType,
-        INamedTypeSymbol resultType)
+        ITypeSymbol resultType)
     {
         if (!openDecoratorType.IsGenericType)
         {

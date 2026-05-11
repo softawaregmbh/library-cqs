@@ -62,7 +62,7 @@ internal sealed class HandlerInfo
 {
     public INamedTypeSymbol HandlerType { get; set; } = null!;
     public INamedTypeSymbol RequestType { get; set; } = null!;
-    public INamedTypeSymbol ResultType { get; set; } = null!;
+    public ITypeSymbol ResultType { get; set; } = null!;
 
     /// <summary>
     /// Decorators applicable to this handler, in registration order (first = closest to handler).
