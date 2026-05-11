@@ -98,6 +98,14 @@ A build warning (`CQ0004`) is emitted for every detected convenience method.
     .AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>)));
 ```
 
+For the following replacing convenience methods, you must also add the required services to your service collection, since they were previously registered for you by the convenience methods:
+
+| Convenience method (remove) | Add DI registration  |
+|---|---|
+| `.AddDataAnnotationsValidationDecorators()` | `builder.Services.AddSingleton<IValidator>(new DataAnnotationsValidator());` |
+| `.AddFluentValidationDecorators()` | Use FluentValidation method to register all validators in assembly, e.g. `services.AddValidatorsFromAssemblyContaining<PersonValidator>()` (see [Docs](https://docs.fluentvalidation.net/en/latest/di.html#automatic-registration)) |
+| `.AddUsageAwareDecorators()` | `builder.Services.AddTransient(typeof(UsageAwareLogger<,>));` |
+
 ### Step 4 — Rebuild
 
 Build the project. If the generator is working correctly you will see:
