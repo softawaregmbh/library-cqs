@@ -7,7 +7,7 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>softaware.CQS.Analyzers</PackageId>
-    <PackageVersion>4.0.0</PackageVersion>
+    <PackageVersion>4.0.1</PackageVersion>
     <Authors>softaware gmbh</Authors>
     <Company>softaware gmbh</Company>
     <PackageIcon>package-icon.png</PackageIcon>
@@ -19,17 +19,18 @@
     <PackageTags>softaware, CQS, command-query-separation</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <FileVersion>4.0.0.0</FileVersion>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.1.0</FileVersion>
+    <AssemblyVersion>4.0.1.0</AssemblyVersion>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

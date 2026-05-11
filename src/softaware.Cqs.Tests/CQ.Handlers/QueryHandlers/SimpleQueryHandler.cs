@@ -1,6 +1,7 @@
 using softaware.Cqs.Tests.CQ.Contract.Queries;
 
 namespace softaware.Cqs.Tests.CQ.Handlers.QueryHandlers;
+
 internal class SimpleQueryHandler
     : IRequestHandler<SimpleQuery1, string>,
     IRequestHandler<SimpleQuery2, string>

@@ -3,6 +3,18 @@
 This project provides a library for the command-query separation pattern.
 Commands and queries will be separated on class-level and will be represented by the `ICommand` and `IQuery<TResult>` interfaces.
 
+## Table of Contents
+
+- [Usage](#usage)
+  - [Queries and Commands](#queries-and-commands)
+  - [Dependency Injection](#dependency-injection)
+    - [Microsoft.Extensions.DependencyInjection](#microsoftextensionsdependencyinjection)
+    - [Microsoft.Extensions.DependencyInjection (Source Generator)](#microsoftextensionsdependencyinjection-source-generator)
+    - [SimpleInjector](#simpleinjector)
+  - [Executing Commands/Queries](#executing-commandsqueries)
+- [Packages](#packages)
+- [Breaking changes in version 4.0](#breaking-changes-in-version-40)
+
 ## Usage
 
 ### Queries and Commands
@@ -68,7 +80,7 @@ It is possible to define decorators for specific query or command types (`IReque
 
 ### Dependency Injection
 
-The software CQS packages support two dependency injection frameworks:
+The softaware CQS packages support two dependency injection frameworks:
   1. [Dependency injection in .NET](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) from the `Microsoft.Extensions.DependencyInjection` package (recommended).
   2. [Simple Injector](https://simpleinjector.org/).
 
@@ -106,6 +118,21 @@ services
 ```
 
 The decorators wrap the handler in the order they are added here (so they are called in opposite order). In this case, the `FluentValidationRequestHandlerDecorator` is the first decorator to be called. The `CommandLoggingDecorator` is the last one and calls the actual handler.
+
+#### Microsoft.Extensions.DependencyInjection (Source Generator)
+
+`softaware.CQS.DependencyInjection.SourceGenerated` is a compile-time alternative to the runtime package above. Instead of using Scrutor's assembly scanning at startup, a Roslyn source generator discovers all handlers at compile time and emits explicit `IServiceCollection` registrations. This eliminates the startup scanning cost and resolves handlers without any runtime reflection.
+
+The API is intentionally identical, with one key difference: **`IncludeTypesFrom` requires a `typeof()` expression** (not an `Assembly`):
+
+```csharp
+services
+    .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(MyMarkerType)))
+    .AddDecorators(b => b
+        .AddRequestHandlerDecorator(typeof(CommandLoggingDecorator<,>)));
+```
+
+See the [package README](src/softaware.Cqs.DependencyInjection.SourceGenerated/README.md) for the full migration guide from the runtime package, a list of limitations, and debugging tips.
 
 #### SimpleInjector
 
@@ -169,6 +196,7 @@ The project consists of several separate packages, which allows flexible usage o
 | [`softaware.CQS.Analyzers`](src/softaware.Cqs.Analyzers)                                                                                   |                                                                                                                                                                                                                                     | Roslyn analyzers that ensure correct usage of the library. (Shipped with core library.)                                               |
 | [`softaware.CQS.SimpleInjector`](src/softaware.Cqs.SimpleInjector)                                                                         | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.SimpleInjector.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.SimpleInjector/)                                                                         | Adds support for dynamic resolving of commands handlers and query handlers via SimpleInjector.                                        |
 | [`softaware.CQS.DependencyInjection`](src/softaware.Cqs.DependencyInjection)                                                               | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.DependencyInjection.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.DependencyInjection/)                                                               | Adds support for dynamic resolving of commands handlers and query handlers via `Microsoft.Extensions.DependencyInjection`.            |
+| [`softaware.CQS.DependencyInjection.SourceGenerated`](src/softaware.Cqs.DependencyInjection.SourceGenerated)                               | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.DependencyInjection.SourceGenerated.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.DependencyInjection.SourceGenerated/)                               | Compile-time alternative to `softaware.CQS.DependencyInjection` using a Roslyn source generator. No runtime assembly scanning.       |
 | [`softaware.CQS.Decorators.Transaction`](src/softaware.Cqs.Decorators.Transaction)                                                         | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.Decorators.Transaction.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.Decorators.Transaction/)                                                         | A decorator for command-query architecture, which supports transactions.                                                              |
 | [`softaware.CQS.Decorators.Transaction.DependencyInjection`](src/softaware.Cqs.Decorators.Transaction.DependencyInjection)                 | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.Decorators.Transaction.DependencyInjection.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.Decorators.Transaction.DependencyInjection/)                 | Builder extensions for adding decorators to Microsoft's DI.                                                                           |
 | [`softaware.CQS.Decorators.Validation`](src/softaware.Cqs.Decorators.Validation)                                                           | [![NuGet](https://img.shields.io/nuget/v/softaware.CQS.Decorators.Validation.svg?style=flat-square)](https://www.nuget.org/packages/softaware.CQS.Decorators.Validation/)                                                           | A decorator for command-query architecture, which supports validation of data annotations.                                            |
