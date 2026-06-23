@@ -22,6 +22,8 @@
     <ProjectReference Include="..\softaware.Cqs.Decorators.ApplicationInsights\softaware.Cqs.Decorators.ApplicationInsights.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation.DependencyInjection\softaware.Cqs.Decorators.FluentValidation.DependencyInjection.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.FluentValidation\softaware.Cqs.Decorators.FluentValidation.csproj" />
+    <ProjectReference Include="..\softaware.Cqs.Decorators.OpenTelemetry.DependencyInjection\softaware.Cqs.Decorators.OpenTelemetry.DependencyInjection.csproj" />
+    <ProjectReference Include="..\softaware.Cqs.Decorators.OpenTelemetry\softaware.Cqs.Decorators.OpenTelemetry.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction.DependencyInjection\softaware.Cqs.Decorators.Transaction.DependencyInjection.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.Transaction\softaware.Cqs.Decorators.Transaction.csproj" />
     <ProjectReference Include="..\softaware.Cqs.Decorators.UsageAware.DependencyInjection\softaware.Cqs.Decorators.UsageAware.DependencyInjection.csproj" />

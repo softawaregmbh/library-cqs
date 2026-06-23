@@ -74,7 +74,8 @@ public class CqsSourceGenerator : IIncrementalGenerator
             or "AddDataAnnotationsValidationDecorators"
             or "AddFluentValidationDecorators"
             or "AddUsageAwareDecorators"
-            or "AddApplicationInsightsDependencyTelemetryDecorator";
+            or "AddApplicationInsightsDependencyTelemetryDecorator"
+            or "AddOpenTelemetryActivityDecorator";
     }
 
     private static string? GetMethodName(InvocationExpressionSyntax invocation)
