@@ -15,7 +15,7 @@ namespace softaware.Cqs.Decorators.OpenTelemetry;
 public class ActivityRequestHandlerDecorator<TRequest, TResult>(IRequestHandler<TRequest, TResult> decoratee) : IRequestHandler<TRequest, TResult>
     where TRequest : IRequest<TResult>
 {
-    public Task<TResult> HandleAsync(TRequest request, CancellationToken cancellationToken)
+    public async Task<TResult> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
         var requestType = request.GetType();
 
@@ -25,6 +25,6 @@ public class ActivityRequestHandlerDecorator<TRequest, TResult>(IRequestHandler<
 
         activity?.SetTag("cqs.request.type", requestType.FullName);
 
-        return decoratee.HandleAsync(request, cancellationToken);
+        return await decoratee.HandleAsync(request, cancellationToken);
     }
 }
