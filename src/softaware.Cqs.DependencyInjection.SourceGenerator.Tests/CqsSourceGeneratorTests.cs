@@ -46,6 +46,57 @@ public class Startup
     }
 
     [Fact]
+    public void HandlerInjectingAnotherHandler_IsRegisteredAndNotTreatedAsDecorator()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class GetInner : IQuery<int>
+{
+}
+
+public class GetInnerHandler : IRequestHandler<GetInner, int>
+{
+    public System.Threading.Tasks.Task<int> HandleAsync(GetInner query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult(42);
+}
+
+public class GetOuter : IQuery<int>
+{
+}
+
+// Composing handler: injects a *different* IRequestHandler. Must NOT be treated as a decorator.
+public class GetOuterHandler : IRequestHandler<GetOuter, int>
+{
+    private readonly IRequestHandler<GetInner, int> inner;
+    public GetOuterHandler(IRequestHandler<GetInner, int> inner) => this.inner = inner;
+
+    public System.Threading.Tasks.Task<int> HandleAsync(GetOuter query, System.Threading.CancellationToken ct)
+        => this.inner.HandleAsync(new GetInner(), ct);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetInner)));
+    }
+}
+";
+
+        var (outputCompilation, diagnostics, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.Contains("GetOuterHandler", registrationSource);
+        Assert.Contains("GetInnerHandler", registrationSource);
+    }
+
+    [Fact]
     public void CommandHandler_GeneratesRegistration()
     {
         var source = @"

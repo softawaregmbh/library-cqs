@@ -551,13 +551,27 @@ public class CqsSourceGenerator : IIncrementalGenerator
 
     private static bool IsDecorator(INamedTypeSymbol type, INamedTypeSymbol requestHandlerType)
     {
+        // A decorator implements IRequestHandler<TRequest, TResult> and wraps the *same*
+        // IRequestHandler<TRequest, TResult> injected via its constructor (the inner handler).
+        // A regular handler may also inject *other* request handlers (composition) - those must
+        // NOT be treated as decorators, otherwise they would be excluded from registration.
+        var implementedHandlerInterfaces = type.AllInterfaces
+            .Where(i => SymbolEqualityComparer.Default.Equals(i.OriginalDefinition, requestHandlerType))
+            .ToArray();
+
+        if (implementedHandlerInterfaces.Length == 0)
+        {
+            return false;
+        }
+
         foreach (var constructor in type.Constructors)
         {
             foreach (var param in constructor.Parameters)
             {
                 if (param.Type is INamedTypeSymbol paramType &&
                     paramType.IsGenericType &&
-                    SymbolEqualityComparer.Default.Equals(paramType.OriginalDefinition, requestHandlerType))
+                    SymbolEqualityComparer.Default.Equals(paramType.OriginalDefinition, requestHandlerType) &&
+                    implementedHandlerInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, paramType)))
                 {
                     return true;
                 }
