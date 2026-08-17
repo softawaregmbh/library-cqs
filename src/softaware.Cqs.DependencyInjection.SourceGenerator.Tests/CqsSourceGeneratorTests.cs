@@ -1033,4 +1033,323 @@ public class Startup
         Assert.Contains("MyQueryHandler", registrationSource);
         Assert.Contains("LoggingDecorator", registrationSource);
     }
+
+    [Fact]
+    public void NullableReferenceResultType_GeneratesNullableResultInRegistrationAndProcessor()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class Data
+{
+}
+
+public class GetData : IQuery<Data?>
+{
+}
+
+public class GetDataHandler : IRequestHandler<GetData, Data?>
+{
+    public System.Threading.Tasks.Task<Data?> HandleAsync(GetData query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<Data?>(null);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetData)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetData, global::TestApp.Data?>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetData, global::TestApp.Data?>", processorSource);
+    }
+
+    [Fact]
+    public void NullableReferenceCommandResultType_GeneratesNullableResultInRegistrationAndProcessor()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class Data
+{
+}
+
+public class GetDataCommand : ICommand<Data?>
+{
+}
+
+public class GetDataCommandHandler : IRequestHandler<GetDataCommand, Data?>
+{
+    public System.Threading.Tasks.Task<Data?> HandleAsync(GetDataCommand command, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<Data?>(null);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetDataCommand)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetDataCommand, global::TestApp.Data?>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetDataCommand, global::TestApp.Data?>", processorSource);
+    }
+
+    [Fact]
+    public void NullableStringResultType_GeneratesNullableResultInRegistrationAndProcessor()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class GetName : IQuery<string?>
+{
+}
+
+public class GetNameHandler : IRequestHandler<GetName, string?>
+{
+    public System.Threading.Tasks.Task<string?> HandleAsync(GetName query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<string?>(null);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetName)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetName, string?>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetName, string?>", processorSource);
+    }
+
+    [Fact]
+    public void NonNullableReferenceResultType_DoesNotGenerateNullableModifier()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class Data
+{
+}
+
+public class GetData : IQuery<Data>
+{
+}
+
+public class GetDataHandler : IRequestHandler<GetData, Data>
+{
+    public System.Threading.Tasks.Task<Data> HandleAsync(GetData query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult(new Data());
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetData)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetData, global::TestApp.Data>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetData, global::TestApp.Data>", processorSource);
+        Assert.DoesNotContain("IRequestHandler<global::TestApp.GetData, global::TestApp.Data?>", registrationSource);
+        Assert.DoesNotContain("IRequestHandler<global::TestApp.GetData, global::TestApp.Data?>", processorSource);
+    }
+
+    [Fact]
+    public void NullableValueTypeResultType_GeneratesNullableResultInRegistrationAndProcessor()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class GetCount : IQuery<int?>
+{
+}
+
+public class GetCountHandler : IRequestHandler<GetCount, int?>
+{
+    public System.Threading.Tasks.Task<int?> HandleAsync(GetCount query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<int?>(null);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetCount)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetCount, int?>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetCount, int?>", processorSource);
+    }
+
+    [Theory]
+    [InlineData("System.Collections.Generic.List<global::TestApp.Data?>")]
+    [InlineData("global::TestApp.Data?[]")]
+    public void NestedNullableReferenceResultType_GeneratesNullableAnnotations(string expectedResultType)
+    {
+        var source = @"
+using System.Collections.Generic;
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class Data
+{
+}
+
+public class GetDataList : IQuery<List<Data?>>
+{
+}
+
+public class GetDataListHandler : IRequestHandler<GetDataList, List<Data?>>
+{
+    public System.Threading.Tasks.Task<List<Data?>> HandleAsync(GetDataList query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<List<Data?>>(new List<Data?>());
+}
+
+public class GetDataArray : IQuery<Data?[]>
+{
+}
+
+public class GetDataArrayHandler : IRequestHandler<GetDataArray, Data?[]>
+{
+    public System.Threading.Tasks.Task<Data?[]> HandleAsync(GetDataArray query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<Data?[]>(System.Array.Empty<Data?>());
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services.AddSoftawareCqs(b => b
+            .IncludeTypesFrom(typeof(GetDataList))
+            .IncludeTypesFrom(typeof(GetDataArray)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+        var processorSource = TestHelper.GetGeneratedSource(runResult, "GeneratedRequestProcessor.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.NotNull(processorSource);
+        Assert.Contains(expectedResultType, registrationSource);
+        Assert.Contains(expectedResultType, processorSource);
+    }
+
+    [Fact]
+    public void NullableReferenceResultType_WithDecorator_ClosesDecoratorWithNullableResult()
+    {
+        var source = @"
+using softaware.Cqs;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TestApp;
+
+public class Data
+{
+}
+
+public class GetData : IQuery<Data?>
+{
+}
+
+public class GetDataHandler : IRequestHandler<GetData, Data?>
+{
+    public System.Threading.Tasks.Task<Data?> HandleAsync(GetData query, System.Threading.CancellationToken ct)
+        => System.Threading.Tasks.Task.FromResult<Data?>(null);
+}
+
+public class LoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+{
+    private readonly IRequestHandler<TRequest, TResult> decoratee;
+    public LoggingDecorator(IRequestHandler<TRequest, TResult> decoratee) => this.decoratee = decoratee;
+    public System.Threading.Tasks.Task<TResult> HandleAsync(TRequest r, System.Threading.CancellationToken ct)
+        => this.decoratee.HandleAsync(r, ct);
+}
+
+public class Startup
+{
+    public void Configure(IServiceCollection services)
+    {
+        services
+            .AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(GetData)))
+            .AddDecorators(b => b.AddRequestHandlerDecorator(typeof(LoggingDecorator<,>)));
+    }
+}
+";
+
+        var (_, _, runResult) = TestHelper.RunGeneratorWithCompilation(source);
+
+        var registrationSource = TestHelper.GetGeneratedSource(runResult, "CqsServiceRegistration.g.cs");
+
+        Assert.NotNull(registrationSource);
+        Assert.Contains("LoggingDecorator<global::TestApp.GetData, global::TestApp.Data?>", registrationSource);
+        Assert.Contains("IRequestHandler<global::TestApp.GetData, global::TestApp.Data?>", registrationSource);
+    }
 }

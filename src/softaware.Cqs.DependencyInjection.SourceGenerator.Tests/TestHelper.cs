@@ -27,7 +27,7 @@ internal static class TestHelper
             assemblyName: "TestAssembly",
             syntaxTrees: syntaxTrees,
             references: references,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            options: CreateCompilationOptions());
 
         var generator = new CqsSourceGenerator();
         GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -58,7 +58,7 @@ internal static class TestHelper
             assemblyName: "TestAssembly",
             syntaxTrees: syntaxTrees,
             references: references,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            options: CreateCompilationOptions());
 
         var generator = new CqsSourceGenerator();
         GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
@@ -66,6 +66,10 @@ internal static class TestHelper
 
         return (outputCompilation, diagnostics, driver.GetRunResult());
     }
+
+    private static CSharpCompilationOptions CreateCompilationOptions()
+        => new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            .WithNullableContextOptions(NullableContextOptions.Enable);
 
     private static List<MetadataReference> GetMetadataReferences()
     {
