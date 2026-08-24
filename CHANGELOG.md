@@ -2,6 +2,10 @@
 
 ## softaware.Cqs.DependencyInjection.SourceGenerated
 
+### 1.0.2
+
+* Fix: Generated handler registrations and `GeneratedRequestProcessor` now preserve nullable reference result types (e.g. `IQuery<Data?>` generates `IRequestHandler<GetData, Data?>` instead of `Data`). Fixes nullable warnings (CS8619/CS8621/CS8634) in generated code when nullable is enabled.
+
 ### 1.0.0
 
 A **compile-time** alternative to `softaware.Cqs.DependencyInjection` that uses a Roslyn source generator instead of Scrutor-based runtime reflection to register CQS handlers and decorators.

@@ -75,13 +75,13 @@ services.AddSoftawareCqs(b => b
 
 The source generator cannot trace through extension methods. Replace all convenience methods with explicit `AddRequestHandlerDecorator(typeof(...))` calls:
 
-| Convenience method (remove) | Replace with |
-|---|---|
-| `.AddTransactionCommandHandlerDecorator()` | `.AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>))` |
-| `.AddTransactionQueryHandlerDecorator()` | `.AddRequestHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))` |
-| `.AddDataAnnotationsValidationDecorators()` | `.AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>))` |
-| `.AddFluentValidationDecorators()` | `.AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>))` |
-| `.AddUsageAwareDecorators()` | `.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))` |
+| Convenience method (remove)                             | Replace with                                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `.AddTransactionCommandHandlerDecorator()`              | `.AddRequestHandlerDecorator(typeof(TransactionAwareCommandHandlerDecorator<,>))`    |
+| `.AddTransactionQueryHandlerDecorator()`                | `.AddRequestHandlerDecorator(typeof(TransactionAwareQueryHandlerDecorator<,>))`      |
+| `.AddDataAnnotationsValidationDecorators()`             | `.AddRequestHandlerDecorator(typeof(ValidationRequestHandlerDecorator<,>))`          |
+| `.AddFluentValidationDecorators()`                      | `.AddRequestHandlerDecorator(typeof(FluentValidationRequestHandlerDecorator<,>))`    |
+| `.AddUsageAwareDecorators()`                            | `.AddRequestHandlerDecorator(typeof(UsageAwareRequestHandlerDecorator<,>))`          |
 | `.AddApplicationInsightsDependencyTelemetryDecorator()` | `.AddRequestHandlerDecorator(typeof(DependencyTelemetryRequestHandlerDecorator<,>))` |
 
 A build warning (`CQ0004`) is emitted for every detected convenience method.
@@ -100,11 +100,11 @@ A build warning (`CQ0004`) is emitted for every detected convenience method.
 
 For the following replacing convenience methods, you must also add the required services to your service collection, since they were previously registered for you by the convenience methods:
 
-| Convenience method (remove) | Add DI registration  |
-|---|---|
-| `.AddDataAnnotationsValidationDecorators()` | `builder.Services.AddSingleton<IValidator>(new DataAnnotationsValidator());` |
-| `.AddFluentValidationDecorators()` | Use FluentValidation method to register all validators in assembly, e.g. `services.AddValidatorsFromAssemblyContaining<PersonValidator>()` (see [Docs](https://docs.fluentvalidation.net/en/latest/di.html#automatic-registration)) |
-| `.AddUsageAwareDecorators()` | `builder.Services.AddTransient(typeof(UsageAwareLogger<,>));` |
+| Convenience method (remove)                 | Add DI registration                                                                                                                                                                                                                 |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.AddDataAnnotationsValidationDecorators()` | `builder.Services.AddSingleton<IValidator>(new DataAnnotationsValidator());`                                                                                                                                                        |
+| `.AddFluentValidationDecorators()`          | Use FluentValidation method to register all validators in assembly, e.g. `services.AddValidatorsFromAssemblyContaining<PersonValidator>()` (see [Docs](https://docs.fluentvalidation.net/en/latest/di.html#automatic-registration)) |
+| `.AddUsageAwareDecorators()`                | `builder.Services.AddTransient(typeof(UsageAwareLogger<,>));`                                                                                                                                                                       |
 
 ### Step 4 — Rebuild
 
@@ -203,24 +203,30 @@ At compile time, the generator:
 4. Generates explicit `IServiceCollection` registrations with decorator chains
 5. Generates a `GeneratedRequestProcessor` for static dispatch (registered as `IRequestProcessor`)
 
+Generated code preserves nullable reference annotations on `TResult` (`Data?`, `string?`, nested forms like `List<Data?>`). Nullable value types (`int?`) were already correct and are unchanged.
+
+```csharp
+IQuery<Data?> → generates IRequestHandler<GetData, global::App.Data?>
+```
+
 At runtime, the `AddSoftawareCqs()` call locates the generated `CqsServiceRegistration` class via reflection and invokes `RegisterAll(IServiceCollection)`.  
 The `AddDecorators()` lambda is **executed at runtime** to capture conditional registrations — see [Conditional Decorator Registration](#conditional-decorator-registration) below.
 
 ## Diagnostics
 
-| ID | Severity | Description |
-|---|---|---|
-| `CQ0002` | Error | A handler is missing for the command or query. |
-| `CQ0003` | Error | The overload taking an assembly is not supported. Use the overload with a `typeof(HandlerMarker)` instead. |
-| `CQ0004` | Warning | Convenience method (e.g. `AddTransactionCommandHandlerDecorator`) detected. Use `AddRequestHandlerDecorator(typeof(...))` instead. |
-| `CQ0005` | Warning | No `AddSoftawareCqs` call found. The generator has nothing to generate. |
-| `CQ0006` | Warning | Core CQS types (`IRequestHandler`, `IRequest`, `IRequestProcessor`) could not be resolved. Ensure `softaware.CQS` is referenced. |
-| `CQ0007` | Info | Generation succeeded. Shows handler and decorator counts. Only visible in IDE Error List (with Info filter) or `dotnet build -v detailed`. |
-| `CQ0008` | Error | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression. |
-| `CQ0009` | Error | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version. |
-| `CQ0010` | Info | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check. |
-| `CQ0011` | Error | Decorator has generic type parameters that could not be mapped to `TRequest`/`TResult` from `IRequestHandler<TRequest, TResult>`. |
-| `CQ0012` | Warning | A method other than `AddRequestHandlerDecorator` was called inside `AddDecorators`. The call is ignored by the source generator. |
+| ID       | Severity | Description                                                                                                                                |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CQ0002` | Error    | A handler is missing for the command or query.                                                                                             |
+| `CQ0003` | Error    | The overload taking an assembly is not supported. Use the overload with a `typeof(HandlerMarker)` instead.                                 |
+| `CQ0004` | Warning  | Convenience method (e.g. `AddTransactionCommandHandlerDecorator`) detected. Use `AddRequestHandlerDecorator(typeof(...))` instead.         |
+| `CQ0005` | Warning  | No `AddSoftawareCqs` call found. The generator has nothing to generate.                                                                    |
+| `CQ0006` | Warning  | Core CQS types (`IRequestHandler`, `IRequest`, `IRequestProcessor`) could not be resolved. Ensure `softaware.CQS` is referenced.           |
+| `CQ0007` | Info     | Generation succeeded. Shows handler and decorator counts. Only visible in IDE Error List (with Info filter) or `dotnet build -v detailed`. |
+| `CQ0008` | Error    | Argument to `IncludeTypesFrom` or `AddRequestHandlerDecorator` is not a `typeof()` expression.                                             |
+| `CQ0009` | Error    | Handler uses an open generic request type (e.g. `MyRequest<TEntity>`). Not supported in this version.                                      |
+| `CQ0010` | Info     | `AddRequestHandlerDecorator` inside a conditional block — will use runtime registry check.                                                 |
+| `CQ0011` | Error    | Decorator has generic type parameters that could not be mapped to `TRequest`/`TResult` from `IRequestHandler<TRequest, TResult>`.          |
+| `CQ0012` | Warning  | A method other than `AddRequestHandlerDecorator` was called inside `AddDecorators`. The call is ignored by the source generator.           |
 
 ## Conditional Decorator Registration
 
@@ -283,6 +289,7 @@ If you see **no CQ warnings at all**, the generator is not running. Check:
 ### Inspect generated files
 
 You should find the two files in Visual Studio Search (<kbd>Ctrl</kbd> + <kbd>T</kbd> shortcut):
+
 - `CqsServiceRegistration.g.cs` — handler and decorator registrations
 - `GeneratedRequestProcessor.g.cs` — static request dispatch
 
@@ -301,6 +308,7 @@ obj/Debug/{TFM}/generated/softaware.Cqs.DependencyInjection.SourceGenerator/soft
 ```
 
 You should see:
+
 - `CqsServiceRegistration.g.cs` — handler and decorator registrations
 - `GeneratedRequestProcessor.g.cs` — static request dispatch
 
@@ -320,20 +328,21 @@ Then build the project. This triggers `Debugger.Launch()` and lets you step thro
 
 ### Common pitfalls
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| No warnings, no generated files | Generator not running | Clear NuGet cache, rebuild |
-| `CQ0005` — "No AddSoftawareCqs call found" | Missing or incorrect `AddSoftawareCqs` call | Ensure you call `services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(...)))` |
-| `CQ0006` — "Core CQS types not resolved" | Missing `softaware.CQS` package reference | Add `<PackageReference Include="softaware.CQS" />` |
-| `CQ0008` — "must be a typeof() expression" | Using a variable or `.Assembly` instead of `typeof()` | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))` |
-| `InvalidOperationException` at runtime | Generated class not found | Ensure the NuGet package is installed and project was rebuilt |
-| `CQ0009` — "open generic request type" | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types |
-| `CQ0011` — "unsupported decorator generic shape" | Decorator has extra generic parameters beyond `TRequest`/`TResult` | Ensure all generic parameters are used by the `IRequestHandler<TRequest, TResult>` implementation |
-| `CQ0012` — "unsupported method call in AddDecorators" | A helper or extension method was called inside `AddDecorators` | Register decorators directly via `AddRequestHandlerDecorator(typeof(...))` |
+| Symptom                                               | Cause                                                                        | Fix                                                                                               |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| No warnings, no generated files                       | Generator not running                                                        | Clear NuGet cache, rebuild                                                                        |
+| `CQ0005` — "No AddSoftawareCqs call found"            | Missing or incorrect `AddSoftawareCqs` call                                  | Ensure you call `services.AddSoftawareCqs(b => b.IncludeTypesFrom(typeof(...)))`                  |
+| `CQ0006` — "Core CQS types not resolved"              | Missing `softaware.CQS` package reference                                    | Add `<PackageReference Include="softaware.CQS" />`                                                |
+| `CQ0008` — "must be a typeof() expression"            | Using a variable or `.Assembly` instead of `typeof()`                        | Replace `IncludeTypesFrom(myVariable)` with `IncludeTypesFrom(typeof(MyType))`                    |
+| `InvalidOperationException` at runtime                | Generated class not found                                                    | Ensure the NuGet package is installed and project was rebuilt                                     |
+| `CQ0009` — "open generic request type"                | Handler like `MyHandler<TEntity> : IRequestHandler<MyRequest<TEntity>, int>` | Not supported. Use the runtime (Scrutor-based) package or refactor to closed generic types        |
+| `CQ0011` — "unsupported decorator generic shape"      | Decorator has extra generic parameters beyond `TRequest`/`TResult`           | Ensure all generic parameters are used by the `IRequestHandler<TRequest, TResult>` implementation |
+| `CQ0012` — "unsupported method call in AddDecorators" | A helper or extension method was called inside `AddDecorators`               | Register decorators directly via `AddRequestHandlerDecorator(typeof(...))`                        |
 
 ## Decorator Order
 
 Decorators are applied in **registration order**:
+
 - **First registered** = closest to the handler (innermost)
 - **Last registered** = outermost (executed first)
 

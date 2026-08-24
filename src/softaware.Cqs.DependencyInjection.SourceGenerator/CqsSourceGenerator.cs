@@ -803,10 +803,13 @@ public class CqsSourceGenerator : IIncrementalGenerator
         }
     }
 
+    private static readonly SymbolDisplayFormat FullyQualifiedFormat =
+        SymbolDisplayFormat.FullyQualifiedFormat.WithMiscellaneousOptions(
+            SymbolDisplayFormat.FullyQualifiedFormat.MiscellaneousOptions
+            | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
+
     private static string GetFullyQualifiedName(ITypeSymbol type)
-    {
-        return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-    }
+        => type.ToDisplayString(FullyQualifiedFormat);
 
     private static string GetOpenGenericTypeName(INamedTypeSymbol openGenericType)
     {
